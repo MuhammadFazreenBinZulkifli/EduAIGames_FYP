@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+
+# Environment files (secrets) — keep .example files only
+.env
+.env.local
+.env.*.local
+server/.env
+EduAIGames/.env
+EduAIGames/.env.local
+EduAIGames/.env.production
+
+# Uploaded files (persisted on a Render disk, not in git)
+server/uploads/
+
+# Build output (rebuilt by Docker / Vite)
+EduAIGames/dist/
+dist/
+
+# Logs & OS/editor cruft
+*.log
+.DS_Store
+Thumbs.db

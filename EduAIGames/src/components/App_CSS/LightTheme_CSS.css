@@ -1,0 +1,443 @@
+/* Light theme polish — student, instructor, front page, modals, chatbot.
+   Loaded after component CSS; dark theme unchanged. */
+
+html[data-theme='light'] {
+  color-scheme: light;
+}
+
+/* ── Shell & sidebar ── */
+html[data-theme='light'] .app-sidebar-footer {
+  border-top-color: var(--border) !important;
+}
+
+html[data-theme='light'] .app-sidebar-user-name {
+  color: var(--text-primary) !important;
+}
+
+html[data-theme='light'] .notification-bell-btn {
+  background: rgba(194, 65, 12, 0.06) !important;
+}
+
+html[data-theme='light'] .notification-bell-btn:hover,
+html[data-theme='light'] .notification-bell-btn[aria-expanded='true'] {
+  background: rgba(194, 65, 12, 0.12) !important;
+}
+
+html[data-theme='light'] .notification-panel {
+  box-shadow: 0 12px 40px var(--shadow-card) !important;
+}
+
+html[data-theme='light'] .notification-item {
+  border-bottom-color: var(--border) !important;
+}
+
+html[data-theme='light'] .notification-item.unread {
+  background: rgba(194, 65, 12, 0.06) !important;
+}
+
+html[data-theme='light'] .notification-item--clickable:hover:not(:disabled) {
+  background: rgba(194, 65, 12, 0.08) !important;
+}
+
+/* ── Front page ── */
+html[data-theme='light'] .frontpage-link--active {
+  background: rgba(194, 65, 12, 0.08) !important;
+}
+
+html[data-theme='light'] .frontpage-trust-row {
+  border-top-color: var(--border) !important;
+}
+
+html[data-theme='light'] .frontpage-intro-panel,
+html[data-theme='light'] .frontpage-feature-card,
+html[data-theme='light'] .frontpage-step,
+html[data-theme='light'] .frontpage-role-card,
+html[data-theme='light'] .frontpage-stat-card {
+  border-color: var(--border) !important;
+}
+
+html[data-theme='light'] .frontpage-intro-points li {
+  background: var(--bg-card) !important;
+  border-color: var(--border) !important;
+}
+
+html[data-theme='light'] .frontpage-schools-panel {
+  background: var(--panel-context-bg) !important;
+  border-color: var(--panel-context-border) !important;
+  box-shadow: var(--panel-card-shadow) !important;
+}
+
+html[data-theme='light'] .frontpage-feature-card:hover,
+html[data-theme='light'] .frontpage-visual-placeholder:hover {
+  box-shadow: var(--panel-card-shadow) !important;
+}
+
+html[data-theme='light'] .frontpage-bg-orbs::before {
+  background: rgba(194, 65, 12, 0.12);
+}
+
+html[data-theme='light'] .frontpage-bg-orbs::after {
+  background: rgba(234, 88, 12, 0.08);
+}
+
+/* ── Dashboard banner (light-friendly hero) ── */
+html[data-theme='light'] .dash-banner {
+  background: linear-gradient(130deg, #fff7ed 0%, #ffedd5 38%, #fef3c7 68%, #fce7f3 100%) !important;
+  border: 1px solid var(--border) !important;
+}
+
+html[data-theme='light'] .dash-banner__title {
+  color: var(--text-primary) !important;
+}
+
+html[data-theme='light'] .dash-banner__sub {
+  color: var(--text-secondary) !important;
+}
+
+html[data-theme='light'] .dash-banner__kicker {
+  color: var(--accent-soft) !important;
+}
+
+html[data-theme='light'] .dash-banner__stat {
+  background: rgba(255, 255, 255, 0.72) !important;
+  border-color: var(--border) !important;
+}
+
+html[data-theme='light'] .dash-banner__stat-value {
+  color: var(--text-primary) !important;
+}
+
+html[data-theme='light'] .dash-banner__stat-label {
+  color: var(--text-muted) !important;
+}
+
+html[data-theme='light'] .dash-banner__stat:hover {
+  background: #ffffff !important;
+}
+
+html[data-theme='light'] .panel-dash-spotlight {
+  background: var(--panel-context-bg) !important;
+  border-color: var(--panel-context-border) !important;
+}
+
+html[data-theme='light'] .dash-tip__badge {
+  color: var(--accent-soft) !important;
+}
+
+html[data-theme='light'] .dash-tip__title,
+html[data-theme='light'] .dash-section__title,
+html[data-theme='light'] .dash-class-item__name {
+  color: var(--text-primary) !important;
+}
+
+html[data-theme='light'] .dash-class-item__meta {
+  color: var(--text-muted) !important;
+}
+
+/* ── Profile & settings ── */
+html[data-theme='light'] .prof-settings__card {
+  background: var(--bg-card) !important;
+  border-color: var(--border) !important;
+}
+
+html[data-theme='light'] .idz__preview-wrap {
+  border-color: var(--border) !important;
+}
+
+html[data-theme='light'] .idz__dropzone {
+  background: rgba(194, 65, 12, 0.04) !important;
+}
+
+html[data-theme='light'] .idz__dropzone--over {
+  background: rgba(194, 65, 12, 0.08) !important;
+  box-shadow: 0 0 0 4px rgba(194, 65, 12, 0.12) !important;
+}
+
+/* ── Change password modal ── */
+html[data-theme='light'] .cpwd__overlay {
+  background: rgba(15, 23, 42, 0.45) !important;
+}
+
+html[data-theme='light'] .cpwd__modal {
+  background: var(--bg-card) !important;
+  border-color: var(--border) !important;
+  box-shadow: 0 32px 80px var(--shadow-card) !important;
+}
+
+html[data-theme='light'] .cpwd__header {
+  background: linear-gradient(130deg, rgba(194, 65, 12, 0.1) 0%, rgba(167, 139, 250, 0.06) 100%) !important;
+  border-bottom-color: var(--border) !important;
+}
+
+html[data-theme='light'] .cpwd__title,
+html[data-theme='light'] .cpwd__success-title {
+  color: var(--text-primary) !important;
+}
+
+html[data-theme='light'] .cpwd__subtitle {
+  color: var(--text-muted) !important;
+}
+
+html[data-theme='light'] .cpwd__close {
+  background: var(--bg-btn-secondary) !important;
+  border-color: var(--border) !important;
+  color: var(--text-secondary) !important;
+}
+
+html[data-theme='light'] .cpwd__strength-bar,
+html[data-theme='light'] .cpwd__divider {
+  background: var(--border) !important;
+}
+
+html[data-theme='light'] .cpwd__error-box {
+  color: #b91c1c !important;
+  background: var(--error-bg) !important;
+}
+
+/* ── Panel skeleton loading ── */
+html[data-theme='light'] .panel-skeleton {
+  background: var(--bg-card-soft) !important;
+  border-color: var(--border) !important;
+}
+
+html[data-theme='light'] .panel-skeleton__line,
+html[data-theme='light'] .panel-skeleton__row {
+  background: rgba(15, 23, 42, 0.06) !important;
+}
+
+/* ── Student pages ── */
+html[data-theme='light'] .student-my-classes__instructor {
+  color: var(--text-secondary) !important;
+}
+
+html[data-theme='light'] .student-my-classes__count {
+  color: var(--accent-soft) !important;
+}
+
+html[data-theme='light'] .student-courses__game-settings {
+  color: var(--text-muted) !important;
+}
+
+/* ── Instructor pages ── */
+html[data-theme='light'] .cls-bg-upload__trigger:hover {
+  color: var(--text-primary) !important;
+  background: rgba(194, 65, 12, 0.06) !important;
+}
+
+html[data-theme='light'] .instructor-quiz-library__tab--active {
+  color: var(--accent-soft) !important;
+}
+
+html[data-theme='light'] .instructor-quiz-library__tabs {
+  border: 1px solid var(--panel-surface-border-soft) !important;
+}
+
+/* ── Quiz & AI generator (extra selectors) ── */
+html[data-theme='light'] .ai-quiz-generator__review-title,
+html[data-theme='light'] .ai-quiz-generator__count-badge,
+html[data-theme='light'] .quiz-review__title {
+  color: var(--text-primary) !important;
+}
+
+html[data-theme='light'] .quiz-creation__tab-btn {
+  color: var(--text-secondary) !important;
+  background: var(--bg-card-soft) !important;
+  border-color: var(--border) !important;
+}
+
+html[data-theme='light'] .quiz-creation__tab-btn--active {
+  color: var(--accent-soft) !important;
+  background: rgba(194, 65, 12, 0.1) !important;
+  border-color: var(--border-accent) !important;
+}
+
+html[data-theme='light'] .quiz-review__card {
+  background: var(--bg-card) !important;
+  border-color: var(--border) !important;
+}
+
+html[data-theme='light'] .quiz-review__option {
+  background: var(--bg-card-soft) !important;
+  border: 1px solid var(--border) !important;
+}
+
+html[data-theme='light'] .edit-quiz__preview {
+  color: var(--text-secondary) !important;
+}
+
+html[data-theme='light'] .edit-quiz__question-type {
+  color: var(--text-muted) !important;
+}
+
+/* ── Game setup screens (inside panel pages) ── */
+html[data-theme='light'] .panel-page [class*='__howto-strong-light'] {
+  color: var(--text-primary) !important;
+}
+
+html[data-theme='light'] .panel-page .maze-game-quiz__quiz-preview,
+html[data-theme='light'] .panel-page .snake-game-quiz__quiz-preview,
+html[data-theme='light'] .panel-page .breakout-game-quiz__quiz-preview,
+html[data-theme='light'] .panel-page .trivia-race-game-quiz__quiz-preview {
+  background: var(--bg-card-soft) !important;
+  border-color: var(--border) !important;
+}
+
+/* Game modals launched from light shell */
+html[data-theme='light'] [class*='-game-quiz__modal'] {
+  background: var(--bg-card) !important;
+  border-color: var(--border) !important;
+}
+
+html[data-theme='light'] [class*='-game-quiz__modal-title'] {
+  color: var(--text-primary) !important;
+}
+
+html[data-theme='light'] [class*='-game-quiz__modal-backdrop'] {
+  background: rgba(15, 23, 42, 0.45) !important;
+}
+
+/* ── AI Chatbot ── */
+html[data-theme='light'] .aichat-panel {
+  background: linear-gradient(165deg, #ffffff 0%, #f8f9fb 55%, #f3f4f6 100%) !important;
+  border-color: var(--border-accent) !important;
+  box-shadow: 0 24px 60px var(--shadow-card) !important;
+}
+
+html[data-theme='light'] .aichat-header {
+  background: linear-gradient(90deg, rgba(194, 65, 12, 0.08) 0%, transparent 100%) !important;
+  border-bottom-color: var(--border) !important;
+}
+
+html[data-theme='light'] .aichat-title {
+  color: var(--text-primary) !important;
+}
+
+html[data-theme='light'] .aichat-subtitle {
+  color: var(--text-muted) !important;
+}
+
+html[data-theme='light'] .aichat-icon-btn {
+  background: var(--bg-btn-secondary) !important;
+  color: var(--text-secondary) !important;
+}
+
+html[data-theme='light'] .aichat-icon-btn:hover {
+  background: rgba(194, 65, 12, 0.1) !important;
+  color: var(--accent-soft) !important;
+}
+
+html[data-theme='light'] .aichat-messages {
+  background: transparent !important;
+}
+
+html[data-theme='light'] .aichat-bubble--assistant {
+  background: var(--bg-card-soft) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--text-primary) !important;
+}
+
+html[data-theme='light'] .aichat-bubble--user {
+  background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%) !important;
+  color: #ffffff !important;
+}
+
+html[data-theme='light'] .aichat-footer {
+  background: var(--bg-card) !important;
+  border-top-color: var(--border) !important;
+}
+
+html[data-theme='light'] .aichat-input {
+  background: var(--bg-input) !important;
+  border-color: var(--border) !important;
+  color: var(--text-primary) !important;
+}
+
+html[data-theme='light'] .aichat-input::placeholder {
+  color: var(--text-muted) !important;
+}
+
+html[data-theme='light'] .aichat-error {
+  color: var(--error-text) !important;
+  background: var(--error-bg) !important;
+}
+
+html[data-theme='light'] .aichat-messages::-webkit-scrollbar-thumb {
+  background: rgba(194, 65, 12, 0.25) !important;
+}
+
+html[data-theme='light'] .aichat-launcher--open {
+  background: linear-gradient(145deg, #f3f4f6 0%, #e5e7eb 100%) !important;
+  color: var(--accent-soft) !important;
+}
+
+/* ── Auth pages (login / register) extra surfaces ── */
+html[data-theme='light'] .auth-panel {
+  border-color: var(--border) !important;
+}
+
+html[data-theme='light'] .auth-panel-back-btn {
+  color: var(--text-secondary) !important;
+  border-color: var(--border) !important;
+  background: var(--bg-btn-secondary) !important;
+}
+
+/* ── Learning game screens (maze / snake / breakout / trivia) ──
+   These setup, level, and summary screens render on the light panel surface
+   with translucent cards, so their hardcoded dark-theme text needs remapping.
+   The in-play "gate" modal keeps its own solid dark background, so we never
+   target gate-* classes here. */
+html[data-theme='light'] .panel-page [class*='-game-quiz__quiz-preview-title'],
+html[data-theme='light'] .panel-page [class*='-game-quiz__summary-heading'],
+html[data-theme='light'] .panel-page [class*='-game-quiz__summary-label'],
+html[data-theme='light'] .panel-page [class*='-game-quiz__summary-quiz'],
+html[data-theme='light'] .panel-page [class*='-game-quiz__explanation-label'],
+html[data-theme='light'] .panel-page [class*='-game-quiz__modal-summary-quiz'],
+html[data-theme='light'] .panel-page [class*='-game-quiz__howto-strong-gate'] {
+  color: var(--c-violet) !important;
+}
+
+html[data-theme='light'] .panel-page [class*='-game-quiz__quiz-preview-desc'],
+html[data-theme='light'] .panel-page [class*='-game-quiz__quiz-preview-stats'],
+html[data-theme='light'] .panel-page [class*='-game-quiz__checkbox-label'],
+html[data-theme='light'] .panel-page [class*='-game-quiz__checkbox-desc'],
+html[data-theme='light'] .panel-page [class*='-game-quiz__howto-list'],
+html[data-theme='light'] .panel-page [class*='-game-quiz__section-meta'],
+html[data-theme='light'] .panel-page [class*='-game-quiz__level-subtitle'],
+html[data-theme='light'] .panel-page [class*='-game-quiz__complete-subtitle'],
+html[data-theme='light'] .panel-page [class*='-game-quiz__explanation-text'],
+html[data-theme='light'] .panel-page [class*='-game-quiz__summary-footnote'],
+html[data-theme='light'] .panel-page [class*='-game-quiz__modal-summary-text'] {
+  color: var(--text-secondary) !important;
+}
+
+html[data-theme='light'] .panel-page [class*='-game-quiz__checkbox-title'],
+html[data-theme='light'] .panel-page [class*='-game-quiz__header-title'],
+html[data-theme='light'] .panel-page [class*='-game-quiz__summary-value'],
+html[data-theme='light'] .panel-page [class*='-game-quiz__howto-strong-light'] {
+  color: var(--text-primary) !important;
+}
+
+html[data-theme='light'] .panel-page [class*='-game-quiz__howto-strong-exit'],
+html[data-theme='light'] .panel-page [class*='-game-quiz__complete-title'] {
+  color: #b45309 !important;
+}
+
+html[data-theme='light'] .panel-page [class*='-game-quiz__level-title'],
+html[data-theme='light'] .panel-page [class*='-game-quiz__summary-value--correct'] {
+  color: #15803d !important;
+}
+
+html[data-theme='light'] .panel-page [class*='-game-quiz__howto-strong-ghost'],
+html[data-theme='light'] .panel-page [class*='-game-quiz__modal-summary-ghost--on'] {
+  color: #a21caf !important;
+}
+
+/* ── Semantic panel buttons (danger / success / logout) ── */
+html[data-theme='light'] .panel-btn-danger,
+html[data-theme='light'] .app-sidebar-logout {
+  font-weight: 700;
+}
+
+html[data-theme='light'] .panel-btn-success {
+  font-weight: 700;
+}

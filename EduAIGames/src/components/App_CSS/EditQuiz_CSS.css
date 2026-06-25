@@ -1,0 +1,44 @@
+.edit-quiz__empty-hint {
+  color: #888;
+  font-style: italic;
+}
+
+.edit-quiz__question-heading {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.edit-quiz__question-type {
+  font-size: 12px;
+  color: #666;
+}
+
+.edit-quiz__question-actions {
+  margin-left: auto;
+  display: inline-flex;
+  gap: 0.35rem;
+}
+
+.edit-quiz__toggle-btn {
+  font-size: 12px;
+  padding: 0.25rem 0.6rem;
+}
+
+.edit-quiz__preview {
+  color: #555;
+  font-size: 14px;
+  margin-bottom: 0.75rem;
+}
+
+.edit-quiz__options-wrap {
+  margin-bottom: 1rem;
+}
+
+.edit-quiz__options-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #000000;
+}

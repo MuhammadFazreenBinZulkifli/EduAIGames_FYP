@@ -1,0 +1,12 @@
+{
+  "name": "eduai-games",
+  "private": true,
+  "scripts": {
+    "install:all": "npm install --prefix EduAIGames && npm install --prefix server",
+    "dev:web": "npm run dev --prefix EduAIGames",
+    "dev:api": "npm run dev --prefix server",
+    "build": "npm run build --prefix EduAIGames",
+    "start": "npm run start --prefix server",
+    "start:prod": "npm run build && npm run start --prefix server"
+  }
+}

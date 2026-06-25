@@ -1,0 +1,121 @@
+.student-grades__back-btn {
+  margin-bottom: 1rem;
+}
+
+.student-grades__hero--center {
+  text-align: center;
+}
+
+.student-grades__meta--class {
+  margin-top: 0.35rem;
+}
+
+.student-grades__stats-row--center {
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.student-grades__stat-value--success {
+  color: #10b981;
+}
+
+.student-grades__meta--completed {
+  margin-top: 0.75rem;
+}
+
+.student-grades__grid-2--spaced {
+  margin-top: 1rem;
+}
+
+.student-grades__stat-card--correct {
+  border-left: 3px solid #10b981;
+}
+
+.student-grades__stat-card--incorrect {
+  border-left: 3px solid #ef4444;
+}
+
+.student-grades__stat-value--error {
+  color: #ef4444;
+}
+
+.student-grades__loading--review {
+  margin-top: 1.25rem;
+}
+
+.student-grades__alert--review {
+  margin-top: 1rem;
+}
+
+.student-grades__review-section {
+  margin-top: 1.5rem;
+}
+
+.student-grades__footer-actions {
+  margin-top: 1.25rem;
+  text-align: center;
+}
+
+.student-grades__class-select-card {
+  margin-bottom: 1rem;
+}
+
+.student-grades__meta--hint {
+  margin-bottom: 0.65rem;
+}
+
+.student-grades__meta--or-choose {
+  text-align: center;
+  margin-bottom: 0.75rem;
+}
+
+.student-grades__class-card--clickable {
+  cursor: pointer;
+}
+
+.student-grades__view-grades-btn {
+  align-self: flex-start;
+  margin-top: 0.4rem;
+}
+
+.student-grades__class-header-card {
+  margin-bottom: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.student-grades__kicker--spaced {
+  margin-bottom: 0.25rem;
+}
+
+.student-grades__class-title {
+  margin: 0;
+  color: #fff4e8;
+  font-size: 1.15rem;
+}
+
+.student-grades__stats-row--results {
+  margin-bottom: 1.1rem;
+}
+
+.student-grades__meta--results-hint {
+  margin-bottom: 0.85rem;
+}
+
+.student-grades__result-row {
+  border-left: 3px solid var(--result-color);
+}
+
+.student-grades__result-score-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.student-grades__score-lg {
+  font-size: 1.2rem;
+  font-weight: 800;
+}

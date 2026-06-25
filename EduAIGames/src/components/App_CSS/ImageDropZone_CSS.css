@@ -1,0 +1,123 @@
+.idz {
+  width: 100%;
+}
+
+/* Drop zone (no image yet) */
+.idz__dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 2rem 1.5rem;
+  border-radius: 14px;
+  border: 2px dashed rgba(255, 122, 26, 0.35);
+  background: rgba(255, 122, 26, 0.04);
+  cursor: pointer;
+  text-align: center;
+  transition: border-color 0.18s, background 0.18s, transform 0.15s;
+  user-select: none;
+}
+
+.idz__dropzone:hover,
+.idz__dropzone:focus-visible {
+  border-color: var(--accent, #ff7a1a);
+  background: rgba(255, 122, 26, 0.09);
+  outline: none;
+}
+
+.idz__dropzone--over {
+  border-color: var(--accent, #ff7a1a);
+  background: rgba(255, 122, 26, 0.14);
+  transform: scale(1.01);
+  box-shadow: 0 0 0 4px rgba(255, 122, 26, 0.15);
+}
+
+.idz__icon {
+  font-size: 2.4rem;
+  line-height: 1;
+  transition: transform 0.15s;
+}
+
+.idz__dropzone--over .idz__icon {
+  transform: scale(1.15) translateY(-2px);
+}
+
+.idz__label {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-primary, #f0eeff);
+  margin: 0;
+  line-height: 1.35;
+}
+
+.idz__hint {
+  font-size: 0.74rem;
+  color: var(--text-muted, #9993a3);
+  margin: 0;
+}
+
+/* Preview state */
+.idz__preview-wrap {
+  position: relative;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.idz__preview-img {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  display: block;
+}
+
+.idz__preview-actions {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.6rem;
+  background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 100%);
+  justify-content: flex-end;
+}
+
+.idz__btn {
+  padding: 0.3rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background 0.15s, transform 0.12s;
+}
+
+.idz__btn:hover {
+  transform: translateY(-1px);
+}
+
+.idz__btn--change {
+  background: rgba(255,255,255,0.15);
+  border-color: rgba(255,255,255,0.25);
+  color: #fff;
+}
+
+.idz__btn--change:hover {
+  background: rgba(255,255,255,0.25);
+}
+
+.idz__btn--remove {
+  background: rgba(239,68,68,0.2);
+  border-color: rgba(239,68,68,0.45);
+  color: #fca5a5;
+}
+
+.idz__btn--remove:hover {
+  background: rgba(239,68,68,0.35);
+}
+
+.idz__hidden-input {
+  display: none;
+}

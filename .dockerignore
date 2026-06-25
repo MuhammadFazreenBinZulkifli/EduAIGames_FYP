@@ -1,0 +1,29 @@
+# Dependencies (reinstalled inside the image)
+**/node_modules
+
+# Build output (regenerated during the image build)
+EduAIGames/dist
+server/public
+server/dist
+
+# Local env files — pass real values via docker-compose / runtime env
+**/.env
+**/.env.local
+**/.env.*.local
+
+# VCS / IDE / OS
+.git
+.gitignore
+.vscode
+.idea
+**/.DS_Store
+
+# Logs and caches
+**/*.log
+EduAIGames/node_modules/.vite
+**/.cache
+
+# Docker files themselves
+Dockerfile
+.dockerignore
+docker-compose*.yml

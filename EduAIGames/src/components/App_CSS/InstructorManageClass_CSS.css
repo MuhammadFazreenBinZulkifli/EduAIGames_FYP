@@ -1,0 +1,353 @@
+.class-hero-banner {
+  width: 100%;
+  height: 180px;
+  border-radius: 20px;
+  overflow: hidden;
+  position: relative;
+  margin-bottom: 1.5rem;
+  background-size: cover;
+  background-position: center;
+}
+
+.class-hero-banner__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.75) 0%, rgba(0, 0, 0, 0.2) 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 1.25rem 1.5rem;
+}
+
+.class-hero-banner__kicker {
+  color: rgba(255, 255, 255, 0.75);
+  margin: 0 0 0.35rem;
+}
+
+.class-hero-banner__title {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #fff;
+  margin: 0 0 0.4rem;
+}
+
+.class-hero-banner__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.class-hero-banner__code {
+  font-size: 0.82rem;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #fff;
+  padding: 0.25rem 0.65rem;
+  border-radius: 8px;
+  font-family: monospace;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.class-hero-banner__visibility {
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.85);
+  text-transform: capitalize;
+}
+
+.instructor-manage-class__topic-form {
+  align-items: flex-end;
+}
+
+.instructor-manage-class__topic-input-group {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+.instructor-manage-class__topic-hint {
+  margin-top: 0.65rem;
+}
+
+.instructor-manage-class__download-link {
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.instructor-manage-class__games-topic {
+  border-color: rgba(167, 139, 250, 0.35);
+}
+
+.instructor-manage-class__games-topic-name {
+  color: var(--c-violet-soft, #c4b5fd);
+}
+
+.instructor-manage-class__games-hint {
+  color: var(--c-violet-soft, #c4b5fd);
+}
+
+.instructor-manage-class__game-list {
+  margin-top: 0.75rem;
+}
+
+.instructor-manage-class__game-badge {
+  margin-left: 6px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+.instructor-manage-class__game-badge--maze {
+  background: rgba(167, 139, 250, 0.15);
+  color: #a78bfa;
+}
+
+.instructor-manage-class__game-badge--snake {
+  background: rgba(52, 211, 153, 0.15);
+  color: #34d399;
+}
+
+.instructor-manage-class__game-badge--breakout {
+  background: rgba(34, 211, 238, 0.15);
+  color: #22d3ee;
+}
+
+.instructor-manage-class__game-badge--race {
+  background: rgba(251, 113, 133, 0.15);
+  color: #fb7185;
+}
+
+.instructor-manage-class__ghost-icon {
+  margin-left: 0.35rem;
+  font-size: 0.8rem;
+  color: #f0abfc;
+}
+
+/* ─── Light theme: keep the Games section + badges legible ─── */
+html[data-theme='light'] .instructor-manage-class__games-topic { border-color: rgba(109, 40, 217, 0.35); }
+html[data-theme='light'] .instructor-manage-class__games-topic-name,
+html[data-theme='light'] .instructor-manage-class__games-hint { color: #6d28d9; }
+html[data-theme='light'] .instructor-manage-class__game-badge--maze { background: rgba(109, 40, 217, 0.12); color: #6d28d9; }
+html[data-theme='light'] .instructor-manage-class__game-badge--snake { background: rgba(5, 150, 105, 0.14); color: #047857; }
+html[data-theme='light'] .instructor-manage-class__game-badge--breakout { background: rgba(8, 145, 178, 0.14); color: #0e7490; }
+html[data-theme='light'] .instructor-manage-class__game-badge--race { background: rgba(225, 29, 72, 0.12); color: #be123c; }
+html[data-theme='light'] .instructor-manage-class__ghost-icon { color: #a21caf; }
+
+/* ─── Mobile: Manage Class ─── */
+@media (max-width: 980px) {
+  .instructor-manage-class .panel-top-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.65rem;
+  }
+
+  .instructor-manage-class .panel-top-row > .panel-row {
+    width: 100%;
+    justify-content: stretch;
+    gap: 0.45rem;
+  }
+
+  .instructor-manage-class .panel-top-row > .panel-row .panel-btn {
+    flex: 1;
+    min-height: 44px;
+  }
+
+  .instructor-manage-class .course-topic-header {
+    min-height: 48px;
+    padding: 0.9rem 1rem;
+  }
+
+  .instructor-manage-class .course-topic-name {
+    white-space: normal;
+    word-break: break-word;
+    line-height: 1.35;
+  }
+}
+
+@media (max-width: 600px) {
+  .class-hero-banner {
+    height: 140px;
+    border-radius: 14px;
+    margin-bottom: 1rem;
+  }
+
+  .class-hero-banner__title {
+    font-size: 1.15rem;
+  }
+
+  .class-hero-banner__overlay {
+    padding: 1rem;
+  }
+
+  .instructor-manage-class__topic-form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .instructor-manage-class__topic-form .panel-btn {
+    width: 100%;
+    min-height: 44px;
+  }
+
+  .instructor-manage-class .course-upload-row {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+
+  .instructor-manage-class .course-upload-row .panel-btn,
+  .instructor-manage-class .course-upload-row label.panel-btn {
+    flex: 1 1 0;
+    min-width: 0;
+    width: auto;
+    justify-content: center;
+    min-height: 46px;
+    border-radius: 12px;
+    font-weight: 600;
+  }
+
+  /* ── Publish row: stacked, touch-friendly ── */
+  .instructor-manage-class .course-quiz-publish {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.6rem;
+  }
+
+  .instructor-manage-class .course-quiz-publish .panel-select,
+  .instructor-manage-class .course-quiz-publish .quiz-search,
+  .instructor-manage-class .course-quiz-publish .panel-btn {
+    width: 100%;
+    min-width: 0;
+    min-height: 46px;
+  }
+
+  /* Bigger tap target for the search field on touch screens. */
+  .instructor-manage-class .course-quiz-publish .quiz-search__input {
+    padding-top: 0.7rem;
+    padding-bottom: 0.7rem;
+    font-size: 0.95rem;
+  }
+
+  /* ── Published items become a clean stack of cards ── */
+  .instructor-manage-class .course-item-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 0.6rem;
+  }
+
+  .instructor-manage-class .course-item {
+    gap: 0.6rem;
+    padding: 0.7rem 0.8rem;
+    border: 1px solid var(--panel-surface-border, rgba(255, 255, 255, 0.12));
+    border-radius: 12px;
+    background: var(--card-bg, rgba(255, 255, 255, 0.04));
+  }
+
+  .instructor-manage-class .course-item-icon {
+    align-self: flex-start;
+    margin-top: 0.1rem;
+  }
+
+  .instructor-manage-class .course-item-title {
+    min-width: 0;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
+    word-break: break-word;
+    line-height: 1.4;
+    font-size: 0.9rem;
+  }
+
+  /* Quiz & game rows: icon | title | trash, all on one line. */
+  .instructor-manage-class .course-item--compact {
+    flex-wrap: nowrap;
+    align-items: center;
+  }
+
+  .instructor-manage-class .course-item--compact .course-item-icon {
+    align-self: center;
+    margin-top: 0;
+  }
+
+  .instructor-manage-class .course-item--compact .course-item-title {
+    flex: 1 1 auto;
+  }
+
+  .instructor-manage-class .course-item--compact > .panel-icon-btn {
+    flex: 0 0 auto;
+    width: 40px;
+    height: 40px;
+    margin-left: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border, rgba(255, 255, 255, 0.12));
+    border-radius: 10px;
+  }
+
+  /* File rows: title on top, action buttons on a full-width row below. */
+  .instructor-manage-class .course-item:not(.course-item--compact) {
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .instructor-manage-class .course-item:not(.course-item--compact) .course-item-title {
+    flex: 1 1 calc(100% - 2.5rem);
+  }
+
+  .instructor-manage-class .course-item-actions {
+    flex: 1 1 100%;
+    width: 100%;
+    margin-left: 0;
+    margin-top: 0.55rem;
+    padding-top: 0.55rem;
+    border-top: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 0.4rem;
+    align-items: center;
+  }
+
+  .instructor-manage-class .course-item-actions .panel-btn {
+    flex: 1 1 0;
+    min-width: 0;
+    width: auto;
+    min-height: 44px;
+    justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border-radius: 10px;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+
+  .instructor-manage-class .course-item-actions .panel-icon-btn {
+    flex: 0 0 auto;
+    width: 44px;
+    height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border, rgba(255, 255, 255, 0.12));
+    border-radius: 10px;
+  }
+
+  .instructor-manage-class .course-topic-body {
+    padding: 0 0.85rem 0.85rem;
+  }
+
+  /* Game title block wraps neatly (title + type badge + ghost tag). */
+  .instructor-manage-class__game-list .course-item-title {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.3rem 0.1rem;
+    padding-right: 0.25rem;
+  }
+}

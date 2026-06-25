@@ -1,0 +1,467 @@
+/* ─── Layout pages ─── */
+.maze-game-quiz__page--loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+}
+.maze-game-quiz__page--relative { position: relative; }
+.maze-game-quiz__page--centered-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: 65vh;
+}
+.maze-game-quiz__page--level-complete {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: 60vh;
+}
+.maze-game-quiz__page--playing { user-select: none; }
+
+/* ─── Loading ─── */
+.maze-game-quiz__loading-inner { text-align: center; }
+.maze-game-quiz__loading-icon { font-size: 3rem; margin-bottom: 1rem; }
+.maze-game-quiz__alert-spaced { margin-top: 1rem; }
+
+/* ─── Modal / overlay ─── */
+.maze-game-quiz__modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  background: rgba(8, 4, 18, 0.88);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+.maze-game-quiz__modal {
+  background: #16102a;
+  border: 1px solid rgba(167, 139, 250, 0.3);
+  border-radius: 16px;
+  padding: 1.75rem;
+  width: 100%;
+  max-width: 440px;
+}
+.maze-game-quiz__modal-title {
+  color: #fff4e8;
+  margin: 0 0 0.3rem;
+  font-size: 1.2rem;
+}
+.maze-game-quiz__modal-meta { margin-bottom: 1.25rem; }
+.maze-game-quiz__modal-summary {
+  padding: 0.65rem 0.9rem;
+  background: rgba(167, 139, 250, 0.08);
+  border: 1px solid rgba(167, 139, 250, 0.18);
+  border-radius: 8px;
+  margin-bottom: 1.1rem;
+}
+.maze-game-quiz__modal-summary-text { margin: 0; }
+.maze-game-quiz__modal-summary-quiz { color: #c4b5fd; }
+.maze-game-quiz__modal-summary-ghost--on { color: #f0abfc; }
+.maze-game-quiz__modal-summary-ghost--off { color: #6b6075; }
+.maze-game-quiz__modal-actions { gap: 0.65rem; }
+.maze-game-quiz__modal-btn { flex: 1; }
+
+/* ─── Setup ─── */
+.maze-game-quiz__hero { margin-bottom: 0; flex: 1; }
+.maze-game-quiz__section-meta { margin: 0 0 0.75rem; }
+.maze-game-quiz__empty { padding: 0.75rem 0; }
+.maze-game-quiz__form-group--quiz-selected { margin-bottom: 0.75rem; }
+.maze-game-quiz__form-group--no-quiz { margin-bottom: 0; }
+.maze-game-quiz__quiz-preview {
+  padding: 0.8rem 1rem;
+  background: rgba(167, 139, 250, 0.08);
+  border: 1px solid rgba(167, 139, 250, 0.2);
+  border-radius: 10px;
+}
+.maze-game-quiz__quiz-preview-title {
+  color: #c4b5fd;
+  font-weight: 700;
+  margin: 0 0 0.25rem;
+}
+.maze-game-quiz__quiz-preview-desc { margin: 0 0 0.4rem; }
+.maze-game-quiz__quiz-preview-stats {
+  display: flex;
+  gap: 1.2rem;
+  flex-wrap: wrap;
+}
+.maze-game-quiz__quiz-preview-error {
+  margin: 0.5rem 0 0;
+  color: #f87171;
+}
+.maze-game-quiz__checkbox-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  cursor: pointer;
+  color: #e2d9f3;
+}
+.maze-game-quiz__checkbox {
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  accent-color: #a78bfa;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.maze-game-quiz__checkbox-title { font-weight: 600; }
+.maze-game-quiz__checkbox-desc { margin: 0.15rem 0 0; }
+.maze-game-quiz__howto-card {
+  background: rgba(167, 139, 250, 0.05);
+  border-color: rgba(167, 139, 250, 0.18);
+}
+.maze-game-quiz__howto-list {
+  margin: 0;
+  padding-left: 1.2rem;
+  color: #c4b5fd;
+  line-height: 2;
+  font-size: 0.88rem;
+}
+.maze-game-quiz__howto-strong-light { color: #fff4e8; }
+.maze-game-quiz__howto-strong-gate { color: #a78bfa; }
+.maze-game-quiz__howto-strong-exit { color: #facc15; }
+.maze-game-quiz__howto-strong-ghost { color: #f0abfc; }
+.maze-game-quiz__actions { gap: 0.75rem; flex-wrap: wrap; }
+.maze-game-quiz__action-btn {
+  flex: 1 1 160px;
+  font-size: 1rem;
+  padding: 0.8rem 1.5rem;
+}
+
+/* ─── Game complete ─── */
+.maze-game-quiz__complete-icon { font-size: 4.5rem; margin-bottom: 0.75rem; }
+.maze-game-quiz__complete-title {
+  color: #fbbf24;
+  margin: 0 0 0.5rem;
+  font-size: 2rem;
+}
+.maze-game-quiz__complete-subtitle {
+  color: #c4b5fd;
+  margin-bottom: 0.4rem;
+  font-size: 1.05rem;
+}
+.maze-game-quiz__complete-quiz-meta { margin-bottom: 1.25rem; }
+.maze-game-quiz__summary-card {
+  width: 100%;
+  max-width: 420px;
+  margin-bottom: 2rem;
+  padding: 1.25rem 1.5rem;
+  background: rgba(167, 139, 250, 0.08);
+  border: 1px solid rgba(167, 139, 250, 0.25);
+  border-radius: 14px;
+  text-align: left;
+}
+.maze-game-quiz__summary-heading {
+  color: #a78bfa;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 0 0 1rem;
+}
+.maze-game-quiz__summary-grid { display: grid; gap: 0.85rem; }
+.maze-game-quiz__summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+.maze-game-quiz__summary-label { color: #c4b5fd; font-size: 0.92rem; }
+.maze-game-quiz__summary-value {
+  color: #fff4e8;
+  font-weight: 700;
+  font-size: 1.35rem;
+  font-variant-numeric: tabular-nums;
+}
+.maze-game-quiz__summary-value--wrong { font-size: 1.15rem; }
+.maze-game-quiz__summary-value--correct { color: #86efac; font-size: 1.15rem; }
+.maze-game-quiz__summary-divider { height: 1px; background: rgba(255, 255, 255, 0.08); }
+.maze-game-quiz__summary-footnote {
+  margin: 1rem 0 0;
+  font-size: 0.78rem;
+}
+.maze-game-quiz__complete-actions {
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.maze-game-quiz__play-again-btn { padding: 0.7rem 1.75rem; }
+.maze-game-quiz__exit-btn-muted { color: #9993a3; }
+
+/* ─── Level complete ─── */
+.maze-game-quiz__level-icon { font-size: 3.5rem; margin-bottom: 0.75rem; }
+.maze-game-quiz__level-title {
+  color: #86efac;
+  margin: 0 0 0.5rem;
+  font-size: 1.8rem;
+}
+.maze-game-quiz__level-subtitle { color: #c4b5fd; margin-bottom: 0.75rem; }
+.maze-game-quiz__explanation-box {
+  margin: 0 auto 1.25rem;
+  max-width: 440px;
+  padding: 0.85rem 1.1rem;
+  background: rgba(167, 139, 250, 0.1);
+  border: 1px solid rgba(167, 139, 250, 0.25);
+  border-radius: 12px;
+  text-align: left;
+}
+.maze-game-quiz__explanation-label {
+  color: #a78bfa;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 0.35rem;
+}
+.maze-game-quiz__explanation-text {
+  color: #e2d9f3;
+  font-size: 0.9rem;
+  margin: 0;
+  line-height: 1.6;
+}
+.maze-game-quiz__level-remaining { margin-bottom: 1.75rem; }
+.maze-game-quiz__next-level-btn {
+  font-size: 1rem;
+  padding: 0.75rem 2.25rem;
+}
+
+/* ─── Playing header ─── */
+.maze-game-quiz__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.maze-game-quiz__header-kicker { margin: 0; }
+.maze-game-quiz__header-title {
+  margin: 0.1rem 0 0;
+  font-size: 1rem;
+  color: #fff4e8;
+  font-weight: 600;
+}
+.maze-game-quiz__header-badges {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+.maze-game-quiz__badge--danger {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  border-radius: 20px;
+  padding: 0.28rem 0.85rem;
+  color: #fca5a5;
+  font-weight: 700;
+  font-size: 0.82rem;
+}
+.maze-game-quiz__badge--timer {
+  background: rgba(250, 204, 21, 0.12);
+  border: 1px solid rgba(250, 204, 21, 0.35);
+  border-radius: 20px;
+  padding: 0.28rem 0.85rem;
+  color: #fde68a;
+  font-weight: 700;
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+}
+.maze-game-quiz__badge--level {
+  background: rgba(167, 139, 250, 0.15);
+  border: 1px solid rgba(167, 139, 250, 0.3);
+  border-radius: 20px;
+  padding: 0.28rem 0.85rem;
+  color: #c4b5fd;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+/* ─── Gate popup ─── */
+.maze-game-quiz__gate-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 250;
+  background: rgba(8, 4, 18, 0.88);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+.maze-game-quiz__gate-modal {
+  background: #16102a;
+  border: 1px solid rgba(167, 139, 250, 0.45);
+  border-radius: 16px;
+  padding: 1.75rem;
+  width: 100%;
+  max-width: 480px;
+  box-shadow: 0 0 40px rgba(100, 60, 160, 0.35);
+}
+.maze-game-quiz__gate-chase-warning {
+  margin: 0 0 0.75rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  color: #fca5a5;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.maze-game-quiz__gate-header {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-bottom: 1rem;
+}
+.maze-game-quiz__gate-icon { font-size: 1.75rem; line-height: 1; }
+.maze-game-quiz__gate-kicker {
+  color: #a78bfa;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 0;
+}
+.maze-game-quiz__gate-title {
+  color: #fff4e8;
+  margin: 0.15rem 0 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+.maze-game-quiz__gate-question {
+  color: #fff4e8;
+  font-weight: 600;
+  font-size: 0.98rem;
+  margin: 0 0 1.25rem;
+  line-height: 1.6;
+  padding: 0.85rem 1rem;
+  background: rgba(167, 139, 250, 0.08);
+  border-radius: 10px;
+  border: 1px solid rgba(167, 139, 250, 0.15);
+}
+.maze-game-quiz__gate-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+.maze-game-quiz__gate-option {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.6rem 0.9rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1.5px solid rgba(255, 255, 255, 0.08);
+  border-radius: 9px;
+  cursor: pointer;
+  color: #b8afc8;
+  font-weight: 400;
+  transition: all 0.15s;
+}
+.maze-game-quiz__gate-option--selected {
+  background: rgba(167, 139, 250, 0.22);
+  border-color: #a78bfa;
+  color: #e2d9f3;
+  font-weight: 600;
+}
+.maze-game-quiz__gate-option-radio { accent-color: #a78bfa; }
+.maze-game-quiz__gate-feedback { margin-bottom: 0.85rem; }
+.maze-game-quiz__gate-actions { gap: 0.65rem; }
+.maze-game-quiz__gate-action-btn { flex: 1; }
+
+/* ─── Maze grid ─── */
+.maze-game-quiz__grid-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+  overflow-x: auto;
+}
+.maze-game-quiz__grid-container { position: relative; }
+.maze-game-quiz__grid {
+  display: grid;
+  gap: 1px;
+  background: #06030f;
+  padding: 3px;
+  border-radius: 12px;
+  border: 2px solid rgba(167, 139, 250, 0.2);
+  box-shadow: 0 0 40px rgba(100, 60, 160, 0.22);
+  transition: opacity 0.2s;
+}
+.maze-game-quiz__grid--dimmed { opacity: 0.35; }
+.maze-game-quiz__cell {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  transition: background 0.1s;
+}
+
+/* ─── Pause overlay ─── */
+.maze-game-quiz__pause-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.78);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  z-index: 10;
+}
+.maze-game-quiz__pause-icon { font-size: 36px; }
+.maze-game-quiz__pause-label {
+  color: #e2e8f0;
+  font-size: 20px;
+  font-weight: 700;
+}
+.maze-game-quiz__pause-timer { color: #94a3b8; font-size: 13px; }
+.maze-game-quiz__pause-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+}
+.maze-game-quiz__light-btn {
+  padding: 10px 24px;
+  font-size: 15px;
+  font-weight: 600;
+  background: rgba(110, 231, 183, 0.18);
+  border: 1px solid rgba(110, 231, 183, 0.55);
+  color: #a7f3d0;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.maze-game-quiz__light-btn--exit {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+}
+
+/* ─── Controls hint ─── */
+.maze-game-quiz__hint-wrap { text-align: center; }
+.maze-game-quiz__hint-text {
+  font-size: 0.8rem;
+  color: #6b6075;
+  font-weight: 400;
+}
+.maze-game-quiz__hint-text--caught {
+  color: #ef4444;
+  font-weight: 600;
+}
+.maze-game-quiz__legend {
+  display: flex;
+  justify-content: center;
+  gap: 1.2rem;
+  margin-top: 0.3rem;
+  font-size: 0.74rem;
+  color: #4a4055;
+  flex-wrap: wrap;
+}

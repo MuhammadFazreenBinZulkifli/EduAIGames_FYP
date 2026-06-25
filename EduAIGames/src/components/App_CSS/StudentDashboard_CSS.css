@@ -1,0 +1,9 @@
+.student-dashboard__label {
+  color: #ffb37a;
+}
+
+.student-dashboard__tip {
+  color: #9993a3;
+  font-size: 0.82rem;
+  margin-top: 0.35rem;
+}

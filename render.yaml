@@ -1,0 +1,91 @@
+# Render Blueprint for EduAIGames
+# Docs: https://render.com/docs/blueprint-spec
+#
+# This provisions everything in one shot:
+#   - a managed PostgreSQL database
+#   - a Docker web service (the Node server that also serves the React app)
+#   - a persistent disk so uploaded class materials survive deploys
+#
+# To use: push this repo to GitHub, then in Render click
+#   New -> Blueprint -> pick this repo. Render reads this file.
+#
+# After the first deploy, set FRONTEND_URL (and any optional secrets) in the
+# service's Environment tab to your real URL, e.g. https://eduaigames.onrender.com
+
+databases:
+  - name: eduaigames-db
+    databaseName: eduaigames
+    user: eduaigames
+    plan: free          # 30-day expiry on free; upgrade for production
+    region: singapore   # keep DB + web service in the SAME region
+
+services:
+  - type: web
+    name: eduaigames
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    region: singapore
+    plan: starter        # a persistent disk requires a paid (>= starter) plan
+    autoDeploy: true     # redeploy automatically on every git push
+    healthCheckPath: /api/health
+
+    # Persistent storage for uploaded class materials.
+    # The server writes to /app/server/uploads/... (see classContent.ts).
+    disk:
+      name: uploads
+      mountPath: /app/server/uploads
+      sizeGB: 1
+
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: SERVE_FRONTEND
+        value: "true"
+      - key: HOST
+        value: 0.0.0.0
+
+      # Database wiring — pulled automatically from the managed DB above.
+      # Same-region internal connection, so SSL is not required.
+      - key: DB_HOST
+        fromDatabase:
+          name: eduaigames-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: eduaigames-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: eduaigames-db
+          property: database
+      - key: DB_USER
+        fromDatabase:
+          name: eduaigames-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: eduaigames-db
+          property: password
+      - key: DB_SSL
+        value: "false"
+
+      # Public URL — used for CORS + email links. Set after the first deploy.
+      - key: FRONTEND_URL
+        sync: false
+
+      # Optional integrations — fill in the dashboard (kept out of git).
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        value: "587"
+      - key: SMTP_SECURE
+        value: "false"
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: SMTP_FROM
+        sync: false

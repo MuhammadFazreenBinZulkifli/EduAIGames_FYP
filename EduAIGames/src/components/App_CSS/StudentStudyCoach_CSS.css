@@ -1,0 +1,181 @@
+/* AI Study Coach card — theme-aware via shared design tokens (works in both
+   dark and light themes automatically). */
+.study-coach {
+  margin: 1.25rem 0;
+  padding: 1.1rem 1.25rem;
+  border: 1px solid var(--panel-surface-border);
+  border-radius: 16px;
+  background:
+    radial-gradient(120% 120% at 0% 0%, rgba(232, 106, 16, 0.08), transparent 60%),
+    var(--panel-surface-bg);
+  box-shadow: var(--panel-card-shadow);
+}
+
+.study-coach__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.study-coach__head-text {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.study-coach__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  font-weight: 800;
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+  color: var(--accent-text-on);
+  background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+  flex-shrink: 0;
+}
+
+.study-coach__title {
+  margin: 0;
+  font-size: 1.05rem;
+  color: var(--text-primary);
+}
+
+.study-coach__subtitle {
+  margin: 0.15rem 0 0;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.study-coach__btn {
+  white-space: nowrap;
+}
+
+.study-coach__hint,
+.study-coach__empty {
+  margin: 0.9rem 0 0;
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+}
+
+.study-coach__error {
+  margin: 0.9rem 0 0;
+  font-size: 0.88rem;
+  color: #ef4444;
+}
+
+.study-coach__loading {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+}
+
+.study-coach__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: study-coach-bounce 1s infinite ease-in-out;
+}
+
+.study-coach__dot:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.study-coach__dot:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes study-coach-bounce {
+  0%, 80%, 100% { transform: scale(0.6); opacity: 0.5; }
+  40% { transform: scale(1); opacity: 1; }
+}
+
+.study-coach__result {
+  margin-top: 1rem;
+}
+
+.study-coach__summary {
+  margin: 0 0 1rem;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--text-primary);
+}
+
+.study-coach__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.85rem;
+}
+
+.study-coach__col,
+.study-coach__reco {
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  border: 1px solid var(--panel-surface-border);
+  background: var(--card-bg);
+}
+
+.study-coach__col h4,
+.study-coach__reco h4 {
+  margin: 0 0 0.5rem;
+  font-size: 0.85rem;
+  color: var(--text-primary);
+}
+
+.study-coach__col--strength {
+  border-color: rgba(34, 197, 94, 0.4);
+}
+
+.study-coach__col--focus {
+  border-color: rgba(234, 88, 12, 0.4);
+}
+
+.study-coach__col ul,
+.study-coach__reco ul {
+  margin: 0;
+  padding-left: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.study-coach__col li,
+.study-coach__reco li {
+  font-size: 0.85rem;
+  line-height: 1.4;
+  color: var(--text-secondary);
+}
+
+.study-coach__reco {
+  margin-top: 0.85rem;
+}
+
+.study-coach__encourage {
+  margin: 1rem 0 0;
+  padding: 0.7rem 0.9rem;
+  border-radius: 10px;
+  background: var(--panel-context-bg);
+  border: 1px solid var(--panel-context-border);
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+@media (max-width: 600px) {
+  .study-coach__head {
+    align-items: flex-start;
+  }
+
+  .study-coach__btn {
+    width: 100%;
+  }
+}

@@ -1,0 +1,19 @@
+.course-creation__card {
+  text-align: left;
+}
+
+.course-creation__card--maze:hover {
+  border-color: rgba(167, 139, 250, 0.45);
+}
+
+.course-creation__card--snake:hover {
+  border-color: rgba(52, 211, 153, 0.45);
+}
+
+.course-creation__card--breakout:hover {
+  border-color: rgba(56, 189, 248, 0.45);
+}
+
+.course-creation__card--race:hover {
+  border-color: rgba(244, 114, 182, 0.45);
+}

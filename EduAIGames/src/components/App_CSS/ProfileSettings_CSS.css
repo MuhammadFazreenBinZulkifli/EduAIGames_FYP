@@ -1,0 +1,113 @@
+.prof-settings__card {
+  background: var(--card-bg, rgba(255,255,255,0.04));
+  border: 1px solid var(--border, rgba(255,255,255,0.08));
+  border-radius: 20px;
+  padding: 2.5rem;
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 3rem;
+  max-width: 820px;
+}
+
+@media (max-width: 700px) {
+  .prof-settings__card {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    padding: 1.5rem;
+  }
+}
+
+/* Avatar section */
+.prof-settings__avatar-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  text-align: center;
+}
+
+.prof-settings__avatar-preview {
+  display: flex;
+  justify-content: center;
+}
+
+/* Constrain the drop zone height in this context */
+.prof-settings__drop-zone .idz__preview-img {
+  height: 110px;
+}
+
+.prof-settings__drop-zone .idz__dropzone {
+  padding: 1.25rem 1rem;
+}
+
+.prof-settings__avatar-hint {
+  font-size: 0.75rem;
+  color: var(--text-muted, #9993a3);
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* Form section */
+.prof-settings__form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.prof-settings__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.prof-settings__label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted, #9993a3);
+}
+
+.prof-settings__input {
+  width: 100%;
+}
+
+.prof-settings__input--readonly {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.prof-settings__hint {
+  font-size: 0.78rem;
+  color: var(--text-muted, #9993a3);
+  margin: 0;
+}
+
+.prof-settings__role-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  background: rgba(255, 122, 26, 0.15);
+  border: 1px solid rgba(255, 122, 26, 0.35);
+  color: var(--accent, #ff7a1a);
+  font-size: 0.82rem;
+  font-weight: 700;
+  align-self: flex-start;
+}
+
+.prof-settings__actions {
+  padding-top: 0.5rem;
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.prof-settings__save-btn {
+  min-width: 140px;
+}
+
+.prof-settings__pwd-btn {
+  min-width: 160px;
+}

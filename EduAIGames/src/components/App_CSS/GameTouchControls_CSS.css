@@ -1,0 +1,74 @@
+/* On-screen D-pad for mobile game play — matches panel orange accent theme */
+
+.game-touch-controls {
+  display: none;
+  width: 100%;
+  max-width: 220px;
+  margin: 0.75rem auto 0;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.game-touch-controls__pad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 52px);
+  gap: 0.35rem;
+}
+
+.game-touch-controls__btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 122, 26, 0.35);
+  background: rgba(255, 122, 26, 0.12);
+  color: #ffb37a;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: background 0.12s, transform 0.1s, border-color 0.12s;
+}
+
+.game-touch-controls__btn:active {
+  background: rgba(255, 122, 26, 0.28);
+  transform: scale(0.96);
+  border-color: rgba(255, 122, 26, 0.55);
+}
+
+.game-touch-controls__btn--up { grid-column: 2; grid-row: 1; }
+.game-touch-controls__btn--left { grid-column: 1; grid-row: 2; }
+.game-touch-controls__btn--center { grid-column: 2; grid-row: 2; font-size: 0.95rem; }
+.game-touch-controls__btn--right { grid-column: 3; grid-row: 2; }
+.game-touch-controls__btn--down { grid-column: 2; grid-row: 3; }
+
+.game-touch-controls__btn--spacer {
+  pointer-events: none;
+  opacity: 0;
+  border-color: transparent;
+  background: transparent;
+}
+
+html[data-theme='light'] .game-touch-controls__btn {
+  border-color: rgba(194, 65, 12, 0.28);
+  background: rgba(194, 65, 12, 0.08);
+  color: #c2410c;
+}
+
+html[data-theme='light'] .game-touch-controls__btn:active {
+  background: rgba(194, 65, 12, 0.18);
+}
+
+@media (max-width: 980px) {
+  .game-touch-controls {
+    display: block;
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .game-touch-controls {
+    display: block;
+  }
+}

@@ -1,0 +1,85 @@
+.login-robot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  gap: 1.2rem;
+  padding-bottom: 0.5rem;
+}
+
+.login-robot__svg {
+  filter: drop-shadow(0 8px 32px rgba(255, 122, 26, 0.35));
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* When shy, the whole robot leans away bashfully */
+.login-robot.is-shy .login-robot__svg {
+  transform: rotate(-5deg) translateY(-2px);
+}
+
+/* ── Covering paws: hidden + dropped below the eyes by default ── */
+.login-robot__cover {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.login-robot__paw {
+  transform: translateY(70px);
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Slight stagger so the two paws don't move in perfect lockstep */
+.login-robot__paw--r {
+  transition-delay: 0.04s;
+}
+
+/* ── Shy state: paws rise up to cover the eyes (🙈) ── */
+.login-robot.is-shy .login-robot__cover {
+  opacity: 1;
+}
+
+.login-robot.is-shy .login-robot__paw {
+  transform: translateY(0);
+}
+
+/* The resting side-arms fade out while the paws are up covering the eyes */
+.login-robot__arms {
+  opacity: 1;
+  transition: opacity 0.25s ease;
+}
+
+.login-robot.is-shy .login-robot__arms {
+  opacity: 0;
+}
+
+.login-robot__caption {
+  margin: 0;
+  font-size: 0.82rem;
+  color: rgba(255, 200, 150, 0.65);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 600;
+  text-align: center;
+  transition: color 0.25s ease;
+  min-height: 1.2em;
+}
+
+.login-robot.is-shy .login-robot__caption {
+  color: rgba(255, 170, 90, 0.9);
+}
+
+/* Respect users who prefer reduced motion — no transforms/transitions */
+@media (prefers-reduced-motion: reduce) {
+  .login-robot__svg,
+  .login-robot__paw,
+  .login-robot__cover,
+  .login-robot__arms {
+    transition: none;
+  }
+
+  .login-robot.is-shy .login-robot__svg {
+    transform: none;
+  }
+}

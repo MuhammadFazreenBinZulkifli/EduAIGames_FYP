@@ -1,0 +1,1344 @@
+/* Front page — extended sections, motion, and desktop polish */
+
+.frontpage {
+  position: relative;
+  overflow-x: hidden;
+}
+
+.frontpage-bg-orbs {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.frontpage-bg-orbs::before,
+.frontpage-bg-orbs::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.45;
+  animation: frontpage-orb-drift 18s ease-in-out infinite alternate;
+}
+
+.frontpage-bg-orbs::before {
+  width: 420px;
+  height: 420px;
+  top: -80px;
+  left: -60px;
+  background: rgba(255, 122, 26, 0.22);
+}
+
+.frontpage-bg-orbs::after {
+  width: 360px;
+  height: 360px;
+  bottom: 10%;
+  right: -40px;
+  background: rgba(255, 151, 77, 0.16);
+  animation-delay: -6s;
+}
+
+.frontpage-nav,
+.frontpage-hero,
+.frontpage-section,
+.frontpage-footer {
+  position: relative;
+  z-index: 1;
+}
+
+/* Clean logo — no glow, border, or crop artifacts */
+.frontpage-logo-img,
+.frontpage-logo-clean,
+.frontpage-footer-brand img {
+  box-shadow: none;
+  border: none;
+  outline: none;
+  background: transparent;
+  object-fit: contain;
+}
+
+.frontpage-logo-img {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  animation: frontpage-logo-float 4s ease-in-out infinite;
+}
+
+.frontpage-footer-brand img {
+  width: 32px;
+  height: 32px;
+}
+
+.frontpage-link--active {
+  color: var(--accent-soft, #ffb37a) !important;
+  background: rgba(255, 122, 26, 0.1) !important;
+}
+
+.frontpage-copy {
+  animation: frontpage-fade-up 0.7s ease both;
+}
+
+.frontpage-headline-line {
+  display: inline-block;
+  animation: frontpage-fade-up 0.65s ease both;
+}
+
+.frontpage-headline-line:nth-of-type(1) { animation-delay: 0.05s; }
+.frontpage-headline-line:nth-of-type(2) { animation-delay: 0.14s; }
+.frontpage-headline-line:nth-of-type(3) { animation-delay: 0.23s; }
+
+.frontpage-headline-line--accent {
+  color: var(--accent-soft, #ffb37a);
+}
+
+.frontpage-pill--shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.frontpage-pill--shimmer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 35%,
+    rgba(255, 255, 255, 0.14) 50%,
+    transparent 65%
+  );
+  transform: translateX(-120%);
+  animation: frontpage-pill-shimmer 4.5s ease-in-out infinite;
+}
+
+.frontpage-visual {
+  animation: frontpage-fade-up 0.85s ease 0.12s both;
+}
+
+.frontpage-visual-placeholder {
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+}
+
+.frontpage-visual-placeholder:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.35);
+}
+
+.frontpage-hero-image {
+  z-index: 0;
+  transition: transform 8s ease;
+}
+
+.frontpage-visual-placeholder:hover .frontpage-hero-image {
+  transform: scale(1.03);
+}
+
+.frontpage-hero-fallback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  background: var(--bg-card-soft, rgba(255, 255, 255, 0.03));
+  z-index: 0;
+}
+
+.frontpage-hero-fallback img {
+  width: 120px;
+  height: 120px;
+}
+
+.frontpage-hero-fallback span {
+  color: var(--text-muted, #9993a3);
+  font-size: 0.88rem;
+  font-weight: 600;
+  max-width: 280px;
+  text-align: center;
+  line-height: 1.45;
+}
+
+/* Scroll-reveal sections */
+.frontpage-section--reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.65s ease, transform 0.65s ease;
+}
+
+.frontpage-section--reveal.frontpage-section--visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.frontpage-intro-panel {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  align-items: start;
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.12));
+  border-radius: 22px;
+  padding: 2rem 2.25rem;
+  background: var(--bg-card-soft, rgba(255, 255, 255, 0.03));
+}
+
+.frontpage-intro-copy h2 {
+  margin: 0 0 0.85rem;
+  font-size: clamp(1.45rem, 2.5vw, 2rem);
+  line-height: 1.2;
+  color: var(--text-primary, #fff4e8);
+}
+
+.frontpage-intro-copy p {
+  margin: 0 0 0.85rem;
+  color: var(--text-muted, #9993a3);
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+.frontpage-intro-copy p:last-child {
+  margin-bottom: 0;
+}
+
+.frontpage-intro-points {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.frontpage-intro-points li {
+  display: flex;
+  gap: 0.85rem;
+  align-items: flex-start;
+  padding: 1rem;
+  border-radius: 14px;
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+  background: var(--bg-card, rgba(14, 14, 18, 0.5));
+  transition: transform 0.25s ease, border-color 0.25s ease;
+}
+
+.frontpage-intro-points li:hover {
+  transform: translateX(4px);
+  border-color: rgba(255, 122, 26, 0.3);
+}
+
+.frontpage-intro-point-icon {
+  flex-shrink: 0;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--text-on-accent, #2a1202);
+  background: linear-gradient(135deg, #ff7a1a, #ff974d);
+}
+
+.frontpage-intro-points strong {
+  display: block;
+  margin-bottom: 0.25rem;
+  color: var(--text-primary, #fff4e8);
+  font-size: 0.95rem;
+}
+
+.frontpage-intro-points p {
+  margin: 0;
+  font-size: 0.86rem;
+  line-height: 1.5;
+  color: var(--text-muted, #9993a3);
+}
+
+.frontpage-trust-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  margin-top: 1.75rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.frontpage-trust-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.frontpage-trust-item strong {
+  font-size: 1.15rem;
+  color: var(--accent-soft, #ffb37a);
+  font-weight: 800;
+}
+
+.frontpage-trust-item span {
+  font-size: 0.78rem;
+  color: var(--text-muted, #9993a3);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.frontpage-section {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 4rem 1.25rem;
+}
+
+.frontpage-section-header {
+  text-align: center;
+  max-width: 640px;
+  margin: 0 auto 2.5rem;
+}
+
+.frontpage-section-eyebrow {
+  margin: 0 0 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent-soft, #ffb37a);
+}
+
+.frontpage-section-header h2 {
+  margin: 0 0 0.65rem;
+  font-size: clamp(1.65rem, 3vw, 2.35rem);
+  line-height: 1.15;
+  color: var(--text-primary, #fff4e8);
+}
+
+.frontpage-section-header p {
+  margin: 0;
+  color: var(--text-muted, #9993a3);
+  font-size: 1rem;
+  line-height: 1.55;
+}
+
+.frontpage-features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.frontpage-feature-card {
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.12));
+  border-radius: 16px;
+  background: var(--bg-card-soft, rgba(255, 255, 255, 0.04));
+  padding: 1.35rem 1.25rem;
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.frontpage-feature-card:nth-child(2) { transition-delay: 0.02s; }
+.frontpage-feature-card:nth-child(3) { transition-delay: 0.04s; }
+.frontpage-feature-card:nth-child(4) { transition-delay: 0.06s; }
+.frontpage-feature-card:nth-child(5) { transition-delay: 0.08s; }
+.frontpage-feature-card:nth-child(6) { transition-delay: 0.1s; }
+
+.frontpage-feature-card:hover {
+  transform: translateY(-5px);
+  border-color: rgba(255, 122, 26, 0.4);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.28);
+}
+
+.frontpage-feature-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.85rem;
+  color: var(--accent-soft, #ffb37a);
+  background: rgba(255, 122, 26, 0.14);
+  border: 1px solid rgba(255, 122, 26, 0.25);
+  transition: transform 0.3s ease, color 0.3s ease, background 0.3s ease;
+}
+
+.frontpage-svg-icon {
+  display: block;
+}
+
+html[data-theme='light'] .frontpage-feature-icon {
+  color: var(--accent-hover, #c2410c);
+  background: rgba(194, 65, 12, 0.08);
+  border-color: rgba(194, 65, 12, 0.18);
+}
+
+.frontpage-feature-card:hover .frontpage-feature-icon {
+  transform: scale(1.08) rotate(-4deg);
+}
+
+.frontpage-feature-card h3 {
+  margin: 0 0 0.45rem;
+  font-size: 1.02rem;
+  color: var(--text-primary, #fff4e8);
+}
+
+.frontpage-feature-card p {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--text-muted, #9993a3);
+}
+
+.frontpage-steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+  counter-reset: frontpage-step;
+}
+
+.frontpage-step {
+  position: relative;
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.12));
+  border-radius: 18px;
+  padding: 1.5rem 1.25rem 1.35rem;
+  background: linear-gradient(160deg, rgba(255, 122, 26, 0.08), var(--bg-card-soft, rgba(255, 255, 255, 0.03)));
+  transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+.frontpage-step:hover {
+  transform: translateY(-4px);
+  border-color: rgba(255, 122, 26, 0.35);
+}
+
+.frontpage-step-connector {
+  position: absolute;
+  top: 50%;
+  right: -0.85rem;
+  width: 0.85rem;
+  height: 2px;
+  background: linear-gradient(90deg, rgba(255, 122, 26, 0.5), rgba(255, 122, 26, 0.1));
+  transform: translateY(-50%);
+  animation: frontpage-connector-pulse 2.2s ease-in-out infinite;
+}
+
+.frontpage-role-card--student {
+  border-color: rgba(255, 122, 26, 0.28);
+  background: linear-gradient(160deg, rgba(255, 122, 26, 0.07), var(--bg-card-soft, rgba(255, 255, 255, 0.04)));
+}
+
+.frontpage-step-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  margin-bottom: 0.85rem;
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--text-on-accent, #2a1202);
+  background: linear-gradient(135deg, #ff7a1a, #ff974d);
+  box-shadow: 0 6px 16px rgba(255, 122, 26, 0.3);
+}
+
+.frontpage-step h3 {
+  margin: 0 0 0.45rem;
+  font-size: 1.05rem;
+  color: var(--text-primary, #fff4e8);
+}
+
+.frontpage-step p {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: var(--text-muted, #9993a3);
+}
+
+.frontpage-schools-panel {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 1.5rem;
+  align-items: center;
+  border: 1px solid rgba(255, 122, 26, 0.28);
+  border-radius: 22px;
+  padding: 2rem 2rem 2rem 2.25rem;
+  background: linear-gradient(135deg, rgba(255, 122, 26, 0.1), rgba(255, 255, 255, 0.02));
+  box-shadow: 0 24px 55px rgba(0, 0, 0, 0.25);
+}
+
+.frontpage-schools-copy h2 {
+  margin: 0 0 0.65rem;
+  font-size: clamp(1.5rem, 2.5vw, 2rem);
+  color: var(--text-primary, #fff4e8);
+}
+
+.frontpage-schools-copy p {
+  margin: 0 0 1rem;
+  color: var(--text-muted, #9993a3);
+  line-height: 1.6;
+  max-width: 520px;
+}
+
+.frontpage-schools-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.frontpage-schools-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 0.9rem;
+  color: var(--text-secondary, #cfc7d0);
+}
+
+.frontpage-schools-list li::before {
+  content: '✓';
+  color: var(--accent-soft, #ffb37a);
+  font-weight: 800;
+}
+
+.frontpage-schools-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.frontpage-stat-card {
+  border-radius: 14px;
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+  background: var(--bg-card, rgba(14, 14, 18, 0.9));
+  padding: 1.1rem;
+  text-align: center;
+  transition: transform 0.25s ease;
+}
+
+.frontpage-stat-card:hover {
+  transform: translateY(-3px);
+}
+
+.frontpage-stat-card strong {
+  display: block;
+  font-size: 1.5rem;
+  color: var(--accent-soft, #ffb37a);
+  margin-bottom: 0.2rem;
+}
+
+.frontpage-stat-card span {
+  font-size: 0.78rem;
+  color: var(--text-muted, #9993a3);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.frontpage-roles-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.frontpage-role-card {
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.12));
+  border-radius: 18px;
+  padding: 1.5rem;
+  background: var(--bg-card-soft, rgba(255, 255, 255, 0.04));
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  transition: border-color 0.25s ease, transform 0.25s ease;
+}
+
+.frontpage-role-card:hover {
+  border-color: rgba(255, 122, 26, 0.35);
+  transform: translateY(-3px);
+}
+
+.frontpage-role-badge {
+  align-self: flex-start;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.25rem 0.55rem;
+  border-radius: 999px;
+  color: var(--accent-soft, #ffb37a);
+  border: 1px solid rgba(255, 122, 26, 0.35);
+  background: rgba(255, 122, 26, 0.1);
+}
+
+.frontpage-role-card h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: var(--text-primary, #fff4e8);
+}
+
+.frontpage-role-card p {
+  margin: 0;
+  flex: 1;
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: var(--text-muted, #9993a3);
+}
+
+.frontpage-footer {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 1.5rem 1.25rem 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border-top: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+}
+
+.frontpage-footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.frontpage-footer-brand img {
+  width: 32px;
+  height: 32px;
+}
+
+.frontpage-footer-brand span {
+  font-weight: 700;
+  color: var(--text-primary, #fff4e8);
+}
+
+.frontpage-footer-copy {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--text-muted, #9993a3);
+}
+
+.frontpage-footer-links {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.frontpage-footer-links button {
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: var(--text-secondary, #cfc7d0);
+  transition: color 0.2s ease;
+}
+
+.frontpage-footer-links button:hover {
+  color: var(--accent-soft, #ffb37a);
+}
+
+@keyframes frontpage-logo-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+@keyframes frontpage-pill-shimmer {
+  0%, 72%, 100% { transform: translateX(-120%); }
+  28% { transform: translateX(120%); }
+}
+
+@keyframes frontpage-connector-pulse {
+  0%, 100% { opacity: 0.45; }
+  50% { opacity: 1; }
+}
+
+@keyframes frontpage-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes frontpage-orb-drift {
+  from {
+    transform: translate(0, 0) scale(1);
+  }
+  to {
+    transform: translate(24px, 18px) scale(1.06);
+  }
+}
+
+/* ─── Scroll margin: prevents sections sliding under the sticky nav ─────── */
+
+#what-is-eduaigames,
+#how-it-works,
+#features,
+#for-campus {
+  scroll-margin-top: 80px;
+}
+
+/* ─── Floating data-glyph particles ─────────────────────────────────────── */
+
+.frontpage-particles {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.frontpage-particle {
+  position: absolute;
+  bottom: -5%;
+  font-family: 'Courier New', monospace;
+  font-weight: 700;
+  color: rgba(255, 122, 26, 0.18);
+  opacity: 0;
+  animation: frontpage-particle-rise linear infinite;
+  user-select: none;
+  will-change: transform, opacity;
+}
+
+@keyframes frontpage-particle-rise {
+  0%   { transform: translateY(0) rotate(0deg); opacity: 0; }
+  8%   { opacity: 1; }
+  88%  { opacity: 0.55; }
+  100% { transform: translateY(-105vh) rotate(14deg); opacity: 0; }
+}
+
+/* ─── Hero activity badges ───────────────────────────────────────────────── */
+
+.frontpage-hero-badges {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.frontpage-hero-badge {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 0.8rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 122, 26, 0.35);
+  background: rgba(10, 10, 16, 0.88);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
+  animation: frontpage-badge-enter 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.frontpage-hero-badge--score {
+  bottom: 16%;
+  left: 6%;
+  animation-delay: 0.8s;
+}
+
+.frontpage-hero-badge--bot {
+  top: 10%;
+  right: 6%;
+  animation-delay: 1.15s;
+}
+
+.frontpage-hero-badge-icon {
+  font-size: 1.1rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.frontpage-hero-badge-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.frontpage-hero-badge-body strong {
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: var(--accent-soft, #ffb37a);
+  line-height: 1.1;
+}
+
+.frontpage-hero-badge-body span {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.55);
+  letter-spacing: 0.02em;
+}
+
+/* Typing dots inside the EduBot badge */
+.frontpage-typing-dots {
+  display: flex;
+  gap: 3px;
+  align-items: center;
+  margin-top: 2px;
+}
+
+.frontpage-typing-dots span {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent-soft, #ffb37a);
+  animation: frontpage-dot-bounce 1.4s ease-in-out infinite;
+}
+
+.frontpage-typing-dots span:nth-child(2) { animation-delay: 0.18s; }
+.frontpage-typing-dots span:nth-child(3) { animation-delay: 0.36s; }
+
+@keyframes frontpage-badge-enter {
+  from { opacity: 0; transform: translateY(12px) scale(0.9); }
+  to   { opacity: 1; transform: translateY(0)   scale(1);   }
+}
+
+@keyframes frontpage-dot-bounce {
+  0%, 60%, 100% { transform: translateY(0);   opacity: 0.55; }
+  30%            { transform: translateY(-4px); opacity: 1;    }
+}
+
+/* ─── Staggered card / step reveals ─────────────────────────────────────── */
+
+/* Cards start slightly below position when their section is about to reveal */
+.frontpage-section--reveal .frontpage-feature-card,
+.frontpage-section--reveal .frontpage-step,
+.frontpage-section--reveal .frontpage-role-card,
+.frontpage-section--reveal .frontpage-stat-card,
+.frontpage-section--reveal .frontpage-intro-points li {
+  transform: translateY(22px);
+  transition: transform 0.55s ease;
+}
+
+/* Slide into place when the section becomes visible */
+.frontpage-section--visible .frontpage-feature-card,
+.frontpage-section--visible .frontpage-step,
+.frontpage-section--visible .frontpage-role-card,
+.frontpage-section--visible .frontpage-stat-card,
+.frontpage-section--visible .frontpage-intro-points li {
+  transform: translateY(0);
+}
+
+/* Feature cards — 6 items */
+.frontpage-section--visible .frontpage-feature-card:nth-child(1) { transition-delay: 0.08s; }
+.frontpage-section--visible .frontpage-feature-card:nth-child(2) { transition-delay: 0.16s; }
+.frontpage-section--visible .frontpage-feature-card:nth-child(3) { transition-delay: 0.24s; }
+.frontpage-section--visible .frontpage-feature-card:nth-child(4) { transition-delay: 0.32s; }
+.frontpage-section--visible .frontpage-feature-card:nth-child(5) { transition-delay: 0.40s; }
+.frontpage-section--visible .frontpage-feature-card:nth-child(6) { transition-delay: 0.48s; }
+
+/* Steps — 3 items */
+.frontpage-section--visible .frontpage-step:nth-child(1) { transition-delay: 0.10s; }
+.frontpage-section--visible .frontpage-step:nth-child(2) { transition-delay: 0.22s; }
+.frontpage-section--visible .frontpage-step:nth-child(3) { transition-delay: 0.34s; }
+
+/* Role cards */
+.frontpage-section--visible .frontpage-role-card:nth-child(1) { transition-delay: 0.10s; }
+.frontpage-section--visible .frontpage-role-card:nth-child(2) { transition-delay: 0.22s; }
+
+/* Stat cards (2x2 grid) */
+.frontpage-section--visible .frontpage-stat-card:nth-child(1) { transition-delay: 0.10s; }
+.frontpage-section--visible .frontpage-stat-card:nth-child(2) { transition-delay: 0.18s; }
+.frontpage-section--visible .frontpage-stat-card:nth-child(3) { transition-delay: 0.26s; }
+.frontpage-section--visible .frontpage-stat-card:nth-child(4) { transition-delay: 0.34s; }
+
+/* Intro points */
+.frontpage-section--visible .frontpage-intro-points li:nth-child(1) { transition-delay: 0.12s; }
+.frontpage-section--visible .frontpage-intro-points li:nth-child(2) { transition-delay: 0.24s; }
+.frontpage-section--visible .frontpage-intro-points li:nth-child(3) { transition-delay: 0.36s; }
+
+/* ─── Mobile hamburger & drawer ─────────────────────────────────────────── */
+
+.frontpage-brand-text {
+  min-width: 0;
+}
+
+.frontpage-nav-end {
+  display: none;
+  align-items: center;
+  gap: 0.45rem;
+  flex-shrink: 0;
+}
+
+.frontpage-nav-theme--mobile {
+  display: none;
+}
+
+.frontpage-nav-theme--desktop {
+  display: inline-flex;
+}
+
+.frontpage-nav-signup-mobile {
+  padding: 0.5rem 0.85rem;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.frontpage-hamburger {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 122, 26, 0.45);
+  background: rgba(255, 122, 26, 0.1);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s ease;
+}
+
+.frontpage-hamburger:hover,
+.frontpage-hamburger:active {
+  background: rgba(255, 122, 26, 0.2);
+}
+
+.frontpage-hamburger-lines {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 20px;
+  height: 20px;
+}
+
+.frontpage-hamburger-lines span {
+  display: block;
+  width: 20px;
+  height: 2px;
+  border-radius: 2px;
+  background: #ffb37a;
+  transition: transform 0.25s ease, opacity 0.2s ease;
+}
+
+.frontpage-hamburger-lines.is-open span:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.frontpage-hamburger-lines.is-open span:nth-child(2) {
+  opacity: 0;
+}
+
+.frontpage-hamburger-lines.is-open span:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+.frontpage-mobile-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 98;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.frontpage-mobile-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 99;
+  background: rgba(10, 10, 14, 0.98);
+  border-bottom: 1px solid rgba(255, 122, 26, 0.25);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 0.75rem 1rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  backdrop-filter: blur(20px);
+  animation: frontpage-menu-drop 0.2s ease both;
+}
+
+@keyframes frontpage-menu-drop {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.frontpage-mobile-link {
+  display: block;
+  padding: 0.9rem 0.75rem;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #e2dde8;
+  text-decoration: none;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  width: 100%;
+  transition: background 0.15s ease, color 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.frontpage-mobile-link:hover,
+.frontpage-mobile-link:active {
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff4e8;
+}
+
+.frontpage-mobile-link--btn {
+  color: #ffb37a;
+}
+
+.frontpage-mobile-link--primary {
+  background: linear-gradient(135deg, #ff7a1a, #ff974d);
+  color: #2a1202;
+  text-align: center;
+  font-weight: 700;
+  margin-top: 0.35rem;
+}
+
+.frontpage-mobile-link--primary:hover,
+.frontpage-mobile-link--primary:active {
+  background: linear-gradient(135deg, #ff8c35, #ffa060);
+  color: #2a1202;
+}
+
+.frontpage-mobile-divider {
+  border: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  margin: 0.35rem 0;
+}
+
+/* ─── Section mobile breakpoints ────────────────────────────────────────── */
+
+@media (max-width: 900px) {
+  .frontpage-intro-panel {
+    grid-template-columns: 1fr;
+    padding: 1.5rem 1.25rem;
+  }
+
+  .frontpage-schools-panel {
+    grid-template-columns: 1fr;
+    padding: 1.5rem 1.25rem;
+  }
+
+  .frontpage-schools-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .frontpage-roles-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Nav: hide desktop links, show mobile end group */
+  .frontpage-nav-links {
+    display: none;
+  }
+
+  .frontpage-nav-end {
+    display: flex;
+  }
+
+  .frontpage-nav-theme--desktop {
+    display: none;
+  }
+
+  .frontpage-nav-theme--mobile {
+    display: inline-flex;
+  }
+
+  .frontpage-nav-bar {
+    /* Dark mode: transparent so the nav blends with the page (no black bar).
+       Light mode keeps a solid panel for legibility while scrolling. */
+    background: transparent;
+    border-bottom: 1px solid transparent;
+    padding-top: max(0px, env(safe-area-inset-top, 0px));
+  }
+
+  html[data-theme='light'] .frontpage-nav-bar {
+    background: rgba(244, 245, 247, 0.95) !important;
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(15, 23, 42, 0.1) !important;
+  }
+
+  .frontpage-nav {
+    padding: 0.65rem 0.85rem;
+    align-items: center;
+    gap: 0.65rem;
+  }
+
+  .frontpage-brand {
+    flex: 1;
+    min-width: 0;
+    align-items: center;
+  }
+
+  .frontpage-brand-title {
+    font-size: 1rem;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .frontpage-mobile-backdrop {
+    display: block;
+  }
+
+  /* Hero */
+  .frontpage-hero {
+    min-height: auto;
+    padding: 2rem 1rem 1.5rem;
+    gap: 1.5rem;
+  }
+
+  .frontpage-copy {
+    padding: 0;
+  }
+
+  .frontpage-copy h1 {
+    font-size: clamp(1.85rem, 8vw, 2.6rem);
+    line-height: 1.12;
+  }
+
+  .frontpage-description {
+    font-size: 0.95rem;
+  }
+
+  .frontpage-pill {
+    font-size: 0.72rem;
+  }
+
+  .frontpage-visual {
+    height: 220px;
+  }
+
+  .frontpage-trust-row {
+    gap: 1rem;
+  }
+
+  /* Sections */
+  .frontpage-section {
+    padding: 2.5rem 1rem;
+  }
+
+  .frontpage-section-header {
+    margin-bottom: 1.5rem;
+  }
+
+  .frontpage-section-header h2 {
+    font-size: clamp(1.35rem, 6vw, 1.9rem);
+  }
+
+  /* Features: 1 column on small mobile, 2 col on tablet */
+  .frontpage-features-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+
+  /* Steps */
+  .frontpage-steps {
+    grid-template-columns: 1fr;
+    gap: 0.85rem;
+  }
+
+  .frontpage-step-connector {
+    display: none;
+  }
+
+  /* Intro panel */
+  .frontpage-intro-panel {
+    gap: 1.25rem;
+  }
+
+  /* Schools */
+  .frontpage-schools-copy p {
+    max-width: 100%;
+  }
+
+  /* Footer */
+  .frontpage-footer {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 0.85rem;
+    padding: 1.5rem 1rem 2rem;
+  }
+
+  .frontpage-footer-links {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  /* Role cards */
+  .frontpage-role-card h3 {
+    font-size: 1.05rem;
+  }
+
+  /* Intro points */
+  .frontpage-intro-points li {
+    padding: 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .frontpage-nav {
+    padding: 0.6rem 0.85rem;
+  }
+
+  .frontpage-brand-subtitle {
+    display: none;
+  }
+
+  .frontpage-nav-signup-mobile {
+    display: none;
+  }
+
+  .frontpage-nav-end {
+    gap: 0.35rem;
+  }
+
+  .frontpage-copy h1 {
+    font-size: clamp(1.65rem, 9vw, 2.2rem);
+  }
+
+  .frontpage-features-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .frontpage-actions {
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .frontpage-actions .frontpage-btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .frontpage-trust-row {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .frontpage-intro-panel {
+    padding: 1.1rem;
+  }
+
+  .frontpage-schools-panel {
+    padding: 1.1rem;
+  }
+
+  .frontpage-section {
+    padding: 2rem 0.85rem;
+  }
+
+  .frontpage-feature-card {
+    padding: 1rem;
+  }
+
+  .frontpage-stat-card {
+    padding: 0.85rem;
+  }
+
+  .frontpage-schools-copy .frontpage-btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .frontpage-role-card {
+    padding: 1.1rem;
+  }
+}
+
+/* ─── Light theme overrides for new elements ─────────────────────────────── */
+
+html[data-theme='light'] .frontpage-particle {
+  color: rgba(194, 65, 12, 0.1);
+}
+
+html[data-theme='light'] .frontpage-hero-badge {
+  background: rgba(255, 255, 255, 0.96);
+  border-color: rgba(194, 65, 12, 0.28);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
+}
+
+html[data-theme='light'] .frontpage-hero-badge-body strong {
+  color: #c2410c;
+}
+
+html[data-theme='light'] .frontpage-hero-badge-body span {
+  color: rgba(15, 23, 42, 0.5);
+}
+
+html[data-theme='light'] .frontpage-typing-dots span {
+  background: #c2410c;
+}
+
+/* ─── Mobile: hide particles + badges on small screens ───────────────────── */
+
+@media (max-width: 768px) {
+  .frontpage-particles {
+    display: none;
+  }
+
+  .frontpage-hero-badges {
+    display: none;
+  }
+
+  /* Stagger on mobile still works but uses shorter delays */
+  .frontpage-section--reveal .frontpage-feature-card,
+  .frontpage-section--reveal .frontpage-step,
+  .frontpage-section--reveal .frontpage-role-card,
+  .frontpage-section--reveal .frontpage-stat-card,
+  .frontpage-section--reveal .frontpage-intro-points li {
+    transform: translateY(14px);
+  }
+}
+
+/* ─── Reduced motion: disable all new animations ─────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .frontpage-copy,
+  .frontpage-visual,
+  .frontpage-headline-line,
+  .frontpage-bg-orbs::before,
+  .frontpage-bg-orbs::after,
+  .frontpage-logo-img,
+  .frontpage-pill--shimmer::after,
+  .frontpage-step-connector,
+  .frontpage-particle,
+  .frontpage-hero-badge,
+  .frontpage-typing-dots span {
+    animation: none;
+  }
+
+  .frontpage-particles {
+    display: none;
+  }
+
+  .frontpage-hero-badges {
+    display: none;
+  }
+
+  .frontpage-section--reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  /* Also disable the stagger transforms in reduced-motion */
+  .frontpage-section--reveal .frontpage-feature-card,
+  .frontpage-section--reveal .frontpage-step,
+  .frontpage-section--reveal .frontpage-role-card,
+  .frontpage-section--reveal .frontpage-stat-card,
+  .frontpage-section--reveal .frontpage-intro-points li {
+    transform: none;
+    transition: none;
+  }
+
+  .frontpage-visual-placeholder:hover,
+  .frontpage-feature-card:hover,
+  .frontpage-feature-card:hover .frontpage-feature-icon,
+  .frontpage-role-card:hover,
+  .frontpage-stat-card:hover,
+  .frontpage-step:hover,
+  .frontpage-intro-points li:hover {
+    transform: none;
+  }
+}

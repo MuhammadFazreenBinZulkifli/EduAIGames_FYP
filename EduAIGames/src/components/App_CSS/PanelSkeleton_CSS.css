@@ -1,0 +1,92 @@
+.panel-skeleton-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.panel-skeleton-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.panel-skeleton {
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.panel-skeleton--hero {
+  padding: 1.35rem 1.4rem;
+  margin-bottom: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.panel-skeleton--card {
+  padding: 1.15rem;
+  min-height: 148px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.panel-skeleton--list-item {
+  padding: 1rem 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.panel-skeleton--table {
+  padding: 0.5rem;
+}
+
+.panel-skeleton__row {
+  height: 44px;
+  margin: 0.35rem 0.5rem;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.panel-skeleton__icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 11px;
+  background: rgba(255, 122, 26, 0.12);
+  flex-shrink: 0;
+}
+
+.panel-skeleton__body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.panel-skeleton__line {
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.panel-skeleton__line--lg {
+  height: 22px;
+  width: 55%;
+}
+
+.panel-skeleton__line--md {
+  height: 14px;
+  width: 75%;
+}
+
+.panel-skeleton__line--sm {
+  height: 12px;
+  width: 90%;
+}
+
+.panel-skeleton__line--xs {
+  height: 10px;
+  width: 40%;
+  margin-top: auto;
+}

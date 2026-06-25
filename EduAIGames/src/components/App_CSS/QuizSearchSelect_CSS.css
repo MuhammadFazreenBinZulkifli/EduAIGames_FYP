@@ -1,0 +1,147 @@
+/* Searchable quiz picker (typeahead combobox). Theme-aware via design tokens. */
+.quiz-search {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.quiz-search__field {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 0.65rem;
+  border: 1px solid var(--panel-surface-border);
+  border-radius: 10px;
+  background: var(--card-bg);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.quiz-search__field--open,
+.quiz-search__field:focus-within {
+  border-color: var(--border-accent);
+  box-shadow: 0 0 0 3px rgba(232, 106, 16, 0.15);
+}
+
+.quiz-search__icon {
+  display: inline-flex;
+  align-items: center;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.quiz-search__input {
+  flex: 1 1 auto;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  padding: 0.6rem 0;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+}
+
+.quiz-search__input::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.85;
+}
+
+.quiz-search__clear {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: var(--text-secondary);
+  font-size: 1.15rem;
+  line-height: 1;
+  padding: 0.1rem 0.3rem;
+  border-radius: 6px;
+  flex-shrink: 0;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.quiz-search__clear:hover {
+  color: var(--text-primary);
+  background: rgba(127, 127, 127, 0.18);
+}
+
+/* ── Dropdown list (portaled to <body>, positioned via inline fixed coords) ── */
+.quiz-search__list {
+  z-index: 1000;
+  margin: 0;
+  padding: 0.35rem;
+  list-style: none;
+  max-height: 264px;
+  overflow-y: auto;
+  border: 1px solid var(--panel-surface-border);
+  border-radius: 12px;
+  box-shadow: var(--panel-card-shadow);
+  /* Opaque surface so the list never shows page content behind it. */
+  background: #1b1922;
+}
+
+html[data-theme='light'] .quiz-search__list {
+  background: #ffffff;
+}
+
+.quiz-search__option {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.55rem 0.6rem;
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--text-primary);
+  font-size: 0.88rem;
+}
+
+.quiz-search__option--active {
+  background: rgba(232, 106, 16, 0.14);
+}
+
+.quiz-search__option--selected {
+  font-weight: 600;
+}
+
+.quiz-search__option-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+/* Per-option custom icon (e.g. game-type emoji) — size for glyphs, fixed width
+   so titles stay aligned. */
+.quiz-search__option-icon--custom {
+  width: 18px;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.quiz-search__option-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.quiz-search__hl {
+  background: transparent;
+  color: var(--accent);
+  font-weight: 700;
+  padding: 0;
+}
+
+.quiz-search__check {
+  display: inline-flex;
+  align-items: center;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.quiz-search__empty {
+  padding: 0.75rem 0.6rem;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  text-align: center;
+}

@@ -1,0 +1,340 @@
+/* ─── SideEduBot: static side-panel EduBot for desktop collapsed-sidebar mode ─── */
+
+/* The outer panel fills the dedicated grid column completely */
+.side-edubot {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  background: var(--panel-bg, rgba(14, 14, 20, 0.98));
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* ── Header ─────────────────────────────────────────────────────────────────── */
+
+.side-edubot__header {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.85rem 1rem;
+  gap: 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 122, 26, 0.06);
+}
+
+.side-edubot__header-info {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-width: 0;
+}
+
+.side-edubot__avatar {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(255, 122, 26, 0.16);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ff7a1a;
+}
+
+.side-edubot__icon-svg {
+  width: 18px;
+  height: 18px;
+}
+
+.side-edubot__header-text {
+  min-width: 0;
+}
+
+.side-edubot__title {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-primary, #fff4e8);
+  line-height: 1.2;
+}
+
+.side-edubot__subtitle {
+  margin: 0;
+  font-size: 0.7rem;
+  color: #ff7a1a;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+.side-edubot__clear-btn {
+  flex-shrink: 0;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  color: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  font-size: 1rem;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.side-edubot__clear-btn:hover {
+  background: rgba(255, 122, 26, 0.12);
+  border-color: rgba(255, 122, 26, 0.28);
+  color: #ff7a1a;
+}
+
+/* ── Messages area ───────────────────────────────────────────────────────────── */
+
+.side-edubot__messages {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0.8rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  scroll-behavior: smooth;
+  /* Thin themed scrollbar for Firefox */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 122, 26, 0.25) transparent;
+}
+
+/* Thin custom scrollbar */
+.side-edubot__messages::-webkit-scrollbar {
+  width: 4px;
+}
+
+.side-edubot__messages::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.side-edubot__messages::-webkit-scrollbar-thumb {
+  background: rgba(255, 122, 26, 0.25);
+  border-radius: 4px;
+}
+
+/* Make the aichat bubbles slightly smaller to fit the narrower column */
+.side-edubot .aichat-bubble {
+  font-size: 0.82rem;
+  padding: 0.5rem 0.7rem;
+  max-width: 88%;
+}
+
+.side-edubot .aichat-suggestions-list {
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.side-edubot .aichat-suggestion-chip {
+  font-size: 0.8rem;
+  padding: 0.4rem 0.65rem;
+  text-align: left;
+}
+
+.side-edubot .aichat-suggestions-label {
+  font-size: 0.72rem;
+}
+
+.side-edubot__unavailable {
+  padding: 1rem 0.5rem;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.side-edubot__unavailable-hint {
+  margin-top: 0.35rem;
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+
+/* ── Error banner ────────────────────────────────────────────────────────────── */
+
+.side-edubot__error {
+  flex-shrink: 0;
+  margin: 0;
+  padding: 0.45rem 0.75rem;
+}
+
+/* ── Footer ─────────────────────────────────────────────────────────────────── */
+
+.side-edubot__footer {
+  flex-shrink: 0;
+  display: flex;
+  padding: 0.65rem 0.75rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 122, 26, 0.03);
+}
+
+/* Compose box: textarea fills the field, Send button floats inside on the right */
+.side-edubot__compose {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  border: 1px solid rgba(255, 179, 122, 0.22);
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.25);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.side-edubot__compose:focus-within {
+  border-color: rgba(255, 159, 90, 0.55);
+  box-shadow: 0 0 0 2px rgba(255, 159, 90, 0.12);
+}
+
+.side-edubot__input {
+  flex: 1;
+  width: 100%;
+  resize: none;
+  border: none;
+  background: transparent;
+  color: var(--text-primary, #f4f1f8);
+  /* Leave room on the right for the floating Send button */
+  padding: 0.6rem 4.2rem 0.6rem 0.85rem;
+  font-size: 0.84rem;
+  line-height: 1.4;
+  font-family: inherit;
+  min-height: 44px;
+  max-height: 120px;
+  outline: none;
+}
+
+.side-edubot__input::placeholder {
+  color: #7a7488;
+}
+
+.side-edubot__input:disabled {
+  opacity: 0.6;
+}
+
+/* Rectangular Send button vertically centred inside the text box on the right */
+.side-edubot__send {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 32px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0.85rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  background: linear-gradient(135deg, #ff9a3d, #ff7a1a);
+  box-shadow: 0 2px 8px rgba(255, 122, 26, 0.3);
+  transition: filter 0.15s, transform 0.1s, opacity 0.15s;
+}
+
+.side-edubot__send:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+
+.side-edubot__send:active:not(:disabled) {
+  transform: translateY(-50%) scale(0.96);
+}
+
+.side-edubot__send:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* ── Animated slide-in when the panel first appears ─────────────────────────── */
+
+.app-shell-edubot-col {
+  animation: side-edubot-enter 0.22s ease;
+}
+
+@keyframes side-edubot-enter {
+  from {
+    opacity: 0;
+    transform: translateX(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* ── Light theme overrides ───────────────────────────────────────────────────── */
+
+html[data-theme='light'] .side-edubot {
+  background: #f8fafc;
+  border-left-color: rgba(15, 23, 42, 0.1);
+}
+
+html[data-theme='light'] .side-edubot__header {
+  background: rgba(194, 65, 12, 0.04);
+  border-bottom-color: rgba(15, 23, 42, 0.1);
+}
+
+html[data-theme='light'] .side-edubot__title {
+  color: #0f172a;
+}
+
+html[data-theme='light'] .side-edubot__avatar {
+  background: rgba(194, 65, 12, 0.1);
+  color: #c2410c;
+}
+
+html[data-theme='light'] .side-edubot__subtitle {
+  color: #c2410c;
+}
+
+html[data-theme='light'] .side-edubot__clear-btn {
+  color: rgba(15, 23, 42, 0.45);
+}
+
+html[data-theme='light'] .side-edubot__clear-btn:hover {
+  background: rgba(194, 65, 12, 0.1);
+  border-color: rgba(194, 65, 12, 0.22);
+  color: #c2410c;
+}
+
+html[data-theme='light'] .side-edubot__footer {
+  border-top-color: rgba(15, 23, 42, 0.1);
+  background: rgba(194, 65, 12, 0.02);
+}
+
+html[data-theme='light'] .side-edubot__compose {
+  border-color: rgba(15, 23, 42, 0.18);
+  background: #ffffff;
+}
+
+html[data-theme='light'] .side-edubot__compose:focus-within {
+  border-color: rgba(194, 65, 12, 0.5);
+  box-shadow: 0 0 0 2px rgba(194, 65, 12, 0.1);
+}
+
+html[data-theme='light'] .side-edubot__input {
+  color: #0f172a;
+}
+
+html[data-theme='light'] .side-edubot__input::placeholder {
+  color: #94a3b8;
+}
+
+html[data-theme='light'] .side-edubot__unavailable {
+  color: rgba(15, 23, 42, 0.5);
+}
+
+html[data-theme='light'] .side-edubot__messages::-webkit-scrollbar-thumb {
+  background: rgba(194, 65, 12, 0.2);
+}

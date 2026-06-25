@@ -1,0 +1,194 @@
+.student-courses__count-meta { margin-bottom: 0.75rem; }
+
+.student-courses__class-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.student-courses__class-kicker { margin-bottom: 0.25rem; }
+
+.student-courses__class-title {
+  margin: 0;
+  color: var(--text-primary, #fff4e8);
+  font-size: 1.15rem;
+}
+
+.student-courses__topic-row { margin-top: 0.5rem; }
+
+.student-courses__download-link { text-decoration: none; }
+
+.student-courses__games-topic { border-color: rgba(167, 139, 250, 0.35); }
+
+.student-courses__games-name { color: var(--c-violet-soft, #c4b5fd); }
+
+.student-courses__game-item { align-items: flex-start; }
+
+.student-courses__game-body { flex: 1; min-width: 0; }
+
+.student-courses__game-badge {
+  margin-left: 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+.student-courses__game-badge--maze { background: rgba(167, 139, 250, 0.15); color: #a78bfa; }
+.student-courses__game-badge--snake { background: rgba(52, 211, 153, 0.15); color: #34d399; }
+.student-courses__game-badge--breakout { background: rgba(34, 211, 238, 0.15); color: #22d3ee; }
+.student-courses__game-badge--race { background: rgba(251, 113, 133, 0.15); color: #fb7185; }
+
+/* Light theme: darken game badges + accents so labels stay legible on light cards */
+html[data-theme='light'] .student-courses__games-topic { border-color: rgba(109, 40, 217, 0.35); }
+html[data-theme='light'] .student-courses__games-name { color: #6d28d9; }
+html[data-theme='light'] .student-courses__game-badge--maze { background: rgba(109, 40, 217, 0.12); color: #6d28d9; }
+html[data-theme='light'] .student-courses__game-badge--snake { background: rgba(5, 150, 105, 0.14); color: #047857; }
+html[data-theme='light'] .student-courses__game-badge--breakout { background: rgba(8, 145, 178, 0.14); color: #0e7490; }
+html[data-theme='light'] .student-courses__game-badge--race { background: rgba(225, 29, 72, 0.12); color: #be123c; }
+
+.student-courses__game-desc {
+  margin: 0.35rem 0 0;
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.student-courses__game-meta {
+  margin: 0.25rem 0 0;
+  font-size: 0.76rem;
+}
+
+.student-courses__game-settings {
+  margin: 0.35rem 0 0;
+  padding-left: 1.1rem;
+  font-size: 0.74rem;
+  color: var(--text-muted, #94a3b8);
+  line-height: 1.5;
+}
+
+.student-courses__file-item {
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.student-courses__file-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.student-courses__file-preview {
+  margin-top: 0.65rem;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.student-courses__file-preview-frame {
+  width: 100%;
+  height: 420px;
+  border: 0;
+  display: block;
+}
+
+.student-courses__file-preview-img {
+  width: 100%;
+  max-height: 420px;
+  object-fit: contain;
+  display: block;
+}
+
+/* ─── Mobile: student class content ─── */
+@media (max-width: 980px) {
+  .student-courses-page .student-courses__class-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.65rem;
+  }
+
+  .student-courses-page .course-topic-header {
+    min-height: 48px;
+  }
+
+  .student-courses-page .course-topic-name {
+    white-space: normal;
+    word-break: break-word;
+    line-height: 1.35;
+  }
+}
+
+@media (max-width: 600px) {
+  .student-courses-page .course-item {
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 0.55rem;
+    padding: 0.85rem 0;
+  }
+
+  .student-courses-page .course-item-title,
+  .student-courses-page .course-item-link {
+    flex: 1 1 calc(100% - 2.5rem);
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
+    word-break: break-word;
+    line-height: 1.45;
+  }
+
+  .student-courses-page .course-item-actions {
+    flex: 1 1 100%;
+    width: 100%;
+    margin-left: 0;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 0.25rem;
+    padding-top: 0.55rem;
+    border-top: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+  }
+
+  .student-courses-page .course-item-actions .panel-btn {
+    flex: 1 1 0;
+    min-width: 0;
+    width: auto;
+    min-height: 42px;
+    justify-content: center;
+    font-size: 0.84rem;
+    font-weight: 600;
+    border-radius: 10px;
+    padding-left: 0.4rem;
+    padding-right: 0.4rem;
+  }
+
+  .student-courses-page .student-courses__file-preview-frame {
+    height: min(52vh, 360px);
+  }
+
+  .student-courses-page .student-courses__file-preview-img {
+    max-height: min(52vh, 360px);
+  }
+
+  .student-courses-page .student-courses__game-item .course-item-title {
+    white-space: normal;
+  }
+
+  .student-courses-page .student-courses__game-item {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .student-courses-page .student-courses__game-body {
+    width: 100%;
+  }
+
+  .student-courses-page .student-courses__game-item > .panel-btn,
+  .student-courses-page .course-item > .panel-btn {
+    width: 100%;
+    min-height: 44px;
+    justify-content: center;
+    margin-top: 0.25rem;
+  }
+}

@@ -1,0 +1,477 @@
+/* ─── Layout pages ─── */
+.snake-game-quiz__page--error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  text-align: center;
+  gap: 1rem;
+}
+.snake-game-quiz__page--relative { position: relative; }
+.snake-game-quiz__page--loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.snake-game-quiz__page--centered {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.snake-game-quiz__page--playing {
+  align-items: center;
+  padding-bottom: 32px;
+}
+.snake-game-quiz__alert-max { max-width: 420px; }
+
+/* ─── Modal ─── */
+.snake-game-quiz__modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  background: rgba(8, 4, 18, 0.88);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+.snake-game-quiz__modal {
+  background: #16102a;
+  border: 1px solid rgba(52, 211, 153, 0.3);
+  border-radius: 16px;
+  padding: 1.75rem;
+  width: 100%;
+  max-width: 440px;
+}
+.snake-game-quiz__modal-title {
+  color: #fff4e8;
+  margin: 0 0 0.3rem;
+  font-size: 1.2rem;
+}
+.snake-game-quiz__modal-meta { margin-bottom: 1.25rem; }
+.snake-game-quiz__modal-summary {
+  padding: 0.65rem 0.9rem;
+  background: rgba(52, 211, 153, 0.08);
+  border: 1px solid rgba(52, 211, 153, 0.18);
+  border-radius: 8px;
+  margin-bottom: 1.1rem;
+}
+.snake-game-quiz__modal-summary-text { margin: 0; }
+.snake-game-quiz__modal-summary-quiz { color: #6ee7b7; }
+.snake-game-quiz__modal-summary-setting { color: #6ee7b7; }
+.snake-game-quiz__modal-summary-hunter--on { color: #d946ef; }
+.snake-game-quiz__modal-summary-hunter--off { color: #6b6075; }
+.snake-game-quiz__modal-actions { gap: 0.65rem; }
+.snake-game-quiz__modal-btn { flex: 1; }
+
+/* ─── Setup ─── */
+.snake-game-quiz__hero { margin-bottom: 0; flex: 1; }
+.snake-game-quiz__section-meta { margin: 0 0 0.75rem; }
+.snake-game-quiz__empty { padding: 0.75rem 0; }
+.snake-game-quiz__form-group--quiz-selected { margin-bottom: 0.75rem; }
+.snake-game-quiz__form-group--no-quiz { margin-bottom: 0; }
+.snake-game-quiz__quiz-preview {
+  padding: 0.8rem 1rem;
+  background: rgba(52, 211, 153, 0.08);
+  border: 1px solid rgba(52, 211, 153, 0.2);
+  border-radius: 10px;
+}
+.snake-game-quiz__quiz-preview-title {
+  color: #6ee7b7;
+  font-weight: 700;
+  margin: 0 0 0.25rem;
+}
+.snake-game-quiz__quiz-preview-desc { margin: 0 0 0.4rem; }
+.snake-game-quiz__quiz-preview-stats {
+  display: flex;
+  gap: 1.2rem;
+  flex-wrap: wrap;
+}
+.snake-game-quiz__quiz-preview-error {
+  margin: 0.5rem 0 0;
+  color: #f87171;
+}
+.snake-game-quiz__settings-grid {
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+.snake-game-quiz__form-group--compact { margin-bottom: 0; }
+.snake-game-quiz__checkbox-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  cursor: pointer;
+  color: #e2d9f3;
+  margin-top: 1rem;
+}
+.snake-game-quiz__checkbox {
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  accent-color: #34d399;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.snake-game-quiz__checkbox-title { font-weight: 600; }
+.snake-game-quiz__checkbox-desc { margin: 0.15rem 0 0; }
+.snake-game-quiz__howto-card {
+  background: rgba(52, 211, 153, 0.05);
+  border-color: rgba(52, 211, 153, 0.18);
+}
+.snake-game-quiz__howto-list {
+  margin: 0;
+  padding-left: 1.2rem;
+  color: #6ee7b7;
+  line-height: 2;
+  font-size: 0.88rem;
+}
+.snake-game-quiz__howto-strong-light { color: #fff4e8; }
+.snake-game-quiz__howto-strong-fruit { color: #4ade80; }
+.snake-game-quiz__howto-strong-hunter { color: #d946ef; }
+.snake-game-quiz__actions { gap: 0.75rem; flex-wrap: wrap; }
+.snake-game-quiz__action-btn {
+  flex: 1 1 160px;
+  font-size: 1rem;
+  padding: 0.8rem 1.5rem;
+}
+
+/* ─── Loading ─── */
+.snake-game-quiz__loading-inner {
+  text-align: center;
+  color: #94a3b8;
+}
+.snake-game-quiz__loading-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+/* ─── End screens ─── */
+.snake-game-quiz__end-card {
+  max-width: 480px;
+  width: 100%;
+  text-align: center;
+}
+.snake-game-quiz__end-card--wide { max-width: 500px; }
+.snake-game-quiz__end-card--level { max-width: 420px; }
+.snake-game-quiz__end-icon { font-size: 56px; margin-bottom: 8px; }
+.snake-game-quiz__end-icon--level { font-size: 48px; margin-bottom: 12px; }
+.snake-game-quiz__end-title--over {
+  color: #ef4444;
+  margin: 0 0 8px;
+}
+.snake-game-quiz__end-title--complete {
+  color: #4ade80;
+  margin: 0 0 4px;
+}
+.snake-game-quiz__end-title--level {
+  color: #4ade80;
+  margin: 0 0 8px;
+}
+.snake-game-quiz__end-subtitle {
+  color: #94a3b8;
+  margin-bottom: 24px;
+}
+.snake-game-quiz__end-subtitle--level { margin-bottom: 24px; }
+.snake-game-quiz__stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.snake-game-quiz__stats-grid--level {
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+.snake-game-quiz__stat-card { padding: 12px 16px; }
+.snake-game-quiz__stat-card--compact { padding: 10px; }
+.snake-game-quiz__stat-label {
+  color: #94a3b8;
+  font-size: 12px;
+}
+.snake-game-quiz__stat-label--sm { font-size: 11px; }
+.snake-game-quiz__stat-value {
+  color: #e2e8f0;
+  font-size: 22px;
+  font-weight: 700;
+}
+.snake-game-quiz__stat-value--green { color: #4ade80; font-size: 22px; font-weight: 700; }
+.snake-game-quiz__stat-value--red { color: #f87171; font-size: 22px; font-weight: 700; }
+.snake-game-quiz__stat-value--orange { color: #fb923c; font-size: 22px; font-weight: 700; }
+.snake-game-quiz__stat-value--bold { font-weight: 700; }
+.snake-game-quiz__score-box {
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 12px;
+  padding: 16px 24px;
+  margin-bottom: 20px;
+}
+.snake-game-quiz__score-label {
+  color: #94a3b8;
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+.snake-game-quiz__score-value {
+  color: #4ade80;
+  font-size: 42px;
+  font-weight: 800;
+}
+.snake-game-quiz__end-actions { display: flex; gap: 10px; }
+.snake-game-quiz__exit-btn {
+  flex: 1;
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+}
+.snake-game-quiz__retry-btn { flex: 1; }
+.snake-game-quiz__full-width-btn { width: 100%; }
+
+/* ─── Playing ─── */
+.snake-game-quiz__board-wrap { max-width: 100%; margin: 0 auto; }
+.snake-game-quiz__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  gap: 8px;
+}
+.snake-game-quiz__light-btn {
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  background: rgba(110, 231, 183, 0.18);
+  border: 1px solid rgba(110, 231, 183, 0.55);
+  color: #a7f3d0;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.snake-game-quiz__light-btn--lg {
+  padding: 10px 24px;
+  font-size: 15px;
+}
+.snake-game-quiz__title {
+  margin: 0;
+  color: #4ade80;
+  font-size: 18px;
+  text-align: center;
+  flex: 1;
+}
+.snake-game-quiz__hud {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+.snake-game-quiz__hud-chip {
+  background: #0f1f14;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 13px;
+  color: #94a3b8;
+}
+.snake-game-quiz__hud-chip--lives {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+.snake-game-quiz__hud-strong { color: #e2e8f0; }
+.snake-game-quiz__hud-wrong { color: #f87171; }
+.snake-game-quiz__hud-penalty { color: #fb923c; }
+.snake-game-quiz__hud-unlimited { color: #ef4444; font-weight: 700; }
+.snake-game-quiz__hud-heart--alive { color: #ef4444; }
+.snake-game-quiz__hud-heart--dead { color: #374151; }
+.snake-game-quiz__hud-hunter {
+  background: rgba(192, 38, 211, 0.15);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 13px;
+  color: #d946ef;
+}
+.snake-game-quiz__hud-hunter-wait {
+  background: rgba(192, 38, 211, 0.1);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 13px;
+  color: #c084fc;
+}
+.snake-game-quiz__question-card {
+  width: 100%;
+  box-sizing: border-box;
+  background: #0f1f14;
+  border: 1px solid rgba(52, 211, 153, 0.35);
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+}
+.snake-game-quiz__question-label {
+  color: #4ade80;
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.snake-game-quiz__question-text {
+  color: #e2e8f0;
+  font-size: 15px;
+  margin-bottom: 14px;
+  line-height: 1.55;
+}
+.snake-game-quiz__options-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 8px;
+}
+.snake-game-quiz__option-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 8px;
+  padding: 8px 10px;
+  min-width: 0;
+}
+.snake-game-quiz__option-badge {
+  color: #fff;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+.snake-game-quiz__option-text {
+  color: #cbd5e1;
+  font-size: 13px;
+  line-height: 1.35;
+  word-break: break-word;
+}
+.snake-game-quiz__grid-area {
+  position: relative;
+  max-width: 100%;
+}
+.snake-game-quiz__grid {
+  display: grid;
+  gap: 1px;
+  box-sizing: border-box;
+  padding: 4px;
+  background: #071009;
+  border-radius: 10px;
+  overflow: hidden;
+  transition: border 0.2s, box-shadow 0.2s;
+}
+.snake-game-quiz__cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.snake-game-quiz__cell-content {
+  line-height: 1;
+  user-select: none;
+}
+.snake-game-quiz__await-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  pointer-events: none;
+}
+.snake-game-quiz__await-title {
+  color: #a7f3d0;
+  font-size: 16px;
+  font-weight: 700;
+}
+.snake-game-quiz__await-sub {
+  color: #94a3b8;
+  font-size: 13px;
+}
+.snake-game-quiz__pause-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.78);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+.snake-game-quiz__pause-icon { font-size: 36px; }
+.snake-game-quiz__pause-label {
+  color: #e2e8f0;
+  font-size: 20px;
+  font-weight: 700;
+}
+.snake-game-quiz__controls-hint {
+  margin-top: 12px;
+  color: #64748b;
+  font-size: 12px;
+  text-align: center;
+}
+
+/* ─── Mobile "fit-to-one-screen" compaction ───────────────────────────────────
+   On phones the playing screen reflows to portrait and the JS sizes the board to
+   fill the leftover height. These tweaks shrink the surrounding chrome (header,
+   HUD, question card, D-pad, hints) so the board gets as much room as possible
+   and the whole thing — question + board + controls — fits without scrolling.
+   Desktop is untouched (the modifier class is only added on mobile). */
+.snake-game-quiz__board-wrap--mobile .snake-game-quiz__header { margin-bottom: 6px; }
+.snake-game-quiz__board-wrap--mobile .snake-game-quiz__title { font-size: 16px; }
+
+.snake-game-quiz__board-wrap--mobile .snake-game-quiz__hud {
+  gap: 6px;
+  margin-bottom: 6px;
+}
+.snake-game-quiz__board-wrap--mobile .snake-game-quiz__hud-chip,
+.snake-game-quiz__board-wrap--mobile .snake-game-quiz__hud-hunter,
+.snake-game-quiz__board-wrap--mobile .snake-game-quiz__hud-hunter-wait {
+  padding: 4px 9px;
+  font-size: 12px;
+}
+
+.snake-game-quiz__board-wrap--mobile .snake-game-quiz__question-card {
+  padding: 9px 11px;
+  margin-bottom: 6px;
+}
+.snake-game-quiz__board-wrap--mobile .snake-game-quiz__question-label {
+  font-size: 11px;
+  margin-bottom: 4px;
+}
+.snake-game-quiz__board-wrap--mobile .snake-game-quiz__question-text {
+  font-size: 13.5px;
+  line-height: 1.4;
+  margin-bottom: 8px;
+}
+.snake-game-quiz__board-wrap--mobile .snake-game-quiz__options-grid {
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+.snake-game-quiz__board-wrap--mobile .snake-game-quiz__option-row { padding: 6px 8px; }
+.snake-game-quiz__board-wrap--mobile .snake-game-quiz__option-badge {
+  width: 20px;
+  height: 20px;
+}
+.snake-game-quiz__board-wrap--mobile .snake-game-quiz__option-text { font-size: 12px; }
+
+/* Tighter D-pad so it always clears the fold on small phones */
+.snake-game-quiz__board-wrap--mobile .game-touch-controls {
+  margin-top: 0.5rem;
+  max-width: 190px;
+}
+.snake-game-quiz__board-wrap--mobile .game-touch-controls__pad {
+  grid-template-rows: repeat(3, 44px);
+  gap: 0.3rem;
+}
+
+/* The verbose move hint is redundant on mobile (there's an on-screen pad) */
+.snake-game-quiz__board-wrap--mobile .snake-game-quiz__controls-hint { margin-top: 6px; }

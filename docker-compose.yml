@@ -1,0 +1,71 @@
+# EduAIGames — Docker Desktop stack.
+#
+# Quick start:
+#   1. (Optional) copy .env.docker.example to .env and fill in secrets.
+#   2. docker compose up --build
+#   3. Open http://localhost:5000
+#
+# The app container serves both the React UI and the API on port 5000.
+# Postgres data is persisted in the named volume "pgdata".
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: eduaigames-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-change_me}
+      # Keep this as the default maintenance DB; the app creates "fyp" itself.
+      POSTGRES_DB: postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      # Host 5433 -> container 5432 to avoid clashing with a local PostgreSQL.
+      # Connect external tools (pgAdmin/DBeaver) to localhost:5433.
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres}"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: eduaigames-app
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 5000
+      HOST: 0.0.0.0
+      SERVE_FRONTEND: "true"
+
+      # Database (points at the db service over the compose network)
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-fyp}
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-change_me}
+      DB_SSL: "false"
+
+      # Public URL (used in emails + as the same-origin CORS allowance)
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:5000}
+
+      # Optional integrations — leave blank to disable
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_SECURE: ${SMTP_SECURE:-false}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+      SMTP_FROM: ${SMTP_FROM:-}
+    ports:
+      - "5000:5000"
+
+volumes:
+  pgdata:

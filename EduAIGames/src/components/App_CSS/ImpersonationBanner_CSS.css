@@ -1,0 +1,30 @@
+.impersonation-banner {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  background: #7c2d12;
+  color: #fff;
+  padding: 0.65rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  font-family: "Georgia", serif;
+  font-size: 0.88rem;
+  box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.15);
+}
+
+.impersonation-banner__return-btn {
+  background: #f5e27d;
+  color: #1a1a2e;
+  border: none;
+  padding: 0.4rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: "Georgia", serif;
+  font-weight: 700;
+  font-size: 0.82rem;
+  flex-shrink: 0;
+}

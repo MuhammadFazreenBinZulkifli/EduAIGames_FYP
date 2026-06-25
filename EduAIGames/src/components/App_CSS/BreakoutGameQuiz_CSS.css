@@ -1,0 +1,423 @@
+/* ─── Layout ─── */
+.breakout-game-quiz__page--error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  text-align: center;
+  gap: 1rem;
+}
+.breakout-game-quiz__page--relative { position: relative; }
+.breakout-game-quiz__page--gameplay {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.breakout-game-quiz__alert-max { max-width: 420px; }
+
+/* ─── Modal ─── */
+.breakout-game-quiz__modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  background: rgba(8, 4, 18, 0.88);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+.breakout-game-quiz__modal {
+  background: #0f1530;
+  border: 1px solid rgba(34, 211, 238, 0.3);
+  border-radius: 16px;
+  padding: 1.75rem;
+  width: 100%;
+  max-width: 440px;
+}
+.breakout-game-quiz__modal-title {
+  color: #fff4e8;
+  margin: 0 0 0.3rem;
+  font-size: 1.2rem;
+}
+.breakout-game-quiz__modal-meta { margin-bottom: 1.25rem; }
+.breakout-game-quiz__modal-summary {
+  padding: 0.65rem 0.9rem;
+  background: rgba(34, 211, 238, 0.08);
+  border: 1px solid rgba(34, 211, 238, 0.18);
+  border-radius: 8px;
+  margin-bottom: 1.1rem;
+}
+.breakout-game-quiz__modal-summary-text { margin: 0; }
+.breakout-game-quiz__modal-summary-accent { color: #67e8f9; }
+.breakout-game-quiz__modal-actions { gap: 0.65rem; }
+.breakout-game-quiz__modal-btn { flex: 1; }
+
+/* ─── Setup ─── */
+.breakout-game-quiz__hero { margin-bottom: 0; flex: 1; }
+.breakout-game-quiz__section-meta { margin: 0 0 0.75rem; }
+.breakout-game-quiz__empty { padding: 0.75rem 0; }
+.breakout-game-quiz__form-group--quiz-selected { margin-bottom: 0.75rem; }
+.breakout-game-quiz__form-group--no-quiz { margin-bottom: 0; }
+.breakout-game-quiz__quiz-preview {
+  padding: 0.8rem 1rem;
+  background: rgba(34, 211, 238, 0.08);
+  border: 1px solid rgba(34, 211, 238, 0.2);
+  border-radius: 10px;
+}
+.breakout-game-quiz__quiz-preview-title {
+  color: #67e8f9;
+  font-weight: 700;
+  margin: 0 0 0.25rem;
+}
+.breakout-game-quiz__quiz-preview-desc { margin: 0 0 0.4rem; }
+.breakout-game-quiz__quiz-preview-stats {
+  display: flex;
+  gap: 1.2rem;
+  flex-wrap: wrap;
+}
+.breakout-game-quiz__quiz-preview-error {
+  margin: 0.5rem 0 0;
+  color: #f87171;
+}
+.breakout-game-quiz__settings-grid {
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+.breakout-game-quiz__form-group--compact { margin-bottom: 0; }
+.breakout-game-quiz__actions { gap: 0.75rem; flex-wrap: wrap; }
+.breakout-game-quiz__test-btn {
+  background: linear-gradient(135deg, #0891b2, #6366f1);
+  color: #fff;
+  border: none;
+  font-weight: 700;
+}
+
+/* ─── Gameplay header ─── */
+.breakout-game-quiz__header {
+  width: 100%;
+  max-width: 760px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.breakout-game-quiz__header-kicker { margin: 0; }
+.breakout-game-quiz__header-title {
+  color: #fff4e8;
+  margin: 0.15rem 0 0;
+  font-size: 1.25rem;
+}
+.breakout-game-quiz__header-stats {
+  display: flex;
+  gap: 1.25rem;
+  align-items: center;
+  font-family: Georgia, serif;
+}
+.breakout-game-quiz__lives { color: #fca5a5; font-weight: 700; }
+.breakout-game-quiz__stat { color: #cbd5e1; }
+.breakout-game-quiz__exit-btn-sm { padding: 4px 12px; }
+
+/* ─── Question ─── */
+.breakout-game-quiz__question-box {
+  width: 100%;
+  max-width: 760px;
+  background: rgba(99, 102, 241, 0.1);
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  border-radius: 12px;
+  padding: 0.85rem 1.1rem;
+  margin-bottom: 0.6rem;
+}
+.breakout-game-quiz__question-text {
+  margin: 0;
+  color: #e0e7ff;
+  font-weight: 700;
+  font-size: 1.02rem;
+}
+
+/* ─── Canvas area ─── */
+.breakout-game-quiz__canvas-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 760px;
+  display: flex;
+  justify-content: center;
+}
+.breakout-game-quiz__canvas {
+  width: 100%;            /* fallback; JS sets an explicit fit size */
+  max-width: 100%;
+  border-radius: 14px;
+  border: 1px solid rgba(99, 102, 241, 0.35);
+  box-shadow: 0 0 32px rgba(56, 189, 248, 0.15);
+  cursor: pointer;
+  display: block;
+  background: #0a0a1f;
+}
+
+/* Power-up announcement (e.g. multiball) */
+.breakout-game-quiz__buff-flash {
+  position: absolute;
+  top: 38%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  color: #fde68a;
+  font-family: Georgia, serif;
+  font-weight: 800;
+  font-size: clamp(1.1rem, 4vw, 1.9rem);
+  letter-spacing: 1px;
+  text-shadow: 0 0 18px rgba(251, 191, 36, 0.8), 0 2px 6px rgba(0, 0, 0, 0.6);
+  animation: breakout-buff-pop 1.1s ease forwards;
+}
+@keyframes breakout-buff-pop {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.6); }
+  18% { opacity: 1; transform: translate(-50%, -50%) scale(1.12); }
+  70% { opacity: 1; transform: translate(-50%, -65%) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -90%) scale(0.95); }
+}
+.breakout-game-quiz__overlay-rules {
+  color: #fcd34d !important;
+  font-weight: 600;
+  margin-bottom: 0.6rem !important;
+}
+.breakout-game-quiz__flash-overlay {
+  position: absolute;
+  inset: 0;
+  border-radius: 14px;
+  pointer-events: none;
+  transition: background 0.2s;
+}
+.breakout-game-quiz__overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(8, 8, 24, 0.82);
+  backdrop-filter: blur(3px);
+  border-radius: 14px;
+}
+.breakout-game-quiz__overlay-inner { text-align: center; }
+.breakout-game-quiz__overlay-inner--wide {
+  text-align: center;
+  max-width: 420px;
+  padding: 0 1rem;
+}
+.breakout-game-quiz__overlay-hint {
+  color: #fde68a;
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 0.4rem;
+}
+.breakout-game-quiz__overlay-sub {
+  color: #cbd5e1;
+  margin-bottom: 1rem;
+}
+.breakout-game-quiz__overlay-title {
+  color: #fff4e8;
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+.breakout-game-quiz__overlay-icon { font-size: 2.4rem; margin-bottom: 0.3rem; }
+.breakout-game-quiz__overlay-icon--lg { font-size: 2.8rem; margin-bottom: 0.3rem; }
+.breakout-game-quiz__overlay-success {
+  color: #4ade80;
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 0.3rem;
+}
+.breakout-game-quiz__overlay-fail {
+  color: #fca5a5;
+  font-size: 1.4rem;
+  font-weight: 800;
+  margin-bottom: 0.3rem;
+}
+.breakout-game-quiz__overlay-result {
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+}
+.breakout-game-quiz__overlay-result--win { color: #fde68a; }
+.breakout-game-quiz__overlay-result--lose { color: #fca5a5; }
+.breakout-game-quiz__overlay-stats {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-bottom: 1.25rem;
+  color: #cbd5e1;
+  flex-wrap: wrap;
+}
+.breakout-game-quiz__overlay-stat-cleared { color: #4ade80; }
+.breakout-game-quiz__overlay-stat-wrong { color: #fca5a5; }
+.breakout-game-quiz__overlay-stat-time { color: #67e8f9; }
+.breakout-game-quiz__overlay-actions {
+  display: flex;
+  gap: 0.6rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.breakout-game-quiz__launch-btn {
+  background: linear-gradient(135deg, #0891b2, #6366f1);
+  color: #fff;
+  border: none;
+  font-weight: 700;
+}
+
+/* ─── Legend ─── */
+.breakout-game-quiz__legend {
+  width: 100%;
+  max-width: 760px;
+  margin-top: 0.75rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 0.5rem;
+}
+.breakout-game-quiz__legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 0.5rem 0.7rem;
+}
+.breakout-game-quiz__legend-badge {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  color: #0a0a1f;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+}
+.breakout-game-quiz__legend-text {
+  color: #e2e8f0;
+  font-size: 0.85rem;
+}
+.breakout-game-quiz__pause-btn {
+  margin-top: 0.75rem;
+  padding: 4px 14px;
+}
+
+/* ─── Fit-to-screen gameplay (keeps everything on one screen) ───────────────── */
+.breakout-game-quiz__page--gameplay {
+  padding-bottom: 0.75rem;
+}
+
+/* Compact the surrounding chrome on phones so the board gets maximum room and the
+   whole screen — header, question, board, legend, controls — fits with no scroll. */
+@media (max-width: 768px) {
+  .breakout-game-quiz__page--gameplay {
+    padding-bottom: 0.4rem;
+  }
+  .breakout-game-quiz__header {
+    margin-bottom: 0.4rem;
+  }
+  .breakout-game-quiz__header-title {
+    font-size: 1.05rem;
+  }
+  .breakout-game-quiz__header-stats {
+    gap: 0.7rem;
+    font-size: 0.9rem;
+  }
+  .breakout-game-quiz__question-box {
+    padding: 0.55rem 0.8rem;
+    margin-bottom: 0.4rem;
+  }
+  .breakout-game-quiz__question-text {
+    font-size: 0.92rem;
+  }
+  .breakout-game-quiz__legend {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.35rem;
+    margin-top: 0.45rem;
+  }
+  .breakout-game-quiz__legend-item {
+    padding: 0.35rem 0.5rem;
+    gap: 0.4rem;
+  }
+  .breakout-game-quiz__legend-badge {
+    width: 20px;
+    height: 20px;
+    font-size: 0.75rem;
+  }
+  .breakout-game-quiz__legend-text {
+    font-size: 0.78rem;
+  }
+  .breakout-game-quiz__pause-btn {
+    margin-top: 0.45rem;
+  }
+}
+
+/* ─── Overlay polish (neat, professional cards on every device) ─────────────── */
+/* Desktop / tablet: present overlay content as a refined glass card. */
+@media (min-width: 769px) {
+  .breakout-game-quiz__overlay-inner,
+  .breakout-game-quiz__overlay-inner--wide {
+    background: rgba(15, 18, 40, 0.82);
+    border: 1px solid rgba(99, 102, 241, 0.28);
+    border-radius: 18px;
+    padding: 1.6rem 2rem;
+    box-shadow: 0 22px 60px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  }
+}
+
+/* Phones (incl. iPhone 12 / 12 Pro): keep the overlay compact so it never spills
+   outside the scaled board, with equal-width, comfortable tap targets. */
+@media (max-width: 768px) {
+  .breakout-game-quiz__overlay {
+    padding: 0.5rem;
+  }
+  .breakout-game-quiz__overlay-inner {
+    width: 100%;
+    max-width: 320px;
+    padding: 0.2rem 0.4rem;
+  }
+  .breakout-game-quiz__overlay-icon,
+  .breakout-game-quiz__overlay-icon--lg {
+    font-size: 1.9rem;
+    margin-bottom: 0.1rem;
+  }
+  .breakout-game-quiz__overlay-hint,
+  .breakout-game-quiz__overlay-title,
+  .breakout-game-quiz__overlay-result {
+    font-size: 1.15rem;
+    margin-bottom: 0.35rem;
+  }
+  .breakout-game-quiz__overlay-fail,
+  .breakout-game-quiz__overlay-success {
+    font-size: 1.15rem;
+    margin-bottom: 0.2rem;
+  }
+  .breakout-game-quiz__overlay-sub {
+    font-size: 0.82rem;
+    margin-bottom: 0.6rem;
+  }
+  .breakout-game-quiz__overlay-rules {
+    font-size: 0.78rem;
+    margin-bottom: 0.5rem !important;
+  }
+  .breakout-game-quiz__overlay-stats {
+    gap: 0.8rem;
+    font-size: 0.82rem;
+    margin-bottom: 0.7rem;
+  }
+  .breakout-game-quiz__overlay-actions {
+    gap: 0.4rem;
+    width: 100%;
+  }
+  .breakout-game-quiz__overlay-actions .panel-btn {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 8px 8px;
+    font-size: 0.85rem;
+    white-space: nowrap;
+  }
+}
