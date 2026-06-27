@@ -6,7 +6,6 @@ import PanelIcon from './PanelIcon'
 import PanelBreadcrumbs from './PanelBreadcrumbs'
 import PanelEmptyState from './PanelEmptyState'
 import ClassCard from './ClassCard'
-import QuizDueBadge from './QuizDueBadge'
 import PanelSkeleton from './PanelSkeleton'
 import { ROUTES } from '../routes/paths'
 import {
@@ -41,13 +40,11 @@ interface Quiz {
   title: string
   description: string
   questions: Question[]
-  due_date?: string | null
   time_limit_minutes?: number | null
   shuffle_questions?: boolean
   shuffle_options?: boolean
   max_attempts?: number | null
-  show_results_after?: 'immediate' | 'due_date' | 'never'
-  allow_late_submit?: boolean
+  show_results_after?: 'immediate' | 'never'
 }
 
 interface JoinedClass {
@@ -165,13 +162,11 @@ function QuizAnswering({ studentId, initialClassId, initialQuizId, onSessionEnd 
           class_id: quiz.class_id != null ? Number(quiz.class_id) : null,
           title: quiz.title,
           description: quiz.description,
-          due_date: quiz.due_date ?? null,
           time_limit_minutes: quiz.time_limit_minutes ?? null,
           shuffle_questions: quiz.shuffle_questions ?? false,
           shuffle_options: quiz.shuffle_options ?? false,
           max_attempts: quiz.max_attempts ?? null,
           show_results_after: quiz.show_results_after ?? 'immediate',
-          allow_late_submit: quiz.allow_late_submit ?? true,
           questions: (quiz.questions || []).map((q: any) => ({
             id: q.id,
             question_type: q.question_type,
@@ -309,16 +304,6 @@ function QuizAnswering({ studentId, initialClassId, initialQuizId, onSessionEnd 
     if (quiz.max_attempts && prevAttempts >= quiz.max_attempts) {
       void showAlert(`You have reached the maximum number of attempts (${quiz.max_attempts}) for this quiz.`)
       return
-    }
-
-    // Enforce hard due date (allow_late_submit = false)
-    if (quiz.due_date && !quiz.allow_late_submit) {
-      const now = new Date()
-      const due = new Date(quiz.due_date)
-      if (now > due) {
-        void showAlert('This quiz is past its due date and is no longer accepting submissions.')
-        return
-      }
     }
 
     if (studentId) {
@@ -570,7 +555,7 @@ function QuizAnswering({ studentId, initialClassId, initialQuizId, onSessionEnd 
         <div className="panel-hero panel-hero--page">
           <p className="panel-kicker">Student · Learning</p>
           <h1>{STUDENT_NAV.pendingQuizzes}</h1>
-          <p className="panel-hero-greeting">Quick access to quizzes across your classes — or open them from Class Content.</p>
+          <p className="panel-hero-greeting">Quick access to quizzes across your classes, or open them from Class Content.</p>
         </div>
 
         {submitSuccess && (
@@ -654,10 +639,8 @@ function QuizAnswering({ studentId, initialClassId, initialQuizId, onSessionEnd 
                   const lastScore = attemptScores[String(quiz.id)]
                   const prevAttempts = attemptCounts[String(quiz.id)] ?? 0
                   const maxReached = !!quiz.max_attempts && prevAttempts >= quiz.max_attempts
-                  const isOverdue = !!(quiz.due_date && new Date() > new Date(quiz.due_date))
-                  const isBlocked = isOverdue && quiz.allow_late_submit === false
                   return (
-                    <div key={quiz.id} className={`panel-class-card panel-class-card--polished${isBlocked ? ' panel-class-card--blocked' : ''}`}>
+                    <div key={quiz.id} className="panel-class-card panel-class-card--polished">
                       <div className="panel-class-card__icon panel-class-card__icon--orange">
                         <PanelIcon name="quiz" variant="card" color="orange" />
                       </div>
@@ -672,10 +655,6 @@ function QuizAnswering({ studentId, initialClassId, initialQuizId, onSessionEnd 
                           {prevAttempts}/{quiz.max_attempts} attempt{quiz.max_attempts > 1 ? 's' : ''} used
                         </span>
                       )}
-                      {quiz.due_date && <QuizDueBadge dueDate={quiz.due_date} />}
-                      {isOverdue && !isBlocked && (
-                        <span className="quiz-answering__badge--late">Late submission</span>
-                      )}
                       {completed && (
                         <span className="quiz-answering__badge--completed">
                           Completed{lastScore !== undefined ? ` - ${lastScore}%` : ''}
@@ -687,9 +666,7 @@ function QuizAnswering({ studentId, initialClassId, initialQuizId, onSessionEnd 
                         </span>
                       )}
                       <div className="panel-row quiz-answering__quiz-actions">
-                        {isBlocked ? (
-                          <span className="quiz-answering__badge--blocked">Past due date — no longer available</span>
-                        ) : maxReached ? (
+                        {maxReached ? (
                           <span className="quiz-answering__badge--blocked">Max attempts reached</span>
                         ) : completed && !maxReached ? (
                           <button
@@ -743,17 +720,6 @@ function QuizAnswering({ studentId, initialClassId, initialQuizId, onSessionEnd 
 
   return (
     <div className="panel-page">
-      <PanelBreadcrumbs
-        items={[
-          studentDashboardCrumb(),
-          { label: STUDENT_NAV.classContent, to: ROUTES.student.courses },
-          ...(selectedClassId != null && selectedClassTitle
-            ? [{ label: selectedClassTitle, to: ROUTES.student.coursesWithClass(selectedClassId) }]
-            : []),
-          { label: STUDENT_NAV.pendingQuizzes, to: ROUTES.student.quiz },
-          { label: selectedQuiz.title },
-        ]}
-      />
       <div className="panel-top-row">
         <div>
           <p className="panel-kicker">
@@ -873,7 +839,7 @@ function QuizAnswering({ studentId, initialClassId, initialQuizId, onSessionEnd 
         )}
         {isConfirmed && selectedQuiz.show_results_after !== 'immediate' && (
           <div className="quiz-answering__feedback--hidden">
-            <p>Answer recorded. Results will be shown {selectedQuiz.show_results_after === 'due_date' ? 'after the due date.' : 'by your instructor.'}</p>
+            <p>Answer recorded. Results will be shown by your instructor.</p>
           </div>
         )}
       </div>

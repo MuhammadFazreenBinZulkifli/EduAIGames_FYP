@@ -45,11 +45,11 @@ async function buildStudentContext(studentId: number): Promise<string | null> {
     }
 
     // Gather quizzes published to each class (lightweight query, no questions).
-    const quizzes: Array<{ title: string; due_date: unknown }> = [];
+    const quizzes: Array<{ title: string }> = [];
     for (const c of classes.slice(0, 6)) {
       try {
         const classQuizzes = await getPublishedQuizzesForClass(c.id, c.instructor_id);
-        for (const q of classQuizzes) quizzes.push({ title: q.title, due_date: q.due_date });
+        for (const q of classQuizzes) quizzes.push({ title: q.title });
       } catch {
         // Skip any class whose quizzes can't be loaded.
       }
@@ -57,10 +57,7 @@ async function buildStudentContext(studentId: number): Promise<string | null> {
     if (quizzes.length > 0) {
       const quizList = quizzes
         .slice(0, 15)
-        .map((q) => {
-          const due = q.due_date ? `due ${new Date(q.due_date as string).toLocaleDateString()}` : 'no due date';
-          return `"${q.title}" (${due})`;
-        })
+        .map((q) => `"${q.title}"`)
         .join('; ');
       parts.push(`Quizzes available to the student: ${quizList}.`);
     }
@@ -189,10 +186,14 @@ router.post('/', requireFeature('chatbot_enabled'), requireFeature('openai_enabl
       ...trimmed,
     ];
 
+    // EduBot uses a stronger conversational model than the cheaper background
+    // tasks (moderation / study-coach) so its help and tutoring are sharper.
+    // Override with OPENAI_CHAT_MODEL if you want a different/cheaper model.
     const reply = await createChatCompletion({
       messages: apiMessages,
-      temperature: 0.65,
-      max_tokens: 900,
+      model: process.env.OPENAI_CHAT_MODEL?.trim() || 'gpt-4o',
+      temperature: 0.6,
+      max_tokens: 1000,
     });
 
     res.json({ reply: reply.trim() || 'Sorry, I could not generate a response. Please try again.' });
@@ -281,7 +282,7 @@ router.post('/quiz-generate', requireFeature('ai_quiz_enabled'), requireFeature(
         {
           role: 'system',
           content:
-            'You are a quiz generator. Always respond with valid JSON only — no markdown, no extra text.',
+            'You are a quiz generator. Always respond with valid JSON only, with no markdown and no extra text.',
         },
         { role: 'user', content: prompt.trim().slice(0, 12000) },
       ],

@@ -67,6 +67,49 @@ router.put('/:userId', async (req: Request, res: Response) => {
   }
 });
 
+// Get a user's stored preferences (e.g. per-game "how to play" toggles).
+router.get('/:userId/preferences', async (req: Request, res: Response) => {
+  try {
+    const id = parseInt(req.params.userId);
+    if (isNaN(id)) { res.status(400).json({ error: 'Invalid user id' }); return; }
+    const result = await pool.query('SELECT preferences FROM users WHERE id = $1', [id]);
+    const row = (result.rows as any[])[0];
+    if (!row) { res.status(404).json({ error: 'User not found' }); return; }
+    res.json({ preferences: row.preferences || {} });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || 'Failed to fetch preferences' });
+  }
+});
+
+// Merge a partial preferences patch into the user's stored preferences.
+// `gameHowToDisabled` is merged at the key level so toggling one game never
+// clobbers the others; all other top-level keys are shallow-merged.
+router.put('/:userId/preferences', async (req: Request, res: Response) => {
+  try {
+    const id = parseInt(req.params.userId);
+    if (isNaN(id)) { res.status(400).json({ error: 'Invalid user id' }); return; }
+    const patch = (req.body && typeof req.body === 'object') ? req.body as Record<string, any> : {};
+
+    const existing = await pool.query('SELECT preferences FROM users WHERE id = $1', [id]);
+    const current = (existing.rows as any[])[0];
+    if (!current) { res.status(404).json({ error: 'User not found' }); return; }
+
+    const prev = (current.preferences && typeof current.preferences === 'object') ? current.preferences : {};
+    const next: Record<string, any> = { ...prev, ...patch };
+    if (patch.gameHowToDisabled && typeof patch.gameHowToDisabled === 'object') {
+      next.gameHowToDisabled = { ...(prev.gameHowToDisabled || {}), ...patch.gameHowToDisabled };
+    }
+
+    const result = await pool.query(
+      'UPDATE users SET preferences = $2::jsonb WHERE id = $1 RETURNING preferences',
+      [id, JSON.stringify(next)]
+    );
+    res.json({ preferences: (result.rows as any[])[0].preferences });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || 'Failed to update preferences' });
+  }
+});
+
 // Change password — requires old password verification
 router.post('/:userId/change-password', async (req: Request, res: Response) => {
   try {

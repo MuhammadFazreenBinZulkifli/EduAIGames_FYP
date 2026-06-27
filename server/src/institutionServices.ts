@@ -55,13 +55,13 @@ const SEED_PLANS: { name: string; price: number; is_default: boolean; features: 
   },
   {
     name: 'Standard',
-    price: 49,
+    price: 200,
     is_default: false,
     features: { openai_enabled: true, games_enabled: true, quizzes_enabled: true, chatbot_enabled: true, ai_quiz_enabled: false },
   },
   {
     name: 'Premium',
-    price: 99,
+    price: 450,
     is_default: false,
     features: { openai_enabled: true, games_enabled: true, quizzes_enabled: true, chatbot_enabled: true, ai_quiz_enabled: true },
   },
@@ -153,6 +153,12 @@ export async function ensureInstitutionInfrastructure(): Promise<void> {
        ON CONFLICT (name) DO NOTHING`,
       [plan.name, plan.price, JSON.stringify(plan.features), plan.is_default]
     );
+  }
+
+  // Keep seeded plan pricing in sync with current commercial rates (RM) for
+  // databases created before the prices were updated.
+  for (const plan of SEED_PLANS) {
+    await pool.query(`UPDATE plans SET price = $1 WHERE name = $2`, [plan.price, plan.name]);
   }
 
   // Ensure a default institution exists (links pre-existing data).
@@ -336,6 +342,44 @@ export async function listInstitutionMembers(id: number) {
     [id]
   );
   return result.rows;
+}
+
+// Finds the institution that owns a given email domain (e.g. "uni-a.edu").
+// Non-default institutions win over the default so tenant domains route correctly.
+// Returns null when no institution claims the domain (caller falls back to default).
+export async function findInstitutionIdByEmailDomain(email: string): Promise<number | null> {
+  const domain = email.split('@')[1]?.trim().toLowerCase();
+  if (!domain) return null;
+  const result = await pool.query(
+    `SELECT id FROM institutions
+     WHERE $1 = ANY(email_domains)
+     ORDER BY is_default ASC
+     LIMIT 1`,
+    [domain]
+  );
+  return (result.rows as { id: number }[])[0]?.id ?? null;
+}
+
+// Returns current seat usage (students + instructors) and the configured limit.
+export async function getInstitutionSeatUsage(
+  institutionId: number
+): Promise<{ used: number; limit: number | null }> {
+  const result = await pool.query(
+    `SELECT i.seats_limit,
+       (SELECT COUNT(*)::int FROM users u
+        WHERE u.institution_id = i.id AND u.role IN ('Student','Instructor')) AS used
+     FROM institutions i WHERE i.id = $1`,
+    [institutionId]
+  );
+  const row = (result.rows as any[])[0];
+  if (!row) return { used: 0, limit: null };
+  return { used: Number(row.used) || 0, limit: row.seats_limit ?? null };
+}
+
+// True when the institution has no seat cap or still has room for one more member.
+export async function institutionHasSeatAvailable(institutionId: number): Promise<boolean> {
+  const { used, limit } = await getInstitutionSeatUsage(institutionId);
+  return limit == null || used < limit;
 }
 
 export async function assignUserToInstitution(userId: number, institutionId: number): Promise<boolean> {

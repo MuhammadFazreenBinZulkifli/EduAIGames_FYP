@@ -12,12 +12,11 @@ export interface PlayableQuiz {
   class_id?: number | null
   title: string
   description: string
-  due_date?: string | null
   time_limit_minutes?: number | null
   shuffle_questions?: boolean
   shuffle_options?: boolean
   max_attempts?: number | null
-  show_results_after?: 'immediate' | 'after_submit' | 'never'
+  show_results_after?: 'immediate' | 'never'
   allow_late_submit?: boolean
   questions: PlayableQuestion[]
 }

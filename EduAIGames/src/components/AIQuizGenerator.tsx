@@ -3,7 +3,6 @@ import { API_BASE_URL } from '../config'
 import { usePanelUI } from '../context/PanelUIContext'
 import AIQuizGeneratingLoader from './AIQuizGeneratingLoader'
 import PanelEmptyState from './PanelEmptyState'
-import QuizDueDatePicker from './QuizDueDatePicker'
 import './App_CSS/PanelPages_CSS.css'
 import './App_CSS/AIQuizGenerator_CSS.css'
 
@@ -20,7 +19,7 @@ interface AIQuestion {
 }
 
 interface AIQuizGeneratorProps {
-  onPublish: (title: string, description: string, questions: AIQuestion[], dueDate?: string | null) => void
+  onPublish: (title: string, description: string, questions: AIQuestion[]) => void
   onCancel: () => void
 }
 
@@ -64,7 +63,6 @@ export default function AIQuizGenerator({ onPublish, onCancel }: AIQuizGenerator
   const [reviewMode, setReviewMode] = useState(false)
   const [quizTitle, setQuizTitle] = useState('')
   const [quizDesc, setQuizDesc] = useState('')
-  const [dueDate, setDueDate] = useState('')
   const [questions, setQuestions] = useState<AIQuestion[]>([])
   const [editingIdx, setEditingIdx] = useState<number | null>(null)
   const [editBuf, setEditBuf] = useState<AIQuestion | null>(null)
@@ -213,7 +211,7 @@ JSON format:
   const handlePublish = () => {
     if (!quizTitle.trim()) { void showAlert('Please enter a quiz title.'); return }
     if (questions.length === 0) { void showAlert('At least one question is required.'); return }
-    onPublish(quizTitle, quizDesc, questions, dueDate || null)
+    onPublish(quizTitle, quizDesc, questions)
   }
 
   if (reviewMode) {
@@ -252,12 +250,6 @@ JSON format:
                 <label className="panel-label">Quiz Title *</label>
                 <input className="panel-input" value={quizTitle} onChange={e => setQuizTitle(e.target.value)} placeholder="Quiz title" />
               </div>
-              <div className="panel-form-group">
-                <label className="panel-label">
-                  Due Date <span style={{ fontWeight: 400, color: '#9993a3', marginLeft: '0.4rem', fontSize: '0.76rem' }}>(optional)</span>
-                </label>
-                <QuizDueDatePicker id="ai-quiz-due-date" value={dueDate} onChange={setDueDate} />
-              </div>
               <div className="panel-form-group" style={{ marginBottom: 0 }}>
                 <label className="panel-label">Description</label>
                 <textarea className="panel-textarea" value={quizDesc} onChange={e => setQuizDesc(e.target.value)} placeholder="Optional description" rows={2} />
@@ -277,7 +269,7 @@ JSON format:
                 <button
                   type="button"
                   className="panel-btn panel-btn-secondary"
-                  onClick={() => { setReviewMode(false); setQuestions([]); setDueDate(''); setPreviewIdx(null) }}
+                  onClick={() => { setReviewMode(false); setQuestions([]); setPreviewIdx(null) }}
                 >
                   ← Regenerate
                 </button>

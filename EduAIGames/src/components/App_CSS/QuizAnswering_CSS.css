@@ -305,3 +305,30 @@
   border-color: var(--accent) !important;
   background: rgba(255,122,26,0.08) !important;
 }
+
+/* ─── Bottom nav on mobile: [Previous]  0/10 answered  [Confirm] ─── */
+@media (max-width: 640px) {
+  .quiz-answering__nav-row {
+    flex-wrap: nowrap;
+    gap: 0.4rem;
+  }
+
+  .quiz-answering__nav-row .panel-btn {
+    flex: 0 0 auto;
+    min-width: 0;
+    padding: 0.6rem 0.7rem;
+    font-size: 0.8rem;
+    white-space: nowrap;
+  }
+
+  .quiz-answering__nav-row .quiz-answering__action-btn {
+    min-width: 0;
+  }
+
+  .quiz-answering__nav-row .panel-progress-text {
+    flex: 1 1 auto;
+    min-width: 0;
+    text-align: center;
+    white-space: nowrap;
+  }
+}

@@ -540,9 +540,15 @@ html[data-theme='light'] .aichat-bubble--assistant .aichat-msg-body strong {
 }
 
 @media (max-width: 980px) {
+  /* Center the panel on phones (both axes) instead of anchoring near the launcher. */
   .aichat-panel--mobile {
     z-index: 10045;
-    animation: aichat-sheet-up 0.28s cubic-bezier(0.34, 1.2, 0.64, 1);
+    left: 50% !important;
+    top: 50% !important;
+    right: auto !important;
+    bottom: auto !important;
+    transform: translate(-50%, -50%);
+    animation: aichat-center-pop 0.28s cubic-bezier(0.34, 1.2, 0.64, 1);
   }
 
   .aichat-panel--mobile .aichat-header {
@@ -606,6 +612,17 @@ html[data-theme='light'] .aichat-bubble--assistant .aichat-msg-body strong {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes aichat-center-pop {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -46%) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
   }
 }
 

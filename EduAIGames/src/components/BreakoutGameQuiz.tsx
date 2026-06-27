@@ -5,6 +5,9 @@ import { usePanelUI } from '../context/PanelUIContext'
 import { useGameImmersiveMode } from '../hooks/useGameImmersiveMode'
 import PanelSkeleton from './PanelSkeleton'
 import PanelEmptyState from './PanelEmptyState'
+import QuizSearchSelect from './QuizSearchSelect'
+import GameHowToModal, { type HowToStep } from './GameHowToModal'
+import { useGameHowTo } from '../hooks/useUserPreferences'
 import {
   countPlayableQuestions,
   normalizeQuestionsForGame,
@@ -27,6 +30,8 @@ interface BreakoutSettings {
   ballSpeed: 'slow' | 'normal' | 'fast'
   paddleSize: 'small' | 'normal' | 'wide'
   lives: number
+  // How often the hidden multiball buff appears (more = faster, shorter games).
+  buffFrequency: 'low' | 'normal' | 'high'
 }
 
 type Phase =
@@ -75,6 +80,10 @@ interface Ball {
   y: number
   vx: number
   vy: number
+  // The real ball (white) is the only one that can hit answers and the only one
+  // whose loss fails the level. Clone balls (green) from the multiball buff just
+  // help smash shields.
+  real: boolean
 }
 
 // Short-lived burst particles for satisfying brick smashes (visual only).
@@ -122,8 +131,15 @@ const SHIELD_H = 15        // the "much smaller" protective bricks
 const LAYER_GAP = 6
 const BRICK_INSET = 3      // gap between adjacent bricks
 
-const MULTIBALL_SPAWN = 3  // extra balls released by the buff
-const MAX_BALLS = 8
+const MULTIBALL_SPAWN = 3  // extra (green clone) balls released by each buff
+const MAX_BALLS = 10
+// How many shields secretly carry a multiball buff, per the instructor's chosen
+// "Multiball Buff" frequency. More buffs clear the wall faster (shorter runs).
+const BUFF_FREQUENCY: Record<BreakoutSettings['buffFrequency'], { ratio: number; min: number }> = {
+  low: { ratio: 0.08, min: 1 },
+  normal: { ratio: 0.18, min: 2 },
+  high: { ratio: 0.34, min: 3 },
+}
 
 // Fisher–Yates shuffle (used to randomise answer positions each level).
 function shuffle<T>(arr: T[]): T[] {
@@ -159,6 +175,7 @@ const DEFAULT_SETTINGS: BreakoutSettings = {
   ballSpeed: 'normal',
   paddleSize: 'normal',
   lives: 3,
+  buffFrequency: 'normal',
 }
 
 // Parses brick breaker game settings from stored JSON.
@@ -169,6 +186,7 @@ function parseSettings(raw: string): BreakoutSettings {
       ballSpeed: ['slow', 'normal', 'fast'].includes(p.ballSpeed) ? p.ballSpeed : DEFAULT_SETTINGS.ballSpeed,
       paddleSize: ['small', 'normal', 'wide'].includes(p.paddleSize) ? p.paddleSize : DEFAULT_SETTINGS.paddleSize,
       lives: typeof p.lives === 'number' ? p.lives : DEFAULT_SETTINGS.lives,
+      buffFrequency: ['low', 'normal', 'high'].includes(p.buffFrequency) ? p.buffFrequency : DEFAULT_SETTINGS.buffFrequency,
     }
   } catch {
     return DEFAULT_SETTINGS
@@ -204,6 +222,11 @@ export default function BreakoutGameQuiz({ instructorId, studentGameData, onExit
   // ── Game state ──
   const [phase, setPhase] = useState<Phase>(isStudentMode ? 'loading' : 'setup')
 
+  // How to Play modal (shown before each run; per-game disable synced to account).
+  const howTo = useGameHowTo('breakout')
+  const [howToOpen, setHowToOpen] = useState(false)
+  const howToShownRef = useRef(false)
+
   useGameImmersiveMode(phase !== 'setup' && phase !== 'loading')
   const [questions, setQuestions] = useState<GamePlayQuestion[]>([])
   const [questionIdx, setQuestionIdx] = useState(0)
@@ -226,7 +249,7 @@ export default function BreakoutGameQuiz({ instructorId, studentGameData, onExit
   const rafRef = useRef<number | null>(null)
   const lastTsRef = useRef<number | null>(null)
   // Multiple balls live at once once the multiball buff is collected.
-  const ballsRef = useRef<Ball[]>([{ x: CANVAS_W / 2, y: PADDLE_Y - BALL_R - 2, vx: 0, vy: 0 }])
+  const ballsRef = useRef<Ball[]>([{ x: CANVAS_W / 2, y: PADDLE_Y - BALL_R - 2, vx: 0, vy: 0, real: true }])
   const particlesRef = useRef<Particle[]>([])
   const paddleRef = useRef({ x: CANVAS_W / 2, w: PADDLE_W[DEFAULT_SETTINGS.paddleSize] })
   const bricksRef = useRef<Brick[]>([])
@@ -268,6 +291,15 @@ export default function BreakoutGameQuiz({ instructorId, studentGameData, onExit
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isStudentMode])
+
+  // Auto-open the How to Play modal once per run while the ball waits on the
+  // paddle (covers instructor test play and student play).
+  useEffect(() => {
+    if (phase === 'ready' && howTo.loaded && !howToShownRef.current) {
+      howToShownRef.current = true
+      if (!howTo.disabled) setHowToOpen(true)
+    }
+  }, [phase, howTo.loaded, howTo.disabled])
 
   const flash = useCallback((type: 'correct' | 'wrong' | 'miss') => {
     setFlashType(type)
@@ -322,7 +354,7 @@ export default function BreakoutGameQuiz({ instructorId, studentGameData, onExit
   // below — so the answer sits protected inside the wall. Shields are black (1 hit)
   // or red (2 hits); the red ratio rises with difficulty. One random shield hides a
   // multiball buff.
-  function buildLevel(q: GamePlayQuestion, difficulty: number): { bricks: Brick[]; shuffledOptions: GamePlayQuestion['options'] } {
+  function buildLevel(q: GamePlayQuestion, difficulty: number, buffFrequency: BreakoutSettings['buffFrequency']): { bricks: Brick[]; shuffledOptions: GamePlayQuestion['options'] } {
     const shuffledOptions = shuffle(q.options)
     const n = shuffledOptions.length
     const totalW = CANVAS_W - WALL_SIDE * 2
@@ -391,9 +423,16 @@ export default function BreakoutGameQuiz({ instructorId, studentGameData, onExit
       y += SHIELD_H + LAYER_GAP
     }
 
-    // Hide exactly one multiball buff in a random shield.
+    // Hide multiball buffs in several random shields so the buff appears often
+    // and the player can blast through the wall quickly (keeps runs short).
     if (shieldRefs.length > 0) {
-      shieldRefs[Math.floor(Math.random() * shieldRefs.length)].buff = 'multiball'
+      const { ratio, min } = BUFF_FREQUENCY[buffFrequency] ?? BUFF_FREQUENCY.normal
+      const buffCount = Math.min(
+        shieldRefs.length,
+        Math.max(min, Math.round(shieldRefs.length * ratio)),
+      )
+      const pick = shuffle(shieldRefs)
+      for (let i = 0; i < buffCount; i++) pick[i].buff = 'multiball'
     }
 
     return { bricks, shuffledOptions }
@@ -401,7 +440,7 @@ export default function BreakoutGameQuiz({ instructorId, studentGameData, onExit
 
   function resetBallOnPaddle() {
     const p = paddleRef.current
-    ballsRef.current = [{ x: p.x, y: PADDLE_Y - BALL_R - 2, vx: 0, vy: 0 }]
+    ballsRef.current = [{ x: p.x, y: PADDLE_Y - BALL_R - 2, vx: 0, vy: 0, real: true }]
     launchedRef.current = false
     // Re-arm answer resolution for the retry (same level isn't rebuilt on a miss).
     levelResolvedRef.current = false
@@ -410,7 +449,7 @@ export default function BreakoutGameQuiz({ instructorId, studentGameData, onExit
   function setupLevel(idx: number, qs: GamePlayQuestion[], cfg: BreakoutSettings) {
     const q = qs[idx]
     if (!q) return
-    const { bricks, shuffledOptions } = buildLevel(q, idx)
+    const { bricks, shuffledOptions } = buildLevel(q, idx, cfg.buffFrequency)
     bricksRef.current = bricks
     setBricksView(bricks)
     setLevelOptions(shuffledOptions)
@@ -435,7 +474,7 @@ export default function BreakoutGameQuiz({ instructorId, studentGameData, onExit
       const raw: RawQuizQuestion[] = data.quiz?.questions ?? data.questions ?? []
       const playable = normalizeQuestionsForGame(raw)
       if (playable.length === 0) {
-        setListError('This quiz has no playable questions. Use multiple-choice (2–4 options) or true/false questions with a valid answer.')
+        setListError('This quiz has no playable questions. Use multiple-choice (2-4 options) or true/false questions with a valid answer.')
         setPhase('setup')
         return
       }
@@ -448,6 +487,7 @@ export default function BreakoutGameQuiz({ instructorId, studentGameData, onExit
 
   function startRun(playable: GamePlayQuestion[]) {
     const cfg = settingsRef.current
+    howToShownRef.current = false // new run → allow the How to Play modal again
     setQuestions(playable)
     questionsRef.current = playable
     const initialLives = cfg.lives === LIVES_UNLIMITED ? LIVES_UNLIMITED : (cfg.lives || 3)
@@ -467,7 +507,7 @@ export default function BreakoutGameQuiz({ instructorId, studentGameData, onExit
     if (!libQuiz) return
     const playable = normalizeQuestionsForGame(libQuiz.questions)
     if (playable.length === 0) {
-      setListError('This quiz has no playable questions. Use multiple-choice (2–4 options) or true/false questions.')
+      setListError('This quiz has no playable questions. Use multiple-choice (2-4 options) or true/false questions.')
       return
     }
     clearTimers()
@@ -623,6 +663,9 @@ export default function BreakoutGameQuiz({ instructorId, studentGameData, onExit
             else ball.vy = -ball.vy
 
             if (b.kind === 'answer') {
+              // Only the real (white) ball can hit answers. Clone (green) balls
+              // bounce off answer bricks without breaking or resolving them.
+              if (!ball.real) break
               // Lock so multiple balls can't resolve the same level twice.
               if (levelResolvedRef.current) break
               levelResolvedRef.current = true
@@ -645,8 +688,10 @@ export default function BreakoutGameQuiz({ instructorId, studentGameData, onExit
                 const room = MAX_BALLS - balls.length
                 const toSpawn = Math.min(MULTIBALL_SPAWN, Math.max(0, room))
                 for (let k = 0; k < toSpawn; k++) {
-                  const ang = (-Math.PI / 2) + (k === 0 ? -0.6 : 0.6)
-                  balls.push({ x: cx, y: cy, vx: Math.cos(ang) * speed, vy: Math.sin(ang) * speed })
+                  // Fan the clone balls out so they spread across the wall.
+                  const spread = (k - (toSpawn - 1) / 2) * 0.5
+                  const ang = (-Math.PI / 2) + spread
+                  balls.push({ x: cx, y: cy, vx: Math.cos(ang) * speed, vy: Math.sin(ang) * speed, real: false })
                 }
                 spawnParticles(cx, cy, '#fde68a', 22)
                 showBuffFlash('MULTIBALL!  ✦✦✦')
@@ -658,11 +703,18 @@ export default function BreakoutGameQuiz({ instructorId, studentGameData, onExit
 
         // This ball fell below the paddle
         if (ball.y - BALL_R > CANVAS_H) {
+          if (ball.real) {
+            // The real (white) ball is the important one — losing it fails the
+            // level, even if green clone balls are still in play.
+            failLevel('miss')
+            return
+          }
+          // A green clone fell away — just remove it, no penalty, no game over.
           balls.splice(bi, 1)
         }
       }
 
-      // Lose all balls into the void → level failed (restart the same question)
+      // Safety net: if somehow no balls remain, fail the level.
       if (balls.length === 0) {
         failLevel('miss')
         return
@@ -815,17 +867,24 @@ export default function BreakoutGameQuiz({ instructorId, studentGameData, onExit
     roundRect(ctx, px + 6, PADDLE_Y + 2, paddle.w - 12, PADDLE_H * 0.4, PADDLE_H * 0.2)
     ctx.fill()
 
-    // Balls — glossy with highlight
+    // Balls — glossy with highlight. The real ball is white (the important one);
+    // clone balls from the multiball buff are green so they're easy to tell apart.
     for (const ball of ballsRef.current) {
       const bgrad = ctx.createRadialGradient(ball.x - 3, ball.y - 3, 1, ball.x, ball.y, BALL_R)
-      bgrad.addColorStop(0, '#fffef0')
-      bgrad.addColorStop(0.5, '#fde68a')
-      bgrad.addColorStop(1, '#f59e0b')
+      if (ball.real) {
+        bgrad.addColorStop(0, '#ffffff')
+        bgrad.addColorStop(0.5, '#f1f5f9')
+        bgrad.addColorStop(1, '#cbd5e1')
+      } else {
+        bgrad.addColorStop(0, '#f0fdf4')
+        bgrad.addColorStop(0.5, '#4ade80')
+        bgrad.addColorStop(1, '#16a34a')
+      }
       ctx.beginPath()
       ctx.arc(ball.x, ball.y, BALL_R, 0, Math.PI * 2)
       ctx.fillStyle = bgrad
-      ctx.shadowColor = '#fbbf24'
-      ctx.shadowBlur = 16
+      ctx.shadowColor = ball.real ? '#e2e8f0' : '#22c55e'
+      ctx.shadowBlur = ball.real ? 16 : 14
       ctx.fill()
       ctx.shadowBlur = 0
     }
@@ -1043,6 +1102,7 @@ export default function BreakoutGameQuiz({ instructorId, studentGameData, onExit
                   Quiz: <strong className="breakout-game-quiz__modal-summary-accent">{selQuiz?.title}</strong>
                   {' · '}Speed: <strong className="breakout-game-quiz__modal-summary-accent">{settings.ballSpeed}</strong>
                   {' · '}Paddle: <strong className="breakout-game-quiz__modal-summary-accent">{settings.paddleSize}</strong>
+                  {' · '}Buff: <strong className="breakout-game-quiz__modal-summary-accent">{settings.buffFrequency}</strong>
                 </p>
               </div>
               <div className="panel-row breakout-game-quiz__modal-actions">
@@ -1068,7 +1128,7 @@ export default function BreakoutGameQuiz({ instructorId, studentGameData, onExit
 
         <div className="panel-card">
           <h3 className="panel-section-title">1. Choose a Quiz</h3>
-          <p className="panel-meta breakout-game-quiz__section-meta">Supports multiple-choice (2–4 options) and true/false questions.</p>
+          <p className="panel-meta breakout-game-quiz__section-meta">Supports multiple-choice (2-4 options) and true/false questions.</p>
           {listLoading ? (
             <PanelSkeleton variant="list" count={3} />
           ) : quizList.length === 0 ? (
@@ -1079,18 +1139,22 @@ export default function BreakoutGameQuiz({ instructorId, studentGameData, onExit
             />
           ) : (
             <div className={`panel-form-group ${selQuiz ? 'breakout-game-quiz__form-group--quiz-selected' : 'breakout-game-quiz__form-group--no-quiz'}`}>
-              <label className="panel-label">Select Quiz</label>
-              <select className="panel-select" value={selectedQuizId} onChange={(e) => setSelectedQuizId(e.target.value ? Number(e.target.value) : '')}>
-                <option value="">Choose a quiz from your library…</option>
-                {quizList.map((q) => {
+              <label className="panel-label">Search your quiz library</label>
+              <QuizSearchSelect
+                options={quizList.map((q) => {
                   const n = countPlayableQuestions(q.questions)
-                  return (
-                    <option key={q.id} value={q.id} disabled={n === 0}>
-                      {q.title} ({n} playable{n === 0 ? ', needs valid questions' : ''}){q.class_title ? ` · ${q.class_title}` : ''}
-                    </option>
-                  )
+                  return {
+                    id: q.id,
+                    title: `${q.title}${q.class_title ? ` · ${q.class_title}` : ''}${n === 0 ? ' · needs valid questions' : ''}`,
+                  }
                 })}
-              </select>
+                value={selectedQuizId === '' ? '' : String(selectedQuizId)}
+                onChange={(id) => setSelectedQuizId(id ? Number(id) : '')}
+                placeholder="Type a quiz name to search…"
+                emptyText="No matching quizzes in your library"
+                ariaLabel="Search quizzes to build a game"
+                optionIcon="quiz"
+              />
             </div>
           )}
           {selQuiz && (
@@ -1103,7 +1167,7 @@ export default function BreakoutGameQuiz({ instructorId, studentGameData, onExit
                 {selQuiz.class_title && <span className="panel-meta">Class: {selQuiz.class_title}</span>}
               </div>
               {playableCount === 0 && (
-                <p className="panel-meta breakout-game-quiz__quiz-preview-error">Add multiple-choice (2–4 options) or true/false questions to use this quiz.</p>
+                <p className="panel-meta breakout-game-quiz__quiz-preview-error">Add multiple-choice (2-4 options) or true/false questions to use this quiz.</p>
               )}
             </div>
           )}
@@ -1135,7 +1199,16 @@ export default function BreakoutGameQuiz({ instructorId, studentGameData, onExit
                 <option value={LIVES_UNLIMITED}>Unlimited</option>
               </select>
             </div>
+            <div className="panel-form-group breakout-game-quiz__form-group--compact">
+              <label className="panel-label">Multiball Buff</label>
+              <select className="panel-select" value={settings.buffFrequency} onChange={(e) => setSettings((s) => ({ ...s, buffFrequency: e.target.value as BreakoutSettings['buffFrequency'] }))}>
+                <option value="low">Rare (Longer game)</option>
+                <option value="normal">Normal (Balanced)</option>
+                <option value="high">Frequent (Shorter game)</option>
+              </select>
+            </div>
           </div>
+          <p className="panel-meta breakout-game-quiz__section-meta">Multiball Buff controls how many hidden buffs are tucked into the wall. More buffs release extra green helper balls, so students clear each wall faster.</p>
         </div>
 
         <div className="panel-row breakout-game-quiz__actions">
@@ -1157,6 +1230,16 @@ export default function BreakoutGameQuiz({ instructorId, studentGameData, onExit
   // ─── Render: gameplay ───
   const livesDisplay = lives === LIVES_UNLIMITED ? '∞' : '❤'.repeat(Math.max(0, lives))
   const flashColor = flashType === 'correct' ? 'rgba(34,197,94,0.18)' : flashType === 'wrong' ? 'rgba(239,68,68,0.2)' : flashType === 'miss' ? 'rgba(249,115,22,0.18)' : 'transparent'
+
+  const breakoutHowToSteps: HowToStep[] = [
+    { icon: '🕹️', text: <>Move the paddle with your <strong>mouse</strong> or <strong>finger</strong> (drag across the canvas).</> },
+    { icon: '🚀', text: <>Click, tap, or press <strong>Space</strong> to launch the ball.</> },
+    { icon: '🧱', text: <>Break the shield bricks: <strong>⬛ 1 hit</strong>, <strong>🟥 2 hits</strong>.</> },
+    { icon: '🎯', text: <>Hit the brick with the <strong>correct answer</strong> to clear the question.</> },
+    { icon: '✦', text: <>Some bricks hide a <strong>multiball</strong> buff. The extra balls only break bricks.</> },
+    { icon: '❤️', text: <>Don&apos;t let every ball fall, or you lose a life. Run out of lives and it&apos;s game over.</> },
+    { icon: '⏸️', text: <>Tap <strong>Pause</strong> anytime to take a break.</> },
+  ]
 
   return (
     <div ref={pageRef} className="panel-page breakout-game-quiz__page--gameplay">
@@ -1204,6 +1287,7 @@ export default function BreakoutGameQuiz({ instructorId, studentGameData, onExit
             <div className="breakout-game-quiz__overlay-inner">
               <p className="breakout-game-quiz__overlay-hint">Smash the shields to reach the answers!</p>
               <p className="breakout-game-quiz__overlay-sub breakout-game-quiz__overlay-rules">⬛ 1 hit · 🟥 2 hits · ✦ hides a multiball</p>
+              <p className="breakout-game-quiz__overlay-sub">⚪ White ball hits answers · 🟢 Green balls only smash shields (safe to drop)</p>
               <p className="breakout-game-quiz__overlay-sub game-controls-hint--desktop">Move with mouse or ← → · Click or Space to launch</p>
               <p className="breakout-game-quiz__overlay-sub game-controls-hint--mobile">Drag on the game area to aim · Tap to launch</p>
               <button className="panel-btn breakout-game-quiz__launch-btn" onClick={launchBall}>▶ Launch Ball</button>
@@ -1240,7 +1324,7 @@ export default function BreakoutGameQuiz({ instructorId, studentGameData, onExit
               <p className="breakout-game-quiz__overlay-icon">{failReason === 'wrong' ? '❌' : '💧'}</p>
               <p className="breakout-game-quiz__overlay-fail">Level Failed</p>
               <p className="breakout-game-quiz__overlay-sub">
-                {failReason === 'wrong' ? 'That was the wrong answer.' : 'You lost all your balls into the void.'}
+                {failReason === 'wrong' ? 'That was the wrong answer.' : 'Your white ball dropped into the void.'}
                 {lives !== LIVES_UNLIMITED && <> {' · '}{lives} {lives === 1 ? 'life' : 'lives'} left</>}
               </p>
               <div className="breakout-game-quiz__overlay-actions">
@@ -1287,6 +1371,20 @@ export default function BreakoutGameQuiz({ instructorId, studentGameData, onExit
       {phase === 'playing' && (
         <button className="panel-btn panel-btn-secondary breakout-game-quiz__pause-btn" onClick={pauseGame}>⏸ Pause</button>
       )}
+
+      <GameHowToModal
+        open={howToOpen}
+        gameName="Brick Breaker"
+        subtitle="Smash the shields and hit the correct answer brick."
+        accent="#f97316"
+        icon="🧱"
+        steps={breakoutHowToSteps}
+        primaryLabel="Let's Play!"
+        onPrimary={() => setHowToOpen(false)}
+        onClose={() => setHowToOpen(false)}
+        dontShowAgain={howTo.disabled}
+        onDontShowAgainChange={howTo.setDisabled}
+      />
     </div>
   )
 }

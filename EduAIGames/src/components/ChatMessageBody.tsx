@@ -21,18 +21,32 @@ export default function ChatMessageBody({ content }: ChatMessageBodyProps) {
   const blocks: ReactNode[] = []
   let listItems: string[] = []
   let listType: 'ul' | 'ol' | null = null
+  // Running counter so numbered steps keep counting up (1, 2, 3, …) even when
+  // sub-bullets interrupt them and force the list to be split into multiple
+  // <ol> blocks — otherwise every step restarts at "1".
+  let olNext = 1
 
   // Emits a completed bullet/numbered list before switching to paragraphs.
   const flushList = () => {
     if (listItems.length === 0 || !listType) return
-    const Tag = listType
-    blocks.push(
-      <Tag key={`list-${blocks.length}`} className="aichat-msg-list">
-        {listItems.map((item, i) => (
-          <li key={i}>{renderInline(item)}</li>
-        ))}
-      </Tag>
-    )
+    if (listType === 'ol') {
+      blocks.push(
+        <ol key={`list-${blocks.length}`} className="aichat-msg-list" start={olNext}>
+          {listItems.map((item, i) => (
+            <li key={i}>{renderInline(item)}</li>
+          ))}
+        </ol>
+      )
+      olNext += listItems.length
+    } else {
+      blocks.push(
+        <ul key={`list-${blocks.length}`} className="aichat-msg-list">
+          {listItems.map((item, i) => (
+            <li key={i}>{renderInline(item)}</li>
+          ))}
+        </ul>
+      )
+    }
     listItems = []
     listType = null
   }
@@ -70,6 +84,9 @@ export default function ChatMessageBody({ content }: ChatMessageBodyProps) {
     if (trimmed === '') {
       blocks.push(<br key={`br-${blocks.length}`} />)
     } else {
+      // A real paragraph ends the current numbered sequence, so the next list
+      // starts fresh at 1.
+      olNext = 1
       blocks.push(
         <p key={`p-${blocks.length}`} className="aichat-msg-para">
           {renderInline(line)}

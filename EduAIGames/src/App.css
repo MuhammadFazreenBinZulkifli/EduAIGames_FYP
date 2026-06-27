@@ -1920,6 +1920,16 @@ html[data-theme='light'] .app-shell-content::-webkit-scrollbar-thumb {
   overflow-x: hidden;
 }
 
+/* During immersive quiz/game play the EduBot side column is suppressed, which
+   otherwise leaves empty space on the right (notably for students answering a
+   quiz with the navbar collapsed). Let the page stretch to fill the content
+   column on desktop so there is no wasted space. */
+@media (min-width: 981px) {
+  .app-shell--immersive .panel-page {
+    max-width: none;
+  }
+}
+
 @keyframes panel-page-enter {
   from {
     opacity: 0;
@@ -1927,6 +1937,107 @@ html[data-theme='light'] .app-shell-content::-webkit-scrollbar-thumb {
   to {
     opacity: 1;
   }
+}
+
+/* ─── Error popup (PanelErrorBoundary) — centered modal dialog ───
+   Kept in the global stylesheet so it is always available, even when a
+   lazily-loaded route crashes before its own CSS chunk has loaded. */
+.panel-error-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 5000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+}
+
+.panel-error-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(8, 10, 18, 0.62);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  animation: panel-error-fade 0.18s ease both;
+}
+
+.panel-error-modal__card {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  box-sizing: border-box;
+  padding: 2rem 1.75rem 1.6rem;
+  text-align: center;
+  background: var(--bg-auth-modal, #16131c);
+  border: 1px solid var(--panel-hero-border, rgba(255, 255, 255, 0.12));
+  border-radius: 18px;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5);
+  animation: panel-error-pop 0.22s cubic-bezier(0.2, 0.8, 0.3, 1) both;
+}
+
+.panel-error-modal__icon {
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: #f87171;
+  background: rgba(239, 68, 68, 0.14);
+  box-shadow: 0 0 0 6px rgba(239, 68, 68, 0.06);
+}
+
+.panel-error-modal__icon svg {
+  width: 30px;
+  height: 30px;
+}
+
+.panel-error-modal__kicker {
+  margin: 0 0 0.4rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #f87171;
+}
+
+.panel-error-modal__title {
+  margin: 0 0 0.55rem;
+  font-size: 1.3rem;
+  line-height: 1.3;
+  color: var(--text-primary, #fff);
+}
+
+.panel-error-modal__message {
+  margin: 0 0 1.5rem;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: var(--text-muted, #9993a3);
+}
+
+.panel-error-modal__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  justify-content: center;
+}
+
+.panel-error-modal__actions .panel-btn {
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@keyframes panel-error-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes panel-error-pop {
+  from { opacity: 0; transform: translateY(10px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 .panel-page-bottom-spacer {

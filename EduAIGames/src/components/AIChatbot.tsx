@@ -254,11 +254,31 @@ export default function AIChatbot({
     return () => window.removeEventListener('resize', onResize)
   }, [persistLauncherPos])
 
+  // Persist to the shared store — but NOT while hidden. When the floating bot is
+  // hidden (e.g. the docked SideEduBot is active), its in-memory messages are
+  // stale; skipping the save prevents it from clobbering chats made in the
+  // docked panel.
   useEffect(() => {
-    if (userId != null) {
+    if (userId != null && !hidden) {
       saveChatSession(userId, messages, open)
     }
-  }, [userId, messages, open])
+  }, [userId, messages, open, hidden])
+
+  // When the floating bot reappears (e.g. the sidebar is expanded again), pull in
+  // any newer history written by the docked SideEduBot so the conversation
+  // transfers across seamlessly in both directions.
+  const prevHiddenRef = useRef(hidden)
+  useEffect(() => {
+    const wasHidden = prevHiddenRef.current
+    prevHiddenRef.current = hidden
+    if (wasHidden && !hidden && userId != null) {
+      const session = loadChatSession(userId)
+      if (session && session.messages.length > 0) {
+        setMessages(session.messages)
+        welcomedRef.current = true
+      }
+    }
+  }, [hidden, userId])
 
   useEffect(() => {
     if (!open) return

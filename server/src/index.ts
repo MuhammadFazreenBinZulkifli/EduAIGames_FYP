@@ -213,10 +213,10 @@ async function start() {
     console.log('Super Admin account ready');
     await pool.query(`
       ALTER TABLE users ADD COLUMN IF NOT EXISTS avatar_url TEXT;
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS preferences JSONB NOT NULL DEFAULT '{}'::jsonb;
       ALTER TABLE classes ADD COLUMN IF NOT EXISTS background_image TEXT;
     `);
     console.log('Profile columns ready');
-    await pool.query(`ALTER TABLE quizzes ADD COLUMN IF NOT EXISTS due_date TIMESTAMPTZ;`);
     await pool.query(`
       ALTER TABLE quizzes ADD COLUMN IF NOT EXISTS time_limit_minutes INTEGER;
       ALTER TABLE quizzes ADD COLUMN IF NOT EXISTS shuffle_questions BOOLEAN NOT NULL DEFAULT FALSE;

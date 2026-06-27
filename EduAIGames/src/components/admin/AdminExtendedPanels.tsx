@@ -3,6 +3,8 @@ import { API_BASE_URL } from '../../config'
 import { usePanelUI } from '../../context/PanelUIContext'
 import { downloadAdminExport } from './adminExport'
 import { invalidatePlatformFeaturesCache } from '../../hooks/usePlatformFeatures'
+import { gameTypeMeta } from '../../utils/gameSettingsDisplay'
+import SidebarIcon, { type IconName } from '../SidebarIcons'
 import '../App_CSS/AdminDashboard_CSS.css'
 import '../App_CSS/AdminExtendedPanels_CSS.css'
 
@@ -98,13 +100,13 @@ export function OverviewPanel({ users, pendingUsers, classes, quizzes, loginActi
     (u) => u.created_at && new Date(u.created_at).getTime() >= sevenDaysAgo
   )
 
-  const kpis = [
-    { label: 'Total students', value: students.length, icon: '🎓', color: '#059669', bg: '#ecfdf5' },
-    { label: 'Total instructors', value: instructors.length, icon: '👩‍🏫', color: '#2563eb', bg: '#eff6ff' },
-    { label: 'Active classes', value: classes.length, icon: '🏫', color: '#7c3aed', bg: '#f5f3ff' },
-    { label: 'Total quizzes', value: quizzes.length, icon: '📝', color: '#c2410c', bg: '#fff7ed' },
-    { label: 'Pending approvals', value: pendingUsers.length, icon: '⏳', color: '#b45309', bg: '#fffbeb' },
-    { label: 'New this week', value: newUsers.length, icon: '🆕', color: '#0284c7', bg: '#f0f9ff' },
+  const kpis: { label: string; value: number; icon: IconName; color: string; bg: string }[] = [
+    { label: 'Total students', value: students.length, icon: 'users', color: '#059669', bg: '#ecfdf5' },
+    { label: 'Total instructors', value: instructors.length, icon: 'library', color: '#2563eb', bg: '#eff6ff' },
+    { label: 'Active classes', value: classes.length, icon: 'classes', color: '#7c3aed', bg: '#f5f3ff' },
+    { label: 'Total quizzes', value: quizzes.length, icon: 'quiz', color: '#c2410c', bg: '#fff7ed' },
+    { label: 'Pending approvals', value: pendingUsers.length, icon: 'clock', color: '#b45309', bg: '#fffbeb' },
+    { label: 'New this week', value: newUsers.length, icon: 'calendar', color: '#0284c7', bg: '#f0f9ff' },
   ]
 
   const bars = loginActivity
@@ -124,7 +126,9 @@ export function OverviewPanel({ users, pendingUsers, classes, quizzes, loginActi
         {kpis.map((k) => (
           <div key={k.label} className="admin-panels__kpi-card">
             <div className="admin-panels__kpi-header">
-              <span className="admin-panels__kpi-icon" style={{ background: k.bg }}>{k.icon}</span>
+              <span className="admin-panels__kpi-icon" style={{ background: k.bg, color: k.color }}>
+                <SidebarIcon name={k.icon} size={18} />
+              </span>
               <span className="admin-panels__kpi-label">{k.label}</span>
             </div>
             <div className="admin-panels__kpi-value" style={{ color: k.color }}>{k.value}</div>
@@ -328,7 +332,7 @@ export function ContentPanel({ adminId, showSuccess, showError }: PanelProps) {
             {sub === 'games' ? games.map((g) => (
               <tr key={g.id} >
                 <td className="admin-os__td admin-os__td--bold">{g.title}</td>
-                <td className="admin-os__td">{g.game_type}</td>
+                <td className="admin-os__td">{gameTypeMeta(g.game_type).icon} {gameTypeMeta(g.game_type).label}</td>
                 <td className="admin-os__td">{g.instructor_name}</td>
                 <td className="admin-os__td">{g.quiz_title}</td>
                 <td className="admin-os__td">{g.published_count}</td>
@@ -560,7 +564,7 @@ export function SettingsPanel({ adminId, showSuccess, showError, isSuperAdmin }:
       { key: 'chatbot', name: 'AI chatbot', desc: 'Floating assistant for guests, students & instructors.', value: chatbotEnabled, set: setChatbotEnabled },
       { key: 'aiquiz', name: 'AI Quiz generator', desc: 'Instructor AI quiz builder tools.', value: aiQuizEnabled, set: setAiQuizEnabled },
       { key: 'quizzes', name: 'Quizzes', desc: 'Create, answer, and manage quizzes.', value: quizzesEnabled, set: setQuizzesEnabled },
-      { key: 'games', name: 'Games', desc: 'Maze & snake game studio and play.', value: gamesEnabled, set: setGamesEnabled },
+      { key: 'games', name: 'Games', desc: 'Game studio and play: Snake Quest, Maze Quest, Brick Breaker, and Trivia Race.', value: gamesEnabled, set: setGamesEnabled },
     ]
 
     return (
@@ -1015,7 +1019,7 @@ type FeatureKey = 'quizzes_enabled' | 'games_enabled' | 'chatbot_enabled' | 'ai_
 
 const FEATURE_META: { key: FeatureKey; label: string; hint: string }[] = [
   { key: 'quizzes_enabled', label: 'Quizzes', hint: 'Create, answer & manage quizzes' },
-  { key: 'games_enabled', label: 'Games', hint: 'Game studio & gameplay' },
+  { key: 'games_enabled', label: 'Games', hint: 'Snake, Maze, Brick Breaker & Trivia Race' },
   { key: 'chatbot_enabled', label: 'AI Chatbot', hint: 'Floating AI assistant' },
   { key: 'ai_quiz_enabled', label: 'AI Quiz Generator', hint: 'Instructor AI quiz builder' },
   { key: 'openai_enabled', label: 'OpenAI Services', hint: 'Backend AI integration' },
@@ -1177,7 +1181,7 @@ export function InstitutionsPanel({ adminId, showSuccess, showError }: PanelProp
             {plans.map((p) => (
               <div key={p.id} className="admin-inst__plan-chip">
                 <span className="admin-inst__plan-name">{p.name}</span>
-                <span className="admin-inst__plan-price">{p.price > 0 ? `$${p.price}/mo` : 'Free'}</span>
+                <span className="admin-inst__plan-price">{p.price > 0 ? `RM${p.price}/mo` : 'Free'}</span>
                 <span className="admin-inst__plan-features">
                   {FEATURE_META.filter((f) => p.features?.[f.key]).map((f) => f.label).join(' · ') || 'No features'}
                 </span>
@@ -1211,7 +1215,7 @@ export function InstitutionsPanel({ adminId, showSuccess, showError }: PanelProp
               <span className="admin-inst__field-label">Plan</span>
               <select className="admin-os__filter-select" value={createForm.plan_id} onChange={(e) => setCreateForm((f) => ({ ...f, plan_id: e.target.value }))}>
                 <option value="">Default plan</option>
-                {plans.map((p) => <option key={p.id} value={p.id}>{p.name}{p.price > 0 ? ` ($${p.price}/mo)` : ' (Free)'}</option>)}
+                {plans.map((p) => <option key={p.id} value={p.id}>{p.name}{p.price > 0 ? ` (RM${p.price}/mo)` : ' (Free)'}</option>)}
               </select>
             </label>
             <label className="admin-inst__field">
@@ -1328,6 +1332,14 @@ function InstitutionEditModal({
     return init
   })
   const [saving, setSaving] = useState(false)
+  const [members, setMembers] = useState<{ id: number; username: string; email: string; role: string; account_status?: string }[]>([])
+
+  useEffect(() => {
+    fetch(`${API_BASE_URL}/api/super-admin/institutions/${institution.id}/members`, { headers: superHeaders(adminId) })
+      .then((r) => r.json())
+      .then((d) => setMembers(d.members || []))
+      .catch(() => {})
+  }, [adminId, institution.id])
 
   const selectedPlan = plans.find((p) => String(p.id) === planId)
 
@@ -1375,7 +1387,7 @@ function InstitutionEditModal({
             <span className="admin-inst__field-label">Plan</span>
             <select className="admin-os__filter-select" value={planId} onChange={(e) => setPlanId(e.target.value)}>
               <option value="">No plan</option>
-              {plans.map((p) => <option key={p.id} value={p.id}>{p.name}{p.price > 0 ? ` ($${p.price}/mo)` : ' (Free)'}</option>)}
+              {plans.map((p) => <option key={p.id} value={p.id}>{p.name}{p.price > 0 ? ` (RM${p.price}/mo)` : ' (Free)'}</option>)}
             </select>
           </label>
           <label className="admin-inst__field">
@@ -1421,6 +1433,40 @@ function InstitutionEditModal({
               </div>
             )
           })}
+        </div>
+
+        <div className="admin-inst__feature-editor">
+          <h4 className="admin-inst__feature-editor-title">
+            Members ({members.length}{institution.seats_limit ? ` / ${institution.seats_limit}` : ''})
+          </h4>
+          <p className="admin-inst__feature-editor-hint">
+            Students and instructors whose account belongs to this institution.
+          </p>
+          {members.length === 0 ? (
+            <p className="admin-panels__empty-msg">No students or instructors yet. New signups using this institution's email domain will appear here.</p>
+          ) : (
+            <div className="admin-os__table-wrap admin-inst__members-table">
+              <table className="admin-os__table">
+                <thead>
+                  <tr>{['Name', 'Email', 'Role', 'Status'].map((h) => <th key={h} className="admin-os__th">{h}</th>)}</tr>
+                </thead>
+                <tbody>
+                  {members.map((m) => (
+                    <tr key={m.id}>
+                      <td className="admin-os__td admin-os__td--bold">{m.username}</td>
+                      <td className="admin-os__td admin-os__td--muted">{m.email}</td>
+                      <td className="admin-os__td"><span className={`admin-os__role-badge admin-os__role-badge--${m.role}`}>{m.role}</span></td>
+                      <td className="admin-os__td">
+                        <span className={`admin-os__status-badge admin-os__status-badge--${m.account_status || 'approved'}`}>
+                          {m.account_status || 'approved'}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
 
         <div className="admin-inst__modal-actions">

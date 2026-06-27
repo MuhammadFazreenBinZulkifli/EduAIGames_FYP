@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react'
+import type { CSSProperties } from 'react'
 import './App_CSS/MazeGameQuiz_CSS.css'
 import { API_BASE_URL } from '../config'
 import { usePanelUI } from '../context/PanelUIContext'
@@ -7,6 +8,9 @@ import { useGameImmersiveMode } from '../hooks/useGameImmersiveMode'
 import GameTouchControls, { type TouchDirection } from './GameTouchControls'
 import PanelSkeleton from './PanelSkeleton'
 import PanelEmptyState from './PanelEmptyState'
+import QuizSearchSelect from './QuizSearchSelect'
+import GameHowToModal, { type HowToStep } from './GameHowToModal'
+import { useGameHowTo } from '../hooks/useUserPreferences'
 import {
   countPlayableQuestions,
   getOptionsForQuestion,
@@ -44,6 +48,7 @@ type Phase =
   | 'at-gate'
   | 'level-complete'
   | 'game-complete'
+  | 'game-over'
   | 'paused'
 
 interface LevelData {
@@ -61,6 +66,23 @@ export interface StudentGameData {
   title: string
   description: string
   ghostEnabled: boolean
+  settings?: string
+}
+
+interface MazeSettings {
+  fogEnabled: boolean
+}
+
+const DEFAULT_MAZE_SETTINGS: MazeSettings = { fogEnabled: true }
+
+function parseMazeSettings(raw?: string): MazeSettings {
+  if (!raw) return { ...DEFAULT_MAZE_SETTINGS }
+  try {
+    const parsed = JSON.parse(raw)
+    return { fogEnabled: parsed?.fogEnabled !== false }
+  } catch {
+    return { ...DEFAULT_MAZE_SETTINGS }
+  }
 }
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -68,20 +90,26 @@ export interface StudentGameData {
 const ROWS = 29        // 2× the original 15 rows (must be odd)
 const COLS = 29        // 2× the original 15 cols (must be odd)
 const CELL_PX = 22
+// Grid geometry — MUST match the CSS (.maze-game-quiz__grid border + padding + gap)
+// so the overlay tokens and fog line up exactly with the rendered cells.
+const GRID_GAP = 1
+const GRID_EDGE = 5    // 2px border + 3px padding before the first cell
 const GHOST_SPAWN_DELAY_MS = 10000
 const GHOST_SPAWN_COUNTDOWN_SEC = 10
-const GHOST_TICK_MS = 360
-const GHOST_TICK_MIN_MS = 100
-const GHOST_WRONG_SPEED_DELTA = 55
+// Slower hunter for fairness (player moves one cell per keypress).
+const GHOST_TICK_MS = 520
+const GHOST_TICK_MIN_MS = 240
+const GHOST_WRONG_SPEED_DELTA = 35
+// Fairer AI: a portion of steps are random wandering instead of a perfect chase,
+// and it re-locks onto the player only every few ticks (chases a stale position).
+const GHOST_WANDER_CHANCE = 0.32
+const GHOST_TARGET_REFRESH_TICKS = 3
+// Torches the player can place to light the maze under fog (refilled each level).
+const TORCH_BUDGET = 20
 
 // ─── Colours ──────────────────────────────────────────────────────────────────
 
 const C = {
-  wall: '#0d0820',
-  path: '#19102e',
-  playerBg: '#f97316',
-  playerBorder: '#fb923c',
-  playerGlow: 'rgba(249,115,22,0.7)',
   exitBg: 'rgba(250,204,21,0.22)',
   exitBorder: '#facc15',
   gateLockedBg: 'rgba(167,139,250,0.38)',
@@ -89,6 +117,27 @@ const C = {
   gateOpenBg: 'rgba(134,239,172,0.25)',
   gateOpenBorder: '#86efac',
 }
+
+// Curated per-level palettes. A small, deliberate set (cycled by level) keeps each
+// maze feeling fresh and hand-designed rather than randomly generated.
+interface MazeTheme {
+  name: string
+  wall: string
+  path: string
+  trail: string
+  accent: string
+  accentSoft: string
+  fog: string
+}
+
+// Walls are kept dark; the walkable path is noticeably lighter so corridors read
+// clearly inside the torchlight (high wall/path contrast was requested).
+const MAZE_THEMES: MazeTheme[] = [
+  { name: 'Ember',  wall: '#241510', path: '#52331a', trail: 'rgba(249,115,22,0.28)', accent: '#f97316', accentSoft: 'rgba(249,115,22,0.7)', fog: '#0a0503' },
+  { name: 'Frost',  wall: '#0e1d2b', path: '#1d4663', trail: 'rgba(56,189,248,0.28)', accent: '#38bdf8', accentSoft: 'rgba(56,189,248,0.7)', fog: '#040b13' },
+  { name: 'Moss',   wall: '#0e2417', path: '#1c4a2c', trail: 'rgba(74,222,128,0.28)', accent: '#4ade80', accentSoft: 'rgba(74,222,128,0.7)', fog: '#03110a' },
+  { name: 'Void',   wall: '#150e2e', path: '#2e2150', trail: 'rgba(167,139,250,0.3)',  accent: '#a78bfa', accentSoft: 'rgba(167,139,250,0.7)', fog: '#06030f' },
+]
 
 // ─── Maze Generation (recursive-backtracking DFS) ─────────────────────────────
 
@@ -101,22 +150,41 @@ function shuffleArr<T>(arr: T[]): T[] {
   return a
 }
 
-// Builds a solvable maze grid using recursive backtracking.
+// Builds a solvable maze using randomized Prim's algorithm.
+//
+// Prim's produces a "low-river" maze: a shorter, less winding route to the goal
+// and MANY short branching dead ends (fake paths / false turns) — instead of one
+// long snaking corridor. That's exactly what makes the maze feel tricky and
+// interesting rather than a single long path to the gate.
 function generateMaze(rows: number, cols: number): number[][] {
   const g: number[][] = Array.from({ length: rows }, () => Array(cols).fill(1))
+  const dirs: [number, number][] = [[0, 2], [0, -2], [2, 0], [-2, 0]]
+  // Frontier holds candidate cells (2 away) plus the in-maze cell they branch from.
+  const frontier: { r: number; c: number; fr: number; fc: number }[] = []
 
-  const carve = (r: number, c: number) => {
-    g[r][c] = 0
-    for (const [dr, dc] of shuffleArr<[number, number]>([[0,2],[0,-2],[2,0],[-2,0]])) {
+  const addFrontier = (r: number, c: number) => {
+    for (const [dr, dc] of dirs) {
       const nr = r + dr, nc = c + dc
       if (nr > 0 && nr < rows - 1 && nc > 0 && nc < cols - 1 && g[nr][nc] === 1) {
-        g[r + dr / 2][c + dc / 2] = 0
-        carve(nr, nc)
+        frontier.push({ r: nr, c: nc, fr: r, fc: c })
       }
     }
   }
-  carve(1, 1)
-  addExtraDeadEnds(g, rows, cols, Math.floor((rows * cols) / 28))
+
+  g[1][1] = 0
+  addFrontier(1, 1)
+  while (frontier.length) {
+    const idx = Math.floor(Math.random() * frontier.length)
+    const { r, c, fr, fc } = frontier.splice(idx, 1)[0]
+    if (g[r][c] !== 1) continue
+    g[r][c] = 0
+    g[(r + fr) / 2][(c + fc) / 2] = 0 // knock down the wall between the two cells
+    addFrontier(r, c)
+  }
+
+  // Lengthen a portion of the (already plentiful) dead ends so the decoys are long
+  // enough to be tempting. Bumped budget for a few extra false corridors.
+  addExtraDeadEnds(g, rows, cols, Math.floor((rows * cols) / 22))
   return g
 }
 
@@ -190,17 +258,47 @@ function bfsStep(grid: number[][], from: Pos, to: Pos): Pos | null {
   return path.length >= 2 ? path[1] : null
 }
 
+function walkableNeighbours(grid: number[][], p: Pos): Pos[] {
+  const dirs: [number, number][] = [[0, 1], [0, -1], [1, 0], [-1, 0]]
+  return dirs
+    .map(([dr, dc]) => ({ r: p.r + dr, c: p.c + dc }))
+    .filter((n) => grid[n.r]?.[n.c] === 0)
+}
+
+// Fairer hunter step: sometimes wanders to a random neighbour instead of taking
+// the optimal chase step, so the player can shake it off at junctions.
+function ghostNextStep(grid: number[][], from: Pos, target: Pos, wanderChance: number): Pos {
+  if (Math.random() < wanderChance) {
+    const ns = walkableNeighbours(grid, from)
+    if (ns.length) return ns[Math.floor(Math.random() * ns.length)]
+  }
+  return bfsStep(grid, from, target) ?? from
+}
+
 // ─── Level builder ────────────────────────────────────────────────────────────
 
 // Places start, exit, and a question gate along a valid maze path.
+// Counts how many of a cell's 4 neighbours are walkable (3+ means a junction).
+function openNeighbours(grid: number[][], p: Pos): number {
+  const dirs: [number, number][] = [[0, 1], [0, -1], [1, 0], [-1, 0]]
+  return dirs.filter(([dr, dc]) => grid[p.r + dr]?.[p.c + dc] === 0).length
+}
+
 function buildLevel(): LevelData {
   const grid = generateMaze(ROWS, COLS)
   const start: Pos = { r: 1, c: 1 }
   const exit: Pos = { r: ROWS - 2, c: COLS - 2 }
   const path = bfsPath(grid, start, exit)
-  let gateIdx = Math.floor(path.length * 0.55)
-  gateIdx = Math.max(5, Math.min(gateIdx, path.length - 6))
-  const gate = path[gateIdx] ?? path[Math.floor(path.length / 2)]
+
+  // Place the gate ~40% along the solution (shorter run to it), then nudge it to a
+  // nearby junction so the player arrives at a fork full of tempting wrong turns.
+  let gateIdx = Math.floor(path.length * 0.4)
+  gateIdx = Math.max(4, Math.min(gateIdx, path.length - 5))
+  let gate = path[gateIdx] ?? path[Math.floor(path.length / 2)]
+  for (let off = 0; off <= 3; off++) {
+    const cand = path[gateIdx + off] ?? path[gateIdx - off]
+    if (cand && openNeighbours(grid, cand) >= 3) { gate = cand; break }
+  }
   return { grid, start, exit, gate, gateOpen: false }
 }
 
@@ -229,6 +327,7 @@ export default function MazeGameQuiz({ instructorId, studentGameData, onExit }: 
   const [listError, setListError] = useState<string | null>(null)
   const [selectedQuizId, setSelectedQuizId] = useState<number | ''>('')
   const [ghostEnabled, setGhostEnabled] = useState(false)
+  const [fogEnabled, setFogEnabled] = useState(true)
 
   // Save Game dialog
   const [saveDialogOpen, setSaveDialogOpen] = useState(false)
@@ -252,6 +351,11 @@ export default function MazeGameQuiz({ instructorId, studentGameData, onExit }: 
   const [selectedAnswer, setSelectedAnswer] = useState('')
   const [answerFeedback, setAnswerFeedback] = useState<'correct' | 'wrong' | null>(null)
   const [timerActive, setTimerActive] = useState(false)
+
+  // How to Play modal (shown before each run; per-game disable synced to account).
+  const howTo = useGameHowTo('maze')
+  const [howToOpen, setHowToOpen] = useState(false)
+  const howToShownRef = useRef(false)
   const [elapsedSeconds, setElapsedSeconds] = useState(0)
   const [finalTimeSeconds, setFinalTimeSeconds] = useState<number | null>(null)
   const [wrongAnswerCount, setWrongAnswerCount] = useState(0)
@@ -262,7 +366,6 @@ export default function MazeGameQuiz({ instructorId, studentGameData, onExit }: 
   const ghostTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const ghostTickMsRef = useRef(GHOST_TICK_MS)
   const [ghostTickMs, setGhostTickMs] = useState(GHOST_TICK_MS)
-  const caughtTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const feedbackTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const chaseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const countdownTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
@@ -272,7 +375,30 @@ export default function MazeGameQuiz({ instructorId, studentGameData, onExit }: 
   const pausedDurationRef = useRef(0)
   const pauseStartRef = useRef<number | null>(null)
 
-  const cellPx = useResponsiveCellSize(CELL_PX, COLS)
+  // Fit both width AND height so the whole 29×29 board (plus HUD + on-screen
+  // controls) stays on small phones like the iPhone 12 Pro without scrolling.
+  const cellPx = useResponsiveCellSize(CELL_PX, COLS, 28, {
+    gridRows: ROWS,
+    verticalReserve: 386,
+    minSize: 9,
+  })
+
+  // Active palette for this level — cycles through the curated themes.
+  const theme = useMemo(() => MAZE_THEMES[level % MAZE_THEMES.length], [level])
+
+  // Breadcrumb trail of recently visited cells (visual aid through the fog).
+  const [trail, setTrail] = useState<string[]>([])
+  const trailSet = useMemo(() => new Set(trail), [trail])
+
+  // Torches the player drops to light the maze (only relevant when fog is on).
+  const [torches, setTorches] = useState<Pos[]>([])
+  const [torchesLeft, setTorchesLeft] = useState(TORCH_BUDGET)
+
+  // Refs for the fairer ghost AI + the canvas-based fog.
+  const ghostTargetRef = useRef<Pos | null>(null)
+  const ghostTickCountRef = useRef(0)
+  const fogCanvasRef = useRef<HTMLCanvasElement | null>(null)
+  const gridContainerRef = useRef<HTMLDivElement | null>(null)
 
   const TOUCH_DIRS: Record<TouchDirection, [number, number]> = {
     up: [-1, 0],
@@ -324,6 +450,7 @@ export default function MazeGameQuiz({ instructorId, studentGameData, onExit }: 
     setChaseCountdown(null)
     ghostTickMsRef.current = GHOST_TICK_MS
     setGhostTickMs(GHOST_TICK_MS)
+    setTrail([])
   }, [clearAllRunTimers])
 
   const startGhostCountdown = useCallback(() => {
@@ -361,10 +488,10 @@ export default function MazeGameQuiz({ instructorId, studentGameData, onExit }: 
     startGhostCountdown()
   }, [startGhostCountdown])
 
-  // Pause time when ESC menu is open
+  // Freeze the clock while the ESC menu or the game-over modal is showing
   useEffect(() => {
-    if (phase === 'paused') {
-      pauseStartRef.current = Date.now()
+    if (phase === 'paused' || phase === 'game-over') {
+      if (pauseStartRef.current === null) pauseStartRef.current = Date.now()
     } else if (pauseStartRef.current !== null) {
       pausedDurationRef.current += Date.now() - pauseStartRef.current
       pauseStartRef.current = null
@@ -374,7 +501,7 @@ export default function MazeGameQuiz({ instructorId, studentGameData, onExit }: 
 
   // Live run timer (stops only on game complete or reset)
   useEffect(() => {
-    if (!timerActive || phase === 'paused' || phase === 'game-complete') return
+    if (!timerActive || phase === 'paused' || phase === 'game-over' || phase === 'game-complete') return
     setElapsedSeconds(computeElapsedSeconds())
     const id = setInterval(() => setElapsedSeconds(computeElapsedSeconds()), 1000)
     return () => clearInterval(id)
@@ -422,12 +549,16 @@ export default function MazeGameQuiz({ instructorId, studentGameData, onExit }: 
         }
         setQuiz(sorted)
         setGhostEnabled(studentGameData.ghostEnabled)
+        setFogEnabled(parseMazeSettings(studentGameData.settings).fogEnabled)
         const ld = buildLevel()
         setLevelData(ld)
         setPlayer(ld.start)
         setGhost({ ...ld.start })
         clearRunStats()
+        setTorches([])
+        setTorchesLeft(TORCH_BUDGET)
         setLevel(0)
+        howToShownRef.current = false // new run → allow the How to Play modal again
         setPhase('playing')
       } catch (err) {
         setListError(err instanceof Error ? err.message : 'Failed to load game')
@@ -436,6 +567,15 @@ export default function MazeGameQuiz({ instructorId, studentGameData, onExit }: 
     }
     load()
   }, [isStudentMode, studentGameData])
+
+  // Auto-open the How to Play modal once per run while the maze is frozen
+  // awaiting the first move (covers instructor test play and student play).
+  useEffect(() => {
+    if (phase === 'playing' && !timerActive && howTo.loaded && !howToShownRef.current) {
+      howToShownRef.current = true
+      if (!howTo.disabled) setHowToOpen(true)
+    }
+  }, [phase, timerActive, howTo.loaded, howTo.disabled])
 
   // ── Ghost movement (chases during play and gate questions; not when paused) ──
   useEffect(() => {
@@ -446,7 +586,13 @@ export default function MazeGameQuiz({ instructorId, studentGameData, onExit }: 
     const tick = () => {
       const ld = levelDataRef.current
       if (!ld) return
-      setGhost(prev => bfsStep(ld.grid, prev, playerRef.current) ?? prev)
+      ghostTickCountRef.current += 1
+      // Re-lock onto the player only every few ticks → chases a slightly stale spot.
+      if (!ghostTargetRef.current || ghostTickCountRef.current % GHOST_TARGET_REFRESH_TICKS === 0) {
+        ghostTargetRef.current = playerRef.current
+      }
+      const target = ghostTargetRef.current ?? playerRef.current
+      setGhost(prev => ghostNextStep(ld.grid, prev, target, GHOST_WANDER_CHANCE))
     }
     tick()
     ghostTimerRef.current = setInterval(tick, ghostTickMs)
@@ -454,15 +600,15 @@ export default function MazeGameQuiz({ instructorId, studentGameData, onExit }: 
     return () => { if (ghostTimerRef.current) clearInterval(ghostTimerRef.current) }
   }, [phase, ghostEnabled, ghostVisible, levelData, ghostTickMs])
 
-  // ── Ghost catch detection (still active while answering at gate) ─────────────
+  // ── Ghost catch detection → game over (restart the level) ────────────────────
   useEffect(() => {
     if (!ghostEnabled || !ghostVisible || (phase !== 'playing' && phase !== 'at-gate')) return
     if (ghost.r === player.r && ghost.c === player.c) {
       setGhostCaught(true)
-      if (caughtTimerRef.current) clearTimeout(caughtTimerRef.current)
-      caughtTimerRef.current = setTimeout(() => setGhostCaught(false), 2000)
+      clearAllRunTimers()
+      setPhase('game-over')
     }
-  }, [ghost, player, ghostEnabled, ghostVisible, phase])
+  }, [ghost, player, ghostEnabled, ghostVisible, phase, clearAllRunTimers])
 
   // ── Movement (keyboard + touch) ───────────────────────────────────────────────
   const tryMove = useCallback((delta: [number, number]) => {
@@ -489,6 +635,7 @@ export default function MazeGameQuiz({ instructorId, studentGameData, onExit }: 
       }
       return
     }
+    setTrail((prev) => [...prev, `${player.r}-${player.c}`].slice(-10))
     setPlayer({ r: nr, c: nc })
   }, [phase, ghostCaught, levelData, quiz, player, level, beginRunOnFirstMove, computeElapsedSeconds])
 
@@ -522,6 +669,60 @@ export default function MazeGameQuiz({ instructorId, studentGameData, onExit }: 
     return () => window.removeEventListener('keydown', onKey)
   }, [tryMove, handleTouchPause])
 
+  // ── Canvas fog of war ─────────────────────────────────────────────────────────
+  // A single dark layer with transparent "holes" punched at the player and each
+  // torch. Canvas lets multiple light sources union cleanly (CSS can't).
+  useEffect(() => {
+    if (!fogEnabled) return
+    const canvas = fogCanvasRef.current
+    if (!canvas) return
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+
+    const stride = cellPx + GRID_GAP
+    const w = 2 * GRID_EDGE + COLS * cellPx + (COLS - 1) * GRID_GAP
+    const h = 2 * GRID_EDGE + ROWS * cellPx + (ROWS - 1) * GRID_GAP
+    const dpr = window.devicePixelRatio || 1
+    canvas.width = Math.round(w * dpr)
+    canvas.height = Math.round(h * dpr)
+    canvas.style.width = `${w}px`
+    canvas.style.height = `${h}px`
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+
+    ctx.clearRect(0, 0, w, h)
+    ctx.globalCompositeOperation = 'source-over'
+    ctx.globalAlpha = 0.985
+    ctx.fillStyle = theme.fog
+    ctx.fillRect(0, 0, w, h)
+    ctx.globalAlpha = 1
+
+    ctx.globalCompositeOperation = 'destination-out'
+    const punch = (cx: number, cy: number, radius: number) => {
+      const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius)
+      g.addColorStop(0, 'rgba(0,0,0,1)')
+      g.addColorStop(0.55, 'rgba(0,0,0,0.92)')
+      g.addColorStop(0.8, 'rgba(0,0,0,0.45)')
+      g.addColorStop(1, 'rgba(0,0,0,0)')
+      ctx.fillStyle = g
+      ctx.beginPath()
+      ctx.arc(cx, cy, radius, 0, Math.PI * 2)
+      ctx.fill()
+    }
+    punch(
+      GRID_EDGE + player.c * stride + cellPx / 2,
+      GRID_EDGE + player.r * stride + cellPx / 2,
+      Math.max(70, cellPx * 4.6)
+    )
+    for (const t of torches) {
+      punch(
+        GRID_EDGE + t.c * stride + cellPx / 2,
+        GRID_EDGE + t.r * stride + cellPx / 2,
+        Math.max(48, cellPx * 3.3)
+      )
+    }
+    ctx.globalCompositeOperation = 'source-over'
+  }, [fogEnabled, player, torches, cellPx, theme])
+
   // ── Helpers ───────────────────────────────────────────────────────────────────
 
   const startGame = useCallback(() => {
@@ -530,7 +731,7 @@ export default function MazeGameQuiz({ instructorId, studentGameData, onExit }: 
     if (!q || !q.questions.length) return
     const playable = normalizeQuestionsForGame(q.questions)
     if (playable.length === 0) {
-      setListError('This quiz has no playable questions. Use multiple-choice (2–4 options) or true/false.')
+      setListError('This quiz has no playable questions. Use multiple-choice (2-4 options) or true/false.')
       return
     }
     const sorted: LibraryQuiz = {
@@ -554,9 +755,12 @@ export default function MazeGameQuiz({ instructorId, studentGameData, onExit }: 
     setPlayer(ld.start)
     setGhost({ ...ld.start })
     clearRunStats()
+    setTorches([])
+    setTorchesLeft(TORCH_BUDGET)
     setGhostCaught(false)
     setSelectedAnswer('')
     setAnswerFeedback(null)
+    howToShownRef.current = false // new run → allow the How to Play modal again
     setPhase('playing')
   }, [selectedQuizId, quizList, clearRunStats])
 
@@ -570,6 +774,11 @@ export default function MazeGameQuiz({ instructorId, studentGameData, onExit }: 
     const ld = buildLevel()
     setLevelData(ld)
     setPlayer(ld.start)
+    setTrail([])
+    setTorches([])
+    setTorchesLeft(TORCH_BUDGET)
+    ghostTargetRef.current = null
+    ghostTickCountRef.current = 0
     setGhost({ ...ld.start })
     setGhostVisible(false)
     setChasing(false)
@@ -581,6 +790,47 @@ export default function MazeGameQuiz({ instructorId, studentGameData, onExit }: 
     setAnswerFeedback(null)
     setPhase('playing')
   }, [level, clearLevelTimers, clearChaseTimers])
+
+  // Replays the current level with a brand-new randomized maze (used after a
+  // game over when the hunter catches the player). Keeps the run timer going.
+  const restartLevel = useCallback(() => {
+    clearLevelTimers()
+    clearChaseTimers()
+    levelMoveStartedRef.current = false
+    const ld = buildLevel()
+    setLevelData(ld)
+    setPlayer(ld.start)
+    setTrail([])
+    setTorches([])
+    setTorchesLeft(TORCH_BUDGET)
+    ghostTargetRef.current = null
+    ghostTickCountRef.current = 0
+    setGhost({ ...ld.start })
+    setGhostVisible(false)
+    setChasing(false)
+    setChaseCountdown(null)
+    setGhostCaught(false)
+    ghostTickMsRef.current = GHOST_TICK_MS
+    setGhostTickMs(GHOST_TICK_MS)
+    setSelectedAnswer('')
+    setAnswerFeedback(null)
+    setPhase('playing')
+  }, [clearLevelTimers, clearChaseTimers])
+
+  // Drop a torch on a specific (walkable) cell, spending one from the budget.
+  const placeTorchAt = useCallback((r: number, c: number) => {
+    if (!fogEnabled || phase !== 'playing' || torchesLeft <= 0) return
+    const ld = levelDataRef.current
+    if (!ld || ld.grid[r]?.[c] !== 0) return
+    if (torches.some((t) => t.r === r && t.c === c)) return // no double-stacking
+    setTorches((prev) => [...prev, { r, c }])
+    setTorchesLeft((n) => n - 1)
+  }, [fogEnabled, phase, torchesLeft, torches])
+
+  // Left-click the maze (or tap the button) to drop a torch on the player's cell.
+  const placeTorchOnPlayer = useCallback(() => {
+    placeTorchAt(playerRef.current.r, playerRef.current.c)
+  }, [placeTorchAt])
 
   const resetToSetup = useCallback(() => {
     clearRunStats()
@@ -639,6 +889,8 @@ export default function MazeGameQuiz({ instructorId, studentGameData, onExit }: 
           title: saveTitle.trim(),
           description: saveDesc.trim(),
           ghost_enabled: ghostEnabled,
+          game_type: 'maze',
+          settings: JSON.stringify({ fogEnabled }),
         }),
       })
       if (!res.ok) throw new Error((await res.json()).error || 'Save failed')
@@ -658,26 +910,29 @@ export default function MazeGameQuiz({ instructorId, studentGameData, onExit }: 
 
   const renderCell = (r: number, c: number) => {
     if (!levelData) return null
-    const isPlayer = player.r === r && player.c === c
-    const isGhost = ghostEnabled && ghostVisible && ghost.r === r && ghost.c === c
     const isGate = levelData.gate.r === r && levelData.gate.c === c
     const isExit = levelData.exit.r === r && levelData.exit.c === c
     const isWall = levelData.grid[r][c] === 1
+    const isTrail = !isWall && trailSet.has(`${r}-${c}`)
 
-    let bg = isWall ? C.wall : C.path
+    let bg = isWall ? theme.wall : theme.path
     let border = '1px solid transparent'
-    let boxShadow = 'none'
+    let boxShadow = ''
     let emoji = ''
     let borderRadius = '2px'
+    let className = `maze-game-quiz__cell ${isWall ? 'maze-game-quiz__cell--wall' : 'maze-game-quiz__cell--path'}`
 
-    if (isExit && !isPlayer) {
+    if (isTrail) {
+      bg = theme.trail
+    }
+    if (isExit) {
       bg = C.exitBg
       border = `1.5px solid ${C.exitBorder}`
       boxShadow = `0 0 6px rgba(250,204,21,0.4)`
       emoji = '⭐'
       borderRadius = '6px'
     }
-    if (isGate && !isPlayer) {
+    if (isGate) {
       bg = levelData.gateOpen ? C.gateOpenBg : C.gateLockedBg
       border = `1.5px solid ${levelData.gateOpen ? C.gateOpenBorder : C.gateLockedBorder}`
       boxShadow = levelData.gateOpen
@@ -685,26 +940,19 @@ export default function MazeGameQuiz({ instructorId, studentGameData, onExit }: 
         : '0 0 8px rgba(167,139,250,0.55)'
       emoji = levelData.gateOpen ? '✓' : '🚪'
       borderRadius = '5px'
-    }
-    if (isGhost && !isPlayer) { emoji = '👻' }
-    if (isPlayer) {
-      bg = ghostCaught ? 'rgba(239,68,68,0.7)' : C.playerBg
-      border = `2px solid ${ghostCaught ? '#ef4444' : C.playerBorder}`
-      boxShadow = `0 0 10px ${ghostCaught ? 'rgba(239,68,68,0.8)' : C.playerGlow}`
-      emoji = ghostCaught ? '😵' : '🧑'
-      borderRadius = '50%'
+      className += levelData.gateOpen ? ' maze-game-quiz__cell--gate-open' : ''
     }
 
     return (
       <div
         key={`${r}-${c}`}
-        className="maze-game-quiz__cell"
+        className={className}
         style={{
           width: cellPx,
           height: cellPx,
           background: bg,
           border,
-          boxShadow,
+          boxShadow: boxShadow || undefined,
           fontSize: cellPx * 0.55,
           borderRadius,
         }}
@@ -770,6 +1018,9 @@ export default function MazeGameQuiz({ instructorId, studentGameData, onExit }: 
                   {' · '}Ghost: <strong className={ghostEnabled ? 'maze-game-quiz__modal-summary-ghost--on' : 'maze-game-quiz__modal-summary-ghost--off'}>
                     {ghostEnabled ? 'Enabled' : 'Disabled'}
                   </strong>
+                  {' · '}Fog: <strong className={fogEnabled ? 'maze-game-quiz__modal-summary-ghost--on' : 'maze-game-quiz__modal-summary-ghost--off'}>
+                    {fogEnabled ? 'On' : 'Off'}
+                  </strong>
                 </p>
               </div>
               <div className="panel-row maze-game-quiz__modal-actions">
@@ -809,7 +1060,7 @@ export default function MazeGameQuiz({ instructorId, studentGameData, onExit }: 
         <div className="panel-card">
           <h3 className="panel-section-title">1. Choose a Quiz</h3>
           <p className="panel-meta maze-game-quiz__section-meta">
-            Supports multiple-choice (2–4 options) and true/false questions.
+            Supports multiple-choice (2-4 options) and true/false questions.
           </p>
           {listLoading ? (
             <PanelSkeleton variant="list" count={3} />
@@ -821,23 +1072,22 @@ export default function MazeGameQuiz({ instructorId, studentGameData, onExit }: 
             />
           ) : (
             <div className={`panel-form-group ${selQuiz ? 'maze-game-quiz__form-group--quiz-selected' : 'maze-game-quiz__form-group--no-quiz'}`}>
-              <label className="panel-label">Select Quiz</label>
-              <select
-                className="panel-select"
-                value={selectedQuizId}
-                onChange={e => setSelectedQuizId(e.target.value ? Number(e.target.value) : '')}
-              >
-                <option value="">Choose a quiz from your library…</option>
-                {quizList.map(q => {
+              <label className="panel-label">Search your quiz library</label>
+              <QuizSearchSelect
+                options={quizList.map(q => {
                   const n = countPlayableQuestions(q.questions)
-                  return (
-                    <option key={q.id} value={q.id} disabled={n === 0}>
-                      {q.title} ({n} playable{n === 0 ? ', needs valid questions' : ''})
-                      {q.class_title ? ` · ${q.class_title}` : ''}
-                    </option>
-                  )
+                  return {
+                    id: q.id,
+                    title: `${q.title}${q.class_title ? ` · ${q.class_title}` : ''}${n === 0 ? ' · needs valid questions' : ''}`,
+                  }
                 })}
-              </select>
+                value={selectedQuizId === '' ? '' : String(selectedQuizId)}
+                onChange={id => setSelectedQuizId(id ? Number(id) : '')}
+                placeholder="Type a quiz name to search…"
+                emptyText="No matching quizzes in your library"
+                ariaLabel="Search quizzes to build a game"
+                optionIcon="quiz"
+              />
             </div>
           )}
           {selQuiz && (
@@ -851,7 +1101,7 @@ export default function MazeGameQuiz({ instructorId, studentGameData, onExit }: 
               </div>
               {playableCount === 0 && (
                 <p className="panel-meta maze-game-quiz__quiz-preview-error">
-                  Add multiple-choice (2–4 options) or true/false questions to use this quiz.
+                  Add multiple-choice (2-4 options) or true/false questions to use this quiz.
                 </p>
               )}
             </div>
@@ -872,6 +1122,22 @@ export default function MazeGameQuiz({ instructorId, studentGameData, onExit }: 
               <span className="maze-game-quiz__checkbox-title">Enable Ghost Enemy 👻</span>
               <p className="panel-meta maze-game-quiz__checkbox-desc">
                 A ghost waits at your spawn point. It appears and chases you 10 seconds after your first move.
+                If it catches you, the level restarts with a new maze.
+              </p>
+            </div>
+          </label>
+          <label className="maze-game-quiz__checkbox-label">
+            <input
+              type="checkbox"
+              checked={fogEnabled}
+              onChange={e => setFogEnabled(e.target.checked)}
+              className="maze-game-quiz__checkbox"
+            />
+            <div>
+              <span className="maze-game-quiz__checkbox-title">Enable Fog of War 🔦</span>
+              <p className="panel-meta maze-game-quiz__checkbox-desc">
+                Only the area around the player is lit. Players get {TORCH_BUDGET} torches per level
+                (right-click or the Place Torch button) to reveal more of the maze. Turn off to show the whole maze.
               </p>
             </div>
           </label>
@@ -899,7 +1165,7 @@ export default function MazeGameQuiz({ instructorId, studentGameData, onExit }: 
             onClick={startGame}
             disabled={!selectedQuizId || listLoading || playableCount === 0}
           >
-            ▶ Start Game
+            ▶ Test Play
           </button>
           <button
             className="panel-btn panel-btn-secondary maze-game-quiz__action-btn"
@@ -1013,11 +1279,41 @@ export default function MazeGameQuiz({ instructorId, studentGameData, onExit }: 
     option_order: o.option_order,
   }))
 
+  // Overlay geometry — keep in sync with the grid's border/padding/gap (CSS).
+  const stride = cellPx + GRID_GAP
+  const tokenStyle = (pos: Pos): CSSProperties => ({
+    width: cellPx,
+    height: cellPx,
+    fontSize: cellPx * 0.62,
+    transform: `translate(${GRID_EDGE + pos.c * stride}px, ${GRID_EDGE + pos.r * stride}px)`,
+  })
+  const ghostActive = ghostEnabled && ghostVisible
+  const ghostDist = ghostActive ? Math.abs(ghost.r - player.r) + Math.abs(ghost.c - player.c) : 99
+  const dangerLevel = ghostActive ? Math.max(0, Math.min(1, (7 - ghostDist) / 7)) : 0
+  const scared = ghostActive && !ghostCaught && ghostDist <= 4
+  // Ghost is hidden in the fog and fades in as it nears the player. With fog off
+  // it's always visible (per the instructor's choice).
+  const ghostOpacity = !fogEnabled ? 1 : Math.max(0, Math.min(1, (6 - ghostDist) / 5))
+
+  const mazeHowToSteps: HowToStep[] = [
+    { icon: '🎮', text: <>Move with <strong>Arrow Keys</strong> or <strong>WASD</strong> (or the on-screen pad on mobile).</> },
+    { icon: '🚪', text: <>Reach the <strong>Gate</strong>, which blocks the only path to the exit.</> },
+    { icon: '✅', text: <>Answer the gate question correctly to unlock it.</> },
+    { icon: '⭐', text: <>Navigate to the <strong>Exit</strong> to advance to the next level.</> },
+    ...(fogEnabled
+      ? [{ icon: '🔥', text: <>Fog of War is on: click the maze (or tap 🔥) to drop a torch and reveal the area. You get {TORCH_BUDGET} torches per level.</> }]
+      : []),
+    ...(ghostEnabled
+      ? [{ icon: '👻', text: <>The <strong>Ghost</strong> appears at spawn and starts chasing 10 seconds after your first move. If it catches you, the level restarts.</> }]
+      : []),
+    { icon: '⏸️', text: <>Press <strong>ESC</strong> (or tap ⏸) to pause at any time.</> },
+  ]
+
   return (
     <div className="panel-page maze-game-quiz__page--playing">
       {/* Header */}
       <div className="maze-game-quiz__header">
-        <div>
+        <div className="maze-game-quiz__header-titles">
           <p className="panel-kicker maze-game-quiz__header-kicker">
             {isStudentMode ? 'Maze Quest' : 'Instructor · Maze Quest'}
           </p>
@@ -1042,10 +1338,10 @@ export default function MazeGameQuiz({ instructorId, studentGameData, onExit }: 
           <span className="maze-game-quiz__badge--level">
             Level {level + 1} / {quiz.questions.length}
           </span>
-          <button className="panel-btn panel-btn-secondary panel-btn-sm" onClick={() => setPhase('paused')} title="Pause (ESC)">
-            ⏸ Pause
-          </button>
         </div>
+        <button className="panel-btn panel-btn-secondary panel-btn-sm maze-game-quiz__header-pause" onClick={() => setPhase('paused')} title="Pause (ESC)">
+          ⏸ Pause
+        </button>
       </div>
 
       {/* Gate Question Popup */}
@@ -1127,9 +1423,39 @@ export default function MazeGameQuiz({ instructorId, studentGameData, onExit }: 
         </div>
       )}
 
+      {/* Game Over (hunter caught the player) */}
+      {phase === 'game-over' && (
+        <div className="maze-game-quiz__gate-backdrop">
+          <div className="maze-game-quiz__gameover-modal" role="alertdialog" aria-labelledby="maze-gameover-title">
+            <div className="maze-game-quiz__gameover-icon">👻</div>
+            <h2 id="maze-gameover-title" className="maze-game-quiz__gameover-title">The hunter caught you!</h2>
+            <p className="maze-game-quiz__gameover-text">
+              Restart Level {level + 1}. A brand-new maze layout is waiting for you.
+            </p>
+            <div className="maze-game-quiz__gameover-actions">
+              <button type="button" className="panel-btn panel-btn-primary maze-game-quiz__gameover-btn" onClick={restartLevel}>
+                ↻ Restart Level
+              </button>
+              <button
+                type="button"
+                className="panel-btn panel-btn-secondary maze-game-quiz__gameover-btn"
+                onClick={() => { clearAllRunTimers(); onExit() }}
+              >
+                ← {isStudentMode ? 'Back to Courses' : 'Back to Studio'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Maze Grid */}
       <div className="maze-game-quiz__grid-wrap">
-        <div className="maze-game-quiz__grid-container">
+        <div
+          ref={gridContainerRef}
+          className="maze-game-quiz__grid-container"
+          style={{ '--maze-accent': theme.accent, '--maze-accent-soft': theme.accentSoft } as CSSProperties}
+          onClick={fogEnabled ? placeTorchOnPlayer : undefined}
+        >
           <div
             className={`maze-game-quiz__grid${phase === 'at-gate' ? ' maze-game-quiz__grid--dimmed' : ''}`}
             style={{
@@ -1139,6 +1465,42 @@ export default function MazeGameQuiz({ instructorId, studentGameData, onExit }: 
           >
             {Array.from({ length: ROWS }, (_, r) => Array.from({ length: COLS }, (_, c) => renderCell(r, c)))}
           </div>
+
+          {/* Torch markers (under the fog so their own glow shows through) */}
+          {fogEnabled && torches.map((t, i) => (
+            <div key={`torch-${i}`} className="maze-game-quiz__token maze-game-quiz__token--torch" style={tokenStyle(t)}>
+              <span className="maze-game-quiz__token-emoji">🔥</span>
+            </div>
+          ))}
+
+          {/* Fog of war — canvas with holes punched at the player + every torch */}
+          {fogEnabled && (
+            <canvas ref={fogCanvasRef} className="maze-game-quiz__fog-canvas" aria-hidden="true" />
+          )}
+
+          {/* Ghost proximity tension */}
+          {dangerLevel > 0 && (
+            <div className="maze-game-quiz__danger-vignette" style={{ opacity: 0.25 + dangerLevel * 0.55 }} />
+          )}
+
+          {/* Player token (slides between cells) */}
+          <div
+            className={`maze-game-quiz__token maze-game-quiz__token--player${ghostCaught ? ' maze-game-quiz__token--caught' : ''}${scared ? ' maze-game-quiz__token--scared' : ''}`}
+            style={tokenStyle(player)}
+          >
+            <span className="maze-game-quiz__token-emoji">{ghostCaught ? '😵' : scared ? '😱' : '🧑'}</span>
+          </div>
+
+          {/* Ghost token — fades in from the fog as it nears the player */}
+          {ghostActive && (
+            <div
+              className="maze-game-quiz__token maze-game-quiz__token--ghost"
+              style={{ ...tokenStyle(ghost), opacity: ghostOpacity }}
+            >
+              <span className="maze-game-quiz__token-emoji">👻</span>
+            </div>
+          )}
+
           {phase === 'paused' && (
             <div className="maze-game-quiz__pause-overlay">
               <div className="maze-game-quiz__pause-icon">⏸</div>
@@ -1166,6 +1528,23 @@ export default function MazeGameQuiz({ instructorId, studentGameData, onExit }: 
         </div>
       </div>
 
+      {/* Torch bar — only relevant while fog is on */}
+      {fogEnabled && (
+        <div className="maze-game-quiz__torch-bar">
+          <button
+            type="button"
+            className="maze-game-quiz__torch-btn"
+            onClick={placeTorchOnPlayer}
+            disabled={phase !== 'playing' || torchesLeft <= 0}
+          >
+            🔥 Place Torch
+          </button>
+          <span className="maze-game-quiz__torch-count">
+            {torchesLeft} / {TORCH_BUDGET} left
+          </span>
+        </div>
+      )}
+
       <GameTouchControls
         onDirection={handleTouchDirection}
         onPause={handleTouchPause}
@@ -1174,14 +1553,14 @@ export default function MazeGameQuiz({ instructorId, studentGameData, onExit }: 
 
       {/* Controls hint */}
       <div className="maze-game-quiz__hint-wrap">
-        <p className={`panel-meta maze-game-quiz__hint-text game-controls-hint--desktop${ghostCaught ? ' maze-game-quiz__hint-text--caught' : ''}`}>
-          {ghostCaught ? '😵 Stunned! Wait 2 seconds…'
-            : phase === 'at-gate' ? '🚪 Answer the gate question in the popup'
+        <p className={`panel-meta maze-game-quiz__hint-text game-controls-hint--desktop`}>
+          {phase === 'at-gate' ? '🚪 Answer the gate question in the popup'
+            : fogEnabled ? 'Find the 🚪 gate · Arrow keys / WASD · Click the maze to drop a 🔥 torch · ESC to pause'
             : 'Find the 🚪 gate · Arrow keys or WASD · ESC to pause'}
         </p>
-        <p className={`panel-meta maze-game-quiz__hint-text game-controls-hint--mobile${ghostCaught ? ' maze-game-quiz__hint-text--caught' : ''}`}>
-          {ghostCaught ? '😵 Stunned! Wait 2 seconds…'
-            : phase === 'at-gate' ? '🚪 Answer the gate question in the popup'
+        <p className={`panel-meta maze-game-quiz__hint-text game-controls-hint--mobile`}>
+          {phase === 'at-gate' ? '🚪 Answer the gate question in the popup'
+            : fogEnabled ? 'Move with the pad · Tap 🔥 to drop a torch · Tap ⏸ to pause'
             : 'Use the on-screen pad to move · Tap ⏸ to pause'}
         </p>
         <div className="maze-game-quiz__legend">
@@ -1189,9 +1568,24 @@ export default function MazeGameQuiz({ instructorId, studentGameData, onExit }: 
           <span>🚪 Gate (locked)</span>
           <span>✓ Gate (open)</span>
           <span>⭐ Exit</span>
+          {fogEnabled && <span>🔥 Torch</span>}
           {ghostEnabled && <span>👻 Ghost</span>}
         </div>
       </div>
+
+      <GameHowToModal
+        open={howToOpen}
+        gameName="Maze Quest"
+        subtitle="Find the gate, answer to unlock it, then reach the exit."
+        accent="#a855f7"
+        icon="🧩"
+        steps={mazeHowToSteps}
+        primaryLabel="Let's Play!"
+        onPrimary={() => setHowToOpen(false)}
+        onClose={() => setHowToOpen(false)}
+        dontShowAgain={howTo.disabled}
+        onDontShowAgainChange={howTo.setDisabled}
+      />
     </div>
   )
 }

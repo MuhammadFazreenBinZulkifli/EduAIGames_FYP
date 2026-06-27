@@ -336,6 +336,33 @@
   line-height: 1.45;
 }
 
+.dash-banner__guide-btn {
+  position: relative;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  align-self: flex-start;
+  max-width: 100%;
+  margin-top: 0.9rem;
+  padding: 0.5rem 0.95rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  white-space: nowrap;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  border-radius: 9px;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.dash-banner__guide-btn:hover {
+  background: rgba(255, 255, 255, 0.26);
+  transform: translateY(-1px);
+}
+
 .dash-banner__stats {
   position: relative;
   z-index: 1;
@@ -871,6 +898,14 @@ html[data-theme='light'] .dash-glance-row {
   .dash-banner__sub {
     font-size: 0.85rem;
     line-height: 1.45;
+  }
+  .dash-banner__copy {
+    width: 100%;
+  }
+  .dash-banner__guide-btn {
+    margin-top: 0.75rem;
+    margin-bottom: 0.25rem;
+    white-space: normal;
   }
 }
 

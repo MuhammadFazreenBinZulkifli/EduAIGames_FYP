@@ -10,7 +10,11 @@ import {
   sendTestEmail,
 } from '../emailService.ts';
 import { getPlatformSetting, insertAdminNotification } from '../adminServices.ts';
-import { getUserInstitutionContext } from '../institutionServices.ts';
+import {
+  getUserInstitutionContext,
+  findInstitutionIdByEmailDomain,
+  institutionHasSeatAvailable,
+} from '../institutionServices.ts';
 import { recordUserLogin } from '../loginEvents.ts';
 import type { AccountStatus } from '../userAccountStatus.ts';
 
@@ -50,7 +54,7 @@ async function notifyAdminIfPending(user: {
     await insertAdminNotification({
       type: 'pending_registration',
       title: 'New registration request',
-      body: `${user.username} (${user.role}) requested access — ${user.email}`,
+      body: `${user.username} (${user.role}) requested access: ${user.email}`,
       metadata: { email: user.email, role: user.role },
     });
   } catch (err) {
@@ -64,6 +68,21 @@ function registrationEmailError(existing: { account_status?: string } | undefine
     return 'A registration for this email is already awaiting admin approval.';
   }
   return 'Email already registered';
+}
+
+const SEAT_LIMIT_MESSAGE =
+  'Your institution has reached its seat limit. Please contact your administrator.';
+
+// Determines which institution a new signup belongs to (by email domain) and
+// whether that tenant still has a free seat. institutionId is null when no
+// institution claims the domain (the account then falls back to the default).
+async function resolveSignupInstitution(
+  email: string
+): Promise<{ full: boolean; institutionId: number | null }> {
+  const institutionId = await findInstitutionIdByEmailDomain(email);
+  if (institutionId == null) return { full: false, institutionId: null };
+  const hasSeat = await institutionHasSeatAvailable(institutionId);
+  return { full: !hasSeat, institutionId };
 }
 
 const getOtpHash = (otp: string) =>
@@ -194,6 +213,15 @@ router.post('/register/verify-otp', async (req: Request, res: Response) => {
     }
 
     const normalizedEmail = String(email).trim().toLowerCase();
+
+    // Route the signup to its institution by email domain and enforce its seat
+    // limit before consuming the OTP, so a full tenant doesn't waste the code.
+    const { full, institutionId } = await resolveSignupInstitution(normalizedEmail);
+    if (full) {
+      res.status(403).json({ error: SEAT_LIMIT_MESSAGE });
+      return;
+    }
+
     const payload = await consumeLatestOtp(normalizedEmail, 'register', String(otp).trim());
     if (!payload || !payload.username || !payload.password || !payload.role) {
       res.status(400).json({ error: 'Registration session not found. Please try again.' });
@@ -213,7 +241,8 @@ router.post('/register/verify-otp', async (req: Request, res: Response) => {
       normalizedEmail,
       payload.password,
       payload.role,
-      accountStatus
+      accountStatus,
+      institutionId
     );
     await notifyAdminIfPending(user);
     const pendingApproval = accountStatus === 'pending';
@@ -323,6 +352,13 @@ router.post('/register', async (req: Request, res: Response) => {
       return;
     }
 
+    // Route to institution by email domain and enforce its seat limit.
+    const { full, institutionId } = await resolveSignupInstitution(normalizedEmail);
+    if (full) {
+      res.status(403).json({ error: SEAT_LIMIT_MESSAGE });
+      return;
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
     const accountStatus = await resolveRegistrationStatus();
     const newUser = await createUser(
@@ -330,7 +366,8 @@ router.post('/register', async (req: Request, res: Response) => {
       normalizedEmail,
       hashedPassword,
       role,
-      accountStatus
+      accountStatus,
+      institutionId
     );
     await notifyAdminIfPending(newUser);
     const pendingApproval = accountStatus === 'pending';

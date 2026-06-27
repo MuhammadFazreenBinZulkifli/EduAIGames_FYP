@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { API_BASE_URL } from '../config'
 import { useAuth } from '../context/AuthContext'
 import { usePanelUI } from '../context/PanelUIContext'
+import { fetchPreferences, updatePreferences } from '../hooks/useUserPreferences'
 import UserAvatar from './UserAvatar'
 import ImageDropZone from './ImageDropZone'
 import ChangePasswordModal from './ChangePasswordModal'
@@ -13,6 +14,14 @@ import './App_CSS/PanelPages_CSS.css'
 
 const MAX_DIMENSION = 512
 const JPEG_QUALITY = 0.82
+
+// Games that show a "How to Play" guide before they start.
+const HOWTO_GAMES: { key: string; name: string; icon: string }[] = [
+  { key: 'snake', name: 'Snake Quest', icon: '🐍' },
+  { key: 'maze', name: 'Maze Quest', icon: '🧩' },
+  { key: 'breakout', name: 'Brick Breaker', icon: '🧱' },
+  { key: 'trivia', name: 'Trivia Race', icon: '🏃' },
+]
 
 // Compress & resize an image file to a base64 data URL.
 function compressImage(file: File): Promise<string> {
@@ -48,8 +57,38 @@ export default function ProfileSettings() {
   const [preview, setPreview] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
   const [showPwdModal, setShowPwdModal] = useState(false)
+  const [howToDisabled, setHowToDisabled] = useState<Record<string, boolean>>({})
+  const [prefsLoading, setPrefsLoading] = useState(true)
+
+  // Load the saved per-game "How to Play" preferences for this account.
+  useEffect(() => {
+    if (!user?.id) { setPrefsLoading(false); return }
+    let active = true
+    fetchPreferences(user.id)
+      .then((prefs) => {
+        if (active) {
+          setHowToDisabled(prefs.gameHowToDisabled || {})
+          setPrefsLoading(false)
+        }
+      })
+      .catch(() => { if (active) setPrefsLoading(false) })
+    return () => { active = false }
+  }, [user?.id])
 
   if (!user) return null
+
+  // Toggle whether a game shows its "How to Play" guide before starting.
+  const toggleHowTo = (key: string, enabled: boolean) => {
+    if (!user.id) return
+    const disabled = !enabled
+    setHowToDisabled((prev) => ({ ...prev, [key]: disabled }))
+    void updatePreferences(user.id, { gameHowToDisabled: { [key]: disabled } })
+      .then(() => toast(enabled ? 'Guide turned on.' : 'Guide turned off.', 'success'))
+      .catch(() => {
+        setHowToDisabled((prev) => ({ ...prev, [key]: enabled }))
+        toast('Failed to save preference.', 'error')
+      })
+  }
 
   const currentAvatar = preview ?? user.avatarUrl ?? null
 
@@ -134,7 +173,7 @@ export default function ProfileSettings() {
             onFile={handleAvatarFile}
             onRemove={() => { setPreview(null); void handleRemoveAvatar() }}
             label="Drag & drop your photo here, or click to browse"
-            hint="JPG, PNG, GIF – resized to 512 px"
+            hint="JPG, PNG, or GIF, resized to 512 px"
             aspectClass="prof-settings__drop-zone"
           />
           <p className="prof-settings__avatar-hint">Max 4 MB. Square images look best.</p>
@@ -188,6 +227,42 @@ export default function ProfileSettings() {
             </button>
           </div>
         </div>
+      </div>
+
+      <div className="prof-settings__card howto-pref">
+        <div className="howto-pref__head">
+          <h2 className="howto-pref__title">Game guides</h2>
+          <p className="howto-pref__sub">
+            Choose which games show the “How to Play” guide before they start. Turn one back on if
+            you previously chose “Don’t show this again”.
+          </p>
+        </div>
+        <ul className="howto-pref__list">
+          {HOWTO_GAMES.map((g) => {
+            const enabled = !howToDisabled[g.key]
+            return (
+              <li key={g.key} className="howto-pref__row">
+                <span className="howto-pref__icon" aria-hidden="true">{g.icon}</span>
+                <div className="howto-pref__info">
+                  <p className="howto-pref__name">{g.name}</p>
+                  <p className="howto-pref__desc">
+                    {enabled ? 'Guide shows before the game starts' : 'Guide is hidden'}
+                  </p>
+                </div>
+                <label className="howto-switch" title={`${enabled ? 'Disable' : 'Enable'} the ${g.name} guide`}>
+                  <input
+                    type="checkbox"
+                    checked={enabled}
+                    disabled={prefsLoading}
+                    onChange={(e) => toggleHowTo(g.key, e.target.checked)}
+                  />
+                  <span className="howto-switch__slider" aria-hidden="true" />
+                  <span className="howto-switch__label">{enabled ? 'On' : 'Off'}</span>
+                </label>
+              </li>
+            )
+          })}
+        </ul>
       </div>
 
       {showPwdModal && user.id && (

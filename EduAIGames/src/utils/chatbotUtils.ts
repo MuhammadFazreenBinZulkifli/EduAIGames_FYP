@@ -1,10 +1,11 @@
 export type ChatbotRole = 'Guest' | 'Instructor' | 'Student'
 
-const CHATBOT_HIDDEN_PATH_PREFIXES = [
+// Pages where STUDENTS should not see the chatbot (during quizzes / live games).
+// Instructors keep the chatbot everywhere — including game test-play — so it is
+// available while they build, test, and answer their own content.
+const STUDENT_CHATBOT_HIDDEN_PATH_PREFIXES = [
   '/student/quiz',
   '/student/games',
-  '/instructor/studio/maze',
-  '/instructor/studio/snake',
 ]
 
 export function shouldShowChatbot(
@@ -14,9 +15,12 @@ export function shouldShowChatbot(
 ): boolean {
   if (features?.chatbot_enabled === false || features?.openai_enabled === false) return false
   if (loggedInUser?.role === 'Admin' || loggedInUser?.role === 'SuperAdmin') return false
-  if (CHATBOT_HIDDEN_PATH_PREFIXES.some((p) => pathname.startsWith(p))) return false
 
-  if (loggedInUser?.role === 'Instructor' || loggedInUser?.role === 'Student') {
+  // Instructors always have the assistant available (test-play included).
+  if (loggedInUser?.role === 'Instructor') return true
+
+  if (loggedInUser?.role === 'Student') {
+    if (STUDENT_CHATBOT_HIDDEN_PATH_PREFIXES.some((p) => pathname.startsWith(p))) return false
     return true
   }
 

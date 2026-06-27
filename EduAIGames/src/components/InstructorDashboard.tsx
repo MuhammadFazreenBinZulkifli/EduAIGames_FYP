@@ -8,6 +8,8 @@ import { ROUTES } from '../routes/paths'
 import type { NotificationType } from './NotificationBell'
 import OnboardingChecklist from './OnboardingChecklist'
 import DashboardIcon from './DashboardIcon'
+import WebsiteGuideModal from './WebsiteGuideModal'
+import { fetchPreferences, updatePreferences } from '../hooks/useUserPreferences'
 import type { IconName } from './SidebarIcons'
 import './App_CSS/PanelDashboard_CSS.css'
 
@@ -81,6 +83,23 @@ function InstructorDashboard({
   })
   const [recentClasses, setRecentClasses] = useState<ClassItem[]>([])
   const [recentActivity, setRecentActivity] = useState<ActivityItem[]>([])
+  const [guideOpen, setGuideOpen] = useState(false)
+
+  // Show the "How it works" guide automatically the first time a new instructor
+  // lands on the dashboard, then remember it on their account.
+  useEffect(() => {
+    if (!user.id) return
+    let active = true
+    fetchPreferences(user.id)
+      .then((prefs) => {
+        if (active && !prefs.guideSeen) {
+          setGuideOpen(true)
+          void updatePreferences(user.id!, { guideSeen: true }).catch(() => {})
+        }
+      })
+      .catch(() => {})
+    return () => { active = false }
+  }, [user.id])
 
   useEffect(() => {
     if (!user.id) { setLoading(false); return }
@@ -220,6 +239,9 @@ function InstructorDashboard({
               ? `You are teaching ${stats.classCount} class${stats.classCount === 1 ? '' : 'es'}. Keep your students engaged with quizzes and games.`
               : 'Welcome! Create your first class to start sharing learning content with students.'}
           </p>
+          <button type="button" className="dash-banner__guide-btn" onClick={() => setGuideOpen(true)}>
+            ❔ How it works
+          </button>
         </div>
 
         {loading ? (
@@ -437,6 +459,8 @@ function InstructorDashboard({
           <span className="dash-tile__arrow">→</span>
         </button>
       </div>
+
+      <WebsiteGuideModal open={guideOpen} role="Instructor" onClose={() => setGuideOpen(false)} />
     </div>
   )
 }

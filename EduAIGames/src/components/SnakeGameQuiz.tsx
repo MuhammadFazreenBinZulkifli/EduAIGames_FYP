@@ -9,6 +9,8 @@ import GameTouchControls, { type TouchDirection } from './GameTouchControls'
 import QuizSearchSelect from './QuizSearchSelect'
 import PanelSkeleton from './PanelSkeleton'
 import PanelEmptyState from './PanelEmptyState'
+import GameHowToModal, { type HowToStep } from './GameHowToModal'
+import { useGameHowTo } from '../hooks/useUserPreferences'
 import {
   countPlayableQuestions,
   normalizeQuestionsForGame,
@@ -382,6 +384,11 @@ export default function SnakeGameQuiz({ instructorId, studentGameData, onExit }:
 
   const [awaitingFirstMove, setAwaitingFirstMove] = useState(true)
 
+  // How to Play modal (shown before each run; per-game disable synced to account).
+  const howTo = useGameHowTo('snake')
+  const [howToOpen, setHowToOpen] = useState(false)
+  const howToShownRef = useRef(false)
+
   const [lives, setLives] = useState(DEFAULT_SETTINGS.lives)
   const [penaltySegments, setPenaltySegments] = useState(0)  // max MAX_PENALTY
   const [wrongCount, setWrongCount] = useState(0)
@@ -529,6 +536,7 @@ export default function SnakeGameQuiz({ instructorId, studentGameData, onExit }:
     const qs = toSnakeQuestions(playable)
     setQuestions(qs)
     questionsRef.current = qs
+    howToShownRef.current = false // new run → allow the How to Play modal again
     initLevel(0, qs, cfg)
   }
 
@@ -544,7 +552,7 @@ export default function SnakeGameQuiz({ instructorId, studentGameData, onExit }:
       const playable = normalizeQuestionsForGame(raw)
       if (playable.length === 0) {
         setListError(
-          'This quiz has no playable questions. Use multiple-choice (2–4 options) or true/false questions with a valid answer.'
+          'This quiz has no playable questions. Use multiple-choice (2-4 options) or true/false questions with a valid answer.'
         )
         setPhase('setup')
         return
@@ -942,6 +950,15 @@ export default function SnakeGameQuiz({ instructorId, studentGameData, onExit }:
     stopTickInterval()
   }, [phase, speedMs, gameTick2])
 
+  // Auto-open the How to Play modal once per run while the snake is frozen
+  // awaiting the first move (covers both instructor test play and student play).
+  useEffect(() => {
+    if (phase === 'playing' && awaitingFirstMove && howTo.loaded && !howToShownRef.current) {
+      howToShownRef.current = true
+      if (!howTo.disabled) setHowToOpen(true)
+    }
+  }, [phase, awaitingFirstMove, howTo.loaded, howTo.disabled])
+
   // ── Hunter movement — one orthogonal step per tick, 50% slower than snake ──
   useEffect(() => {
     if (hunterVisible && phase === 'playing') {
@@ -1069,7 +1086,7 @@ export default function SnakeGameQuiz({ instructorId, studentGameData, onExit }:
     const playable = normalizeQuestionsForGame(libQuiz.questions)
     if (playable.length === 0) {
       setListError(
-        'This quiz has no playable questions. Use multiple-choice (2–4 options) or true/false questions.'
+        'This quiz has no playable questions. Use multiple-choice (2-4 options) or true/false questions.'
       )
       return
     }
@@ -1263,7 +1280,7 @@ export default function SnakeGameQuiz({ instructorId, studentGameData, onExit }:
         <div className="panel-card">
           <h3 className="panel-section-title">1. Choose a Quiz</h3>
           <p className="panel-meta snake-game-quiz__section-meta">
-            Supports multiple-choice (2–4 options) and true/false questions.
+            Supports multiple-choice (2-4 options) and true/false questions.
           </p>
           {listLoading ? (
             <PanelSkeleton variant="list" count={3} />
@@ -1304,7 +1321,7 @@ export default function SnakeGameQuiz({ instructorId, studentGameData, onExit }:
               </div>
               {playableCount === 0 && (
                 <p className="panel-meta snake-game-quiz__quiz-preview-error">
-                  Add multiple-choice (2–4 options) or true/false questions to use this quiz.
+                  Add multiple-choice (2-4 options) or true/false questions to use this quiz.
                 </p>
               )}
             </div>
@@ -1404,7 +1421,7 @@ export default function SnakeGameQuiz({ instructorId, studentGameData, onExit }:
             onClick={startGame}
             disabled={!selectedQuizId || listLoading || playableCount === 0}
           >
-            ▶ Start Game
+            ▶ Test Play
           </button>
           <button
             className="panel-btn panel-btn-secondary snake-game-quiz__action-btn"
@@ -1567,6 +1584,18 @@ export default function SnakeGameQuiz({ instructorId, studentGameData, onExit }:
     ? null
     : Array.from({ length: settings.lives }, (_, i) => i < lives)
 
+  const snakeHowToSteps: HowToStep[] = [
+    { icon: '🎮', text: <>Move with <strong>Arrow Keys</strong> or <strong>WASD</strong> (or the on-screen pad on mobile).</> },
+    { icon: '🍎', text: <>Read the question and eat the <strong>correct coloured fruit</strong> (A/B/C/D).</> },
+    { icon: '⚠️', text: <>Wrong fruit grows your tail by 2 (up to +{MAX_PENALTY} penalty segments per round).</> },
+    { icon: '🧱', text: <>Hitting an obstacle or yourself respawns you with a longer tail, and the timer keeps running.</> },
+    { icon: '🔄', text: <>Edges wrap around: you re-enter from the opposite side.</> },
+    ...(settings.hunterEnabled
+      ? [{ icon: '👾', text: <>The <strong>Hunter</strong> chases at half your speed. If it catches you, it&apos;s game over (unless lives are unlimited).</> }]
+      : []),
+    { icon: '⏸️', text: <>Press <strong>ESC</strong> (or tap ⏸) to pause anytime.</> },
+  ]
+
   return (
     <div className="panel-page snake-game-quiz__page--playing">
       <div
@@ -1720,6 +1749,20 @@ export default function SnakeGameQuiz({ instructorId, studentGameData, onExit }:
           Use the on-screen pad to move · Tap ⏸ to pause
         </div>
       </div>
+
+      <GameHowToModal
+        open={howToOpen}
+        gameName="Snake Quest"
+        subtitle="Eat the correct answer fruit to clear each question."
+        accent="#22c55e"
+        icon="🐍"
+        steps={snakeHowToSteps}
+        primaryLabel="Let's Play!"
+        onPrimary={() => setHowToOpen(false)}
+        onClose={() => setHowToOpen(false)}
+        dontShowAgain={howTo.disabled}
+        onDontShowAgainChange={howTo.setDisabled}
+      />
     </div>
   )
 }

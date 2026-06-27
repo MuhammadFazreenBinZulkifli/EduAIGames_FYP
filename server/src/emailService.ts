@@ -87,7 +87,7 @@ export async function sendRegistrationApprovedEmail(input: {
   await transporter.sendMail({
     from: getFromAddress(),
     to: input.to,
-    subject: 'EduAIGames — Your account has been approved',
+    subject: 'EduAIGames: Your account has been approved',
     text: `Hi ${input.fullName},\n\nYour ${roleLabel} registration on EduAIGames has been approved. You can now log in at ${loginUrl}\n\nWelcome aboard!`,
     html: emailLayout(
       'Your account has been approved',
@@ -113,7 +113,7 @@ export async function sendRegistrationRejectedEmail(input: {
   await transporter.sendMail({
     from: getFromAddress(),
     to: input.to,
-    subject: 'EduAIGames — Registration update',
+    subject: 'EduAIGames: Registration update',
     text: `Hi ${input.fullName},\n\nYour EduAIGames registration was not approved at this time. If you believe this is a mistake, please contact your administrator.\n\nYou may submit a new registration request if you wish to try again.`,
     html: emailLayout(
       'Registration not approved',

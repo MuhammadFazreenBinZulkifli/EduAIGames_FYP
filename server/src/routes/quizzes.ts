@@ -72,7 +72,7 @@ function buildQuizModerationText(
 // Create a new quiz
 router.post('/', async (req: Request, res: Response) => {
   try {
-    const { instructor_id, class_id, course_id, title, description, questions, due_date,
+    const { instructor_id, class_id, course_id, title, description, questions,
             time_limit_minutes, shuffle_questions, shuffle_options, max_attempts,
             show_results_after, allow_late_submit } = req.body;
 
@@ -142,7 +142,6 @@ router.post('/', async (req: Request, res: Response) => {
       title,
       description: description || '',
       questions,
-      due_date: due_date || null,
       time_limit_minutes: time_limit_minutes ?? null,
       shuffle_questions: shuffle_questions ?? false,
       shuffle_options: shuffle_options ?? false,
@@ -250,7 +249,7 @@ router.get('/:quizId(\\d+)', async (req: Request, res: Response) => {
 router.put('/:quizId', async (req: Request, res: Response) => {
   try {
     const { quizId } = req.params;
-    const { instructor_id, title, description, questions, due_date,
+    const { instructor_id, title, description, questions,
             time_limit_minutes, shuffle_questions, shuffle_options, max_attempts,
             show_results_after, allow_late_submit } = req.body;
 
@@ -297,7 +296,6 @@ router.put('/:quizId', async (req: Request, res: Response) => {
       title,
       description: description || '',
       questions,
-      due_date: due_date !== undefined ? due_date || null : existingQuiz.due_date,
       time_limit_minutes: time_limit_minutes !== undefined ? time_limit_minutes ?? null : existingQuiz.time_limit_minutes,
       shuffle_questions: shuffle_questions !== undefined ? shuffle_questions : existingQuiz.shuffle_questions,
       shuffle_options: shuffle_options !== undefined ? shuffle_options : existingQuiz.shuffle_options,

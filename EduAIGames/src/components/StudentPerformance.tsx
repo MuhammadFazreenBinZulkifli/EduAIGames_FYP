@@ -10,9 +10,6 @@ import { ROUTES } from '../routes/paths'
 import { INSTRUCTOR_NAV, instructorDashboardCrumb } from '../utils/panelBreadcrumbHelpers'
 import {
   aggregateGrades,
-  formatDueDate,
-  isDueDatePast,
-  isSubmissionLate,
   type AttemptMode,
   type PerformanceGrade,
   type PublishedQuizMeta,
@@ -54,9 +51,6 @@ interface ClassMember {
 interface QuizOverviewRow {
   quizId: number
   quizTitle: string
-  dueDate: string | null
-  dueDateLabel: string | null
-  isPastDue: boolean
   attempted: number
   notAttempted: number
   completionPct: number
@@ -166,8 +160,6 @@ function StudentPerformance({ instructorId }: StudentPerformanceProps) {
           (data.publishedQuizzes || []).map((quiz: PublishedQuizMeta) => ({
             id: Number(quiz.id),
             title: quiz.title,
-            due_date: quiz.due_date ?? null,
-            allow_late_submit: quiz.allow_late_submit ?? null,
             max_attempts: quiz.max_attempts ?? null,
           }))
         )
@@ -293,9 +285,6 @@ function StudentPerformance({ instructorId }: StudentPerformanceProps) {
       return {
         quizId: quiz.id,
         quizTitle: quiz.title,
-        dueDate: quiz.due_date,
-        dueDateLabel: formatDueDate(quiz.due_date),
-        isPastDue: isDueDatePast(quiz.due_date),
         attempted: attemptedStudentIds.size,
         notAttempted,
         completionPct,
@@ -339,7 +328,7 @@ function StudentPerformance({ instructorId }: StudentPerformanceProps) {
     if (!quiz) return
 
     const grades = displayGrades.filter((g) => g.quiz_id === exportQuizId)
-    const header = ['Student', 'Quiz', 'Score (%)', 'Correct', 'Total', 'Late', 'Date', 'Time']
+    const header = ['Student', 'Quiz', 'Score (%)', 'Correct', 'Total', 'Date', 'Time']
     const rows: string[][] = [header]
     grades.forEach((g) => {
       const dt = new Date(g.completed_at)
@@ -349,7 +338,6 @@ function StudentPerformance({ instructorId }: StudentPerformanceProps) {
         g.score.toFixed(1),
         String(g.correct_answers),
         String(g.total_questions),
-        isSubmissionLate(g) ? 'Yes' : 'No',
         dt.toLocaleDateString(),
         dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       ])
@@ -570,7 +558,6 @@ function StudentPerformance({ instructorId }: StudentPerformanceProps) {
               <thead>
                 <tr>
                   <th>Quiz</th>
-                  <th>Due</th>
                   <th>Completion</th>
                   <th>Submitted</th>
                   <th>Missing</th>
@@ -582,15 +569,6 @@ function StudentPerformance({ instructorId }: StudentPerformanceProps) {
                 {quizOverview.map((row) => (
                   <tr key={row.quizId}>
                     <td className="student-performance__quiz-title-cell">{row.quizTitle}</td>
-                    <td>
-                      {row.dueDateLabel ? (
-                        <span className={`student-performance__due-badge ${row.isPastDue ? 'student-performance__due-badge--past' : ''}`}>
-                          {row.dueDateLabel}
-                        </span>
-                      ) : (
-                        <span className="student-performance__not-attempted">No due date</span>
-                      )}
-                    </td>
                     <td>
                       <div className="student-performance__completion">
                         <div className="student-performance__completion-bar-wrap">
@@ -637,11 +615,6 @@ function StudentPerformance({ instructorId }: StudentPerformanceProps) {
               <article key={row.quizId} className="student-performance__overview-card">
                 <div className="student-performance__overview-card-head">
                   <h3>{row.quizTitle}</h3>
-                  {row.dueDateLabel && (
-                    <span className={`student-performance__due-badge ${row.isPastDue ? 'student-performance__due-badge--past' : ''}`}>
-                      Due {row.dueDateLabel}
-                    </span>
-                  )}
                 </div>
                 <div className="student-performance__overview-card-stats">
                   <div>
@@ -737,9 +710,6 @@ function StudentPerformance({ instructorId }: StudentPerformanceProps) {
                               <h3>{grade.quiz_title}</h3>
                               <p className="student-performance__attempt-meta">
                                 {dt.toLocaleDateString()} · {dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                {isSubmissionLate(grade) && (
-                                  <span className="student-performance__late-badge">Late</span>
-                                )}
                               </p>
                             </div>
                             <span className={`student-performance__score-pill ${getScorePillClass(grade.score)}`}>

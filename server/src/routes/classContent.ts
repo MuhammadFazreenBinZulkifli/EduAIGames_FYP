@@ -20,6 +20,7 @@ import {
   notifyClassStudentsContentPublished,
   notifyClassStudentsQuizPublished,
 } from '../notificationService.ts';
+import { updateQuizPlaySettings, instructorOwnsQuiz } from '../quizQueries.ts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -246,11 +247,32 @@ router.post(
 router.post('/topics/:topicId/quizzes', async (req: Request, res: Response) => {
   try {
     const { topicId } = req.params;
-    const { instructor_id, quiz_id } = req.body;
+    const { instructor_id, quiz_id, settings } = req.body;
     if (!instructor_id || !quiz_id) {
       res.status(400).json({ error: 'instructor_id and quiz_id are required' });
       return;
     }
+
+    // Apply the play settings chosen in the publish dialog to the quiz itself,
+    // so they take effect for students. Owner check guards against tampering.
+    if (settings && typeof settings === 'object') {
+      const owns = await instructorOwnsQuiz(parseInt(String(instructor_id)), parseInt(String(quiz_id)));
+      if (!owns) {
+        res.status(403).json({ error: 'You can only publish your own quizzes' });
+        return;
+      }
+      const toIntOrNull = (v: unknown) => {
+        const n = parseInt(String(v), 10);
+        return Number.isFinite(n) && n > 0 ? n : null;
+      };
+      await updateQuizPlaySettings(parseInt(String(quiz_id)), {
+        time_limit_minutes: toIntOrNull(settings.time_limit_minutes),
+        max_attempts: toIntOrNull(settings.max_attempts),
+        shuffle_questions: !!settings.shuffle_questions,
+        shuffle_options: !!settings.shuffle_options,
+      });
+    }
+
     const item = await addQuizToTopic(parseInt(topicId), instructor_id, quiz_id);
     try {
       await notifyClassStudentsQuizPublished(item.class_id, item.quiz_id, item.title);

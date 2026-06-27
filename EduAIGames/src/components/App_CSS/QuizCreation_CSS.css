@@ -443,6 +443,17 @@
     text-align: center;
     white-space: normal;
   }
+
+  /* Stack answer options one per row so each text box is full-width and easy to
+     tap/type on a phone (avoids cramped, truncated 2-column inputs). */
+  .quiz-creation__options-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* 16px keeps mobile browsers (esp. iOS Safari) from auto-zooming on focus. */
+  .quiz-creation__option-item .panel-input {
+    font-size: 16px;
+  }
 }
 
 html[data-theme='light'] .quiz-creation__ai-card {

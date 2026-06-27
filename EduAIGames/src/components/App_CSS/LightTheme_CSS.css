@@ -441,3 +441,140 @@ html[data-theme='light'] .app-sidebar-logout {
 html[data-theme='light'] .panel-btn-success {
   font-weight: 700;
 }
+
+/* ── Instructor library — question detail view ──
+   The correct-answer green and the question-type label are hardcoded light
+   colors that wash out on the white surface; remap to readable equivalents. */
+html[data-theme='light'] .instructor-quiz-library__option-item--correct {
+  color: #15803d !important;
+}
+
+html[data-theme='light'] .instructor-quiz-library__explanation {
+  color: #5b21b6 !important;
+}
+
+html[data-theme='light'] .panel-question-item .q-label {
+  color: var(--c-peach) !important;
+}
+
+/* ── In-play game HUD (timer / level / score chips) ──
+   These chips and titles render on the light panel surface above the dark game
+   board, so their dark-theme text needs readable light-theme colors.
+   We deliberately avoid touching the dark in-board / gate / stage elements. */
+html[data-theme='light'] .maze-game-quiz__header-title,
+html[data-theme='light'] .breakout-game-quiz__header-title,
+html[data-theme='light'] .trivia-race-game-quiz__header-title {
+  color: var(--text-primary) !important;
+}
+
+html[data-theme='light'] .maze-game-quiz__badge--timer {
+  background: rgba(180, 83, 9, 0.14) !important;
+  border-color: rgba(180, 83, 9, 0.4) !important;
+  color: #92400e !important;
+}
+
+html[data-theme='light'] .maze-game-quiz__badge--level {
+  background: rgba(109, 40, 217, 0.12) !important;
+  border-color: rgba(109, 40, 217, 0.35) !important;
+  color: #6d28d9 !important;
+}
+
+html[data-theme='light'] .maze-game-quiz__badge--danger {
+  background: rgba(220, 38, 38, 0.12) !important;
+  border-color: rgba(220, 38, 38, 0.4) !important;
+  color: #b91c1c !important;
+}
+
+/* Breakout & Trivia stat pills */
+html[data-theme='light'] .breakout-game-quiz__stat,
+html[data-theme='light'] .trivia-race-game-quiz__stat {
+  color: var(--text-secondary) !important;
+}
+
+html[data-theme='light'] .trivia-race-game-quiz__stat {
+  background: rgba(15, 23, 42, 0.05) !important;
+  border-color: rgba(15, 23, 42, 0.12) !important;
+}
+
+html[data-theme='light'] .breakout-game-quiz__lives,
+html[data-theme='light'] .trivia-race-game-quiz__lives {
+  color: #b91c1c !important;
+}
+
+/* Snake HUD chips */
+html[data-theme='light'] .snake-game-quiz__hud-chip {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--text-secondary) !important;
+}
+
+html[data-theme='light'] .snake-game-quiz__hud-strong {
+  color: var(--text-primary) !important;
+}
+
+html[data-theme='light'] .snake-game-quiz__hud-wrong {
+  color: #b91c1c !important;
+}
+
+html[data-theme='light'] .snake-game-quiz__hud-penalty {
+  color: #b45309 !important;
+}
+
+html[data-theme='light'] .snake-game-quiz__hud-hunter {
+  background: rgba(162, 28, 175, 0.1) !important;
+  color: #a21caf !important;
+}
+
+html[data-theme='light'] .snake-game-quiz__hud-hunter-wait {
+  background: rgba(162, 28, 175, 0.08) !important;
+  color: #a21caf !important;
+}
+
+/* ── Snake end screens (game-over / game-complete / level-complete) ──
+   These render on the light panel surface, so their dark-theme stat text needs
+   readable light-theme colors. */
+html[data-theme='light'] .snake-game-quiz__end-subtitle,
+html[data-theme='light'] .snake-game-quiz__stat-label,
+html[data-theme='light'] .snake-game-quiz__stat-label--sm,
+html[data-theme='light'] .snake-game-quiz__score-label {
+  color: var(--text-muted) !important;
+}
+
+html[data-theme='light'] .snake-game-quiz__stat-value,
+html[data-theme='light'] .snake-game-quiz__stat-value--bold {
+  color: var(--text-primary) !important;
+}
+
+html[data-theme='light'] .snake-game-quiz__stat-value--green,
+html[data-theme='light'] .snake-game-quiz__score-value,
+html[data-theme='light'] .snake-game-quiz__end-title--complete,
+html[data-theme='light'] .snake-game-quiz__end-title--level {
+  color: #15803d !important;
+}
+
+html[data-theme='light'] .snake-game-quiz__stat-value--red {
+  color: #b91c1c !important;
+}
+
+html[data-theme='light'] .snake-game-quiz__stat-value--orange {
+  color: #b45309 !important;
+}
+
+html[data-theme='light'] .snake-game-quiz__end-title--over {
+  color: #dc2626 !important;
+}
+
+html[data-theme='light'] .snake-game-quiz__exit-btn {
+  color: var(--text-primary) !important;
+  background: var(--bg-btn-secondary) !important;
+  border-color: var(--border) !important;
+}
+
+/* ── Breakout in-play question + answer legend (on light panel surface) ── */
+html[data-theme='light'] .breakout-game-quiz__question-text {
+  color: #312e81 !important;
+}
+
+html[data-theme='light'] .breakout-game-quiz__legend-text {
+  color: var(--text-secondary) !important;
+}

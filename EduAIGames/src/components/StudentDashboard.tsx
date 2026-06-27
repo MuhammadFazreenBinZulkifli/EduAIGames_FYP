@@ -7,6 +7,8 @@ import { notificationTargetPath } from '../utils/notificationNavigation'
 import type { NotificationType } from './NotificationBell'
 import OnboardingChecklist from './OnboardingChecklist'
 import DashboardIcon from './DashboardIcon'
+import WebsiteGuideModal from './WebsiteGuideModal'
+import { fetchPreferences, updatePreferences } from '../hooks/useUserPreferences'
 import type { IconName } from './SidebarIcons'
 import './App_CSS/PanelDashboard_CSS.css'
 
@@ -43,7 +45,6 @@ interface DashboardStats {
   classCount: number
   quizTaken: number
   pendingQuizzes: number
-  dueSoonCount: number
   avgScore: number | null
   lastQuizTitle: string | null
   lastScore: number | null
@@ -83,26 +84,41 @@ function StudentDashboard({
   const { features } = usePlatformFeatures()
   const [loading, setLoading] = useState(true)
   const [stats, setStats] = useState<DashboardStats>({
-    classCount: 0, quizTaken: 0, pendingQuizzes: 0, dueSoonCount: 0,
+    classCount: 0, quizTaken: 0, pendingQuizzes: 0,
     avgScore: null, lastQuizTitle: null, lastScore: null,
     lastQuizId: null, lastClassId: null,
   })
   const [enrolledClasses, setEnrolledClasses] = useState<ClassItem[]>([])
   const [recentActivity, setRecentActivity] = useState<ActivityItem[]>([])
-  const [dueSoonQuizzes, setDueSoonQuizzes] = useState<Array<{ id: number; title: string; due_date: string; class_id?: number | null }>>([])
-  const [showDueHub, setShowDueHub] = useState(false)
+  const [guideOpen, setGuideOpen] = useState(false)
+
+  // Show the "How it works" guide automatically the first time a new student
+  // lands on the dashboard, then remember it on their account.
+  useEffect(() => {
+    if (!user.id) return
+    let active = true
+    fetchPreferences(user.id)
+      .then((prefs) => {
+        if (active && !prefs.guideSeen) {
+          setGuideOpen(true)
+          void updatePreferences(user.id!, { guideSeen: true }).catch(() => {})
+        }
+      })
+      .catch(() => {})
+    return () => { active = false }
+  }, [user.id])
 
   useEffect(() => {
     if (!user.id) { setLoading(false); return }
 
-    // Aggregate enrolment, quiz progress, due dates, and recent notifications for the hero stats.
+    // Aggregate enrolment, quiz progress, and recent notifications for the hero stats.
     const load = async () => {
       try {
         setLoading(true)
         const [classesRes, quizzesRes, attemptsRes, notifRes] = await Promise.all([
           apiGet<{ classes: ClassItem[] }>(`/api/classes/student/${user.id}/my-classes`).catch(() => null),
           features.quizzes_enabled
-            ? apiGet<{ quizzes: Array<{ id: number; title: string; due_date?: string | null; class_id?: number | null }> }>(`/api/quizzes/student/${user.id}/available`).catch(() => null)
+            ? apiGet<{ quizzes: Array<{ id: number; title: string; class_id?: number | null }> }>(`/api/quizzes/student/${user.id}/available`).catch(() => null)
             : Promise.resolve(null),
           features.quizzes_enabled
             ? apiGet<{ attempts: Array<{ quiz_id: number; score: number; quiz_title?: string; quiz_class_id?: number | null }> }>(`/api/quizzes/attempts/student/${user.id}`).catch(() => null)
@@ -117,7 +133,7 @@ function StudentDashboard({
           setEnrolledClasses(list.slice(0, 5))
         }
 
-        let pendingQuizzes = 0, quizTaken = 0, dueSoonCount = 0
+        let pendingQuizzes = 0, quizTaken = 0
         let avgScore: number | null = null, lastQuizTitle: string | null = null, lastScore: number | null = null
         let lastQuizId: number | null = null, lastClassId: number | null = null
 
@@ -126,17 +142,8 @@ function StudentDashboard({
           const attemptsData = attemptsRes
           const attempts = attemptsData.attempts || []
           const completedIds = new Set(attempts.map((a: { quiz_id: number }) => String(a.quiz_id)))
-          const available: Array<{ id: number; title: string; due_date?: string | null; class_id?: number | null }> = quizData.quizzes || []
-          const now = new Date()
-          const sevenDaysFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000)
+          const available: Array<{ id: number; title: string; class_id?: number | null }> = quizData.quizzes || []
           pendingQuizzes = available.filter((q) => !completedIds.has(String(q.id))).length
-          const dueSoon = available.filter((q) => {
-            if (!q.due_date || completedIds.has(String(q.id))) return false
-            const due = new Date(q.due_date)
-            return due >= now && due <= sevenDaysFromNow
-          })
-          dueSoonCount = dueSoon.length
-          setDueSoonQuizzes(dueSoon.map((q) => ({ id: q.id, title: q.title, due_date: q.due_date!, class_id: q.class_id ?? null })))
           quizTaken = attempts.length
           if (attempts.length > 0) {
             const scores = attempts.map((a: { score: number }) => Number(a.score)).filter(Number.isFinite)
@@ -149,7 +156,7 @@ function StudentDashboard({
           }
         }
 
-        setStats({ classCount, quizTaken, pendingQuizzes, dueSoonCount, avgScore, lastQuizTitle, lastScore, lastQuizId, lastClassId })
+        setStats({ classCount, quizTaken, pendingQuizzes, avgScore, lastQuizTitle, lastScore, lastQuizId, lastClassId })
 
         if (notifRes) {
           const notifData = notifRes
@@ -186,12 +193,6 @@ function StudentDashboard({
       title: 'Join your first class',
       body: 'Ask your lecturer for a join code, then enrol to unlock quizzes, games, and grades.',
       action: onJoinClassClick, actionLabel: 'Join a Class',
-    }
-    if (features.quizzes_enabled && stats.dueSoonCount > 0) return {
-      badge: 'Due soon', icon: 'clock',
-      title: `${stats.dueSoonCount} quiz${stats.dueSoonCount === 1 ? '' : 'zes'} due within 7 days`,
-      body: 'Complete upcoming quizzes before the deadline to keep your grades on track.',
-      action: onAnswerQuizClick, actionLabel: 'View pending quizzes',
     }
     if (features.quizzes_enabled && stats.pendingQuizzes > 0) return {
       badge: 'Up next', icon: 'quiz',
@@ -275,6 +276,9 @@ function StudentDashboard({
               ? `You are enrolled in ${stats.classCount} class${stats.classCount === 1 ? '' : 'es'}. Keep learning and levelling up!`
               : 'Welcome to EduAIGames! Join a class to start taking quizzes and playing learning games.'}
           </p>
+          <button type="button" className="dash-banner__guide-btn" onClick={() => setGuideOpen(true)}>
+            ❔ How it works
+          </button>
         </div>
 
         {loading ? (
@@ -302,9 +306,9 @@ function StudentDashboard({
                   <span className="dash-banner__stat-label">Done</span>
                 </div>
                 <div className="dash-banner__stat">
-                  <DashboardIcon name="clock" variant="stat" />
-                  <span className="dash-banner__stat-value">{stats.dueSoonCount}</span>
-                  <span className="dash-banner__stat-label">Due Soon</span>
+                  <DashboardIcon name="quiz" variant="stat" />
+                  <span className="dash-banner__stat-value">{stats.pendingQuizzes}</span>
+                  <span className="dash-banner__stat-label">Pending</span>
                 </div>
                 <div className="dash-banner__stat">
                   <DashboardIcon name="grades" variant="stat" />
@@ -340,56 +344,6 @@ function StudentDashboard({
               {spotlight.actionLabel} →
             </button>
           )}
-        </div>
-      )}
-
-      {/* ── Due This Week hub ── */}
-      {!loading && features.quizzes_enabled && dueSoonQuizzes.length > 0 && (
-        <div className="dash-due-hub">
-          <div className="dash-due-hub__header">
-            <div>
-              <p className="dash-due-hub__kicker">Upcoming deadlines</p>
-              <h2 className="dash-due-hub__title">Due This Week</h2>
-            </div>
-            <button
-              type="button"
-              className="panel-btn panel-btn-primary panel-btn-sm"
-              onClick={onAnswerQuizClick}
-            >
-              View all quizzes →
-            </button>
-          </div>
-          <div className="dash-due-hub__list">
-            {dueSoonQuizzes.map((quiz) => {
-              const due = new Date(quiz.due_date)
-              const diffMs = due.getTime() - Date.now()
-              const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24))
-              const isUrgent = diffDays <= 1
-              return (
-                <button
-                  key={quiz.id}
-                  type="button"
-                  className={`dash-due-item${isUrgent ? ' dash-due-item--urgent' : ''}`}
-                  onClick={onAnswerQuizClick}
-                >
-                  <div className="dash-due-item__left">
-                    <DashboardIcon name="quiz" variant="stat" />
-                  </div>
-                  <div className="dash-due-item__body">
-                    <p className="dash-due-item__title">{quiz.title}</p>
-                    <p className="dash-due-item__date">
-                      Due: {due.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' })}
-                      {' · '}
-                      {due.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    </p>
-                  </div>
-                  <span className={`dash-due-item__badge${isUrgent ? ' dash-due-item__badge--urgent' : ''}`}>
-                    {diffDays <= 0 ? 'Due today' : diffDays === 1 ? 'Due tomorrow' : `${diffDays}d left`}
-                  </span>
-                </button>
-              )
-            })}
-          </div>
         </div>
       )}
 
@@ -449,7 +403,7 @@ function StudentDashboard({
               { icon: 'classes' as IconName, label: 'Enrolled Classes', value: stats.classCount, valueClass: 'dash-glance-row__value--blue' },
               ...(features.quizzes_enabled ? [
                 { icon: 'check' as IconName, label: 'Quizzes Completed', value: stats.quizTaken, valueClass: 'dash-glance-row__value--green' },
-                { icon: 'clock' as IconName, label: 'Due Soon', value: stats.dueSoonCount, valueClass: 'dash-glance-row__value--amber' },
+                { icon: 'quiz' as IconName, label: 'Pending Quizzes', value: stats.pendingQuizzes, valueClass: 'dash-glance-row__value--amber' },
                 { icon: 'grades' as IconName, label: 'Average Score', value: stats.avgScore != null ? `${stats.avgScore}%` : '—', valueClass: 'dash-glance-row__value--pink' },
               ] : []),
             ]).map((item) => (
@@ -544,6 +498,8 @@ function StudentDashboard({
           <span className="dash-tile__arrow">→</span>
         </button>
       </div>
+
+      <WebsiteGuideModal open={guideOpen} role="Student" onClose={() => setGuideOpen(false)} />
     </div>
   )
 }

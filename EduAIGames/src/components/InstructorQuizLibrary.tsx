@@ -303,6 +303,44 @@ function InstructorQuizLibrary({ instructorId }: InstructorQuizLibraryProps) {
     }
   }
 
+  // ─── Filtered games (declared before any conditional return so hook order is
+  //     stable across the list/view screen swap — otherwise React throws
+  //     "Rendered fewer hooks than expected" and the page crashes). ───
+  const quizClassByQuizId = useMemo(() => {
+    const map = new Map<number, number>()
+    quizzes.forEach((quiz) => {
+      if (quiz.class_id) map.set(quiz.id, quiz.class_id)
+    })
+    return map
+  }, [quizzes])
+
+  const filteredGames = useMemo(() => {
+    const q = gameSearchQuery.trim().toLowerCase()
+    const filtered = games.filter((g) => {
+      if (gameTypeFilter && g.game_type !== gameTypeFilter) return false
+      if (gameFilterClassId) {
+        const classId = quizClassByQuizId.get(g.quiz_id)
+        if (classId !== gameFilterClassId) return false
+      }
+      if (!q) return true
+      return (
+        g.title.toLowerCase().includes(q) ||
+        g.quiz_title.toLowerCase().includes(q) ||
+        (g.description || '').toLowerCase().includes(q)
+      )
+    })
+    return sortLibraryItems(filtered, gameSort)
+  }, [games, gameSearchQuery, gameFilterClassId, gameTypeFilter, gameSort, quizClassByQuizId])
+
+  const gameActiveFilterCount = useMemo(() => {
+    let count = 0
+    if (gameSearchQuery.trim()) count += 1
+    if (gameFilterClassId) count += 1
+    if (gameTypeFilter) count += 1
+    if (gameSort !== 'newest') count += 1
+    return count
+  }, [gameSearchQuery, gameFilterClassId, gameTypeFilter, gameSort])
+
   if (screen === 'view' && selectedQuiz) {
     return (
       <div className="panel-page">
@@ -320,7 +358,7 @@ function InstructorQuizLibrary({ instructorId }: InstructorQuizLibraryProps) {
         <div className="panel-card">
           <div className="panel-row instructor-quiz-library__meta-row">
             <span className="panel-meta">
-              {selectedQuiz.class_id ? `Class: ${selectedQuiz.class_title || 'Assigned'}` : 'Library — usable in all classes'}
+              {selectedQuiz.class_id ? `Class: ${selectedQuiz.class_title || 'Assigned'}` : 'Library: usable in all classes'}
             </span>
             <span className="panel-meta">
               {selectedQuiz.questions.length} question{selectedQuiz.questions.length !== 1 ? 's' : ''}
@@ -388,42 +426,6 @@ function InstructorQuizLibrary({ instructorId }: InstructorQuizLibraryProps) {
     )
   }
 
-  // ─── Filtered games ──────────────────────────────────────────────────────────
-  const quizClassByQuizId = useMemo(() => {
-    const map = new Map<number, number>()
-    quizzes.forEach((quiz) => {
-      if (quiz.class_id) map.set(quiz.id, quiz.class_id)
-    })
-    return map
-  }, [quizzes])
-
-  const filteredGames = useMemo(() => {
-    const q = gameSearchQuery.trim().toLowerCase()
-    const filtered = games.filter((g) => {
-      if (gameTypeFilter && g.game_type !== gameTypeFilter) return false
-      if (gameFilterClassId) {
-        const classId = quizClassByQuizId.get(g.quiz_id)
-        if (classId !== gameFilterClassId) return false
-      }
-      if (!q) return true
-      return (
-        g.title.toLowerCase().includes(q) ||
-        g.quiz_title.toLowerCase().includes(q) ||
-        (g.description || '').toLowerCase().includes(q)
-      )
-    })
-    return sortLibraryItems(filtered, gameSort)
-  }, [games, gameSearchQuery, gameFilterClassId, gameTypeFilter, gameSort, quizClassByQuizId])
-
-  const gameActiveFilterCount = useMemo(() => {
-    let count = 0
-    if (gameSearchQuery.trim()) count += 1
-    if (gameFilterClassId) count += 1
-    if (gameTypeFilter) count += 1
-    if (gameSort !== 'newest') count += 1
-    return count
-  }, [gameSearchQuery, gameFilterClassId, gameTypeFilter, gameSort])
-
   const clearGameFilters = () => {
     setGameSearchQuery('')
     setGameFilterClassId('')
@@ -437,7 +439,7 @@ function InstructorQuizLibrary({ instructorId }: InstructorQuizLibraryProps) {
       <div className="panel-hero panel-hero--page">
         <p className="panel-kicker">Instructor · Library</p>
         <h1>Library</h1>
-        <p className="panel-hero-greeting">Your quizzes and saved games — reuse quizzes across any class you teach.</p>
+        <p className="panel-hero-greeting">Your quizzes and saved games. Reuse quizzes across any class you teach.</p>
       </div>
 
       {/* Tab Bar */}
@@ -599,8 +601,8 @@ function InstructorQuizLibrary({ instructorId }: InstructorQuizLibraryProps) {
                   >
                     <option value="newest">Newest first</option>
                     <option value="oldest">Oldest first</option>
-                    <option value="title-asc">Title A–Z</option>
-                    <option value="title-desc">Title Z–A</option>
+                    <option value="title-asc">Title A-Z</option>
+                    <option value="title-desc">Title Z-A</option>
                   </select>
                 </div>
               </div>
@@ -786,8 +788,8 @@ function InstructorQuizLibrary({ instructorId }: InstructorQuizLibraryProps) {
               >
                 <option value="newest">Newest first</option>
                 <option value="oldest">Oldest first</option>
-                <option value="title-asc">Title A–Z</option>
-                <option value="title-desc">Title Z–A</option>
+                <option value="title-asc">Title A-Z</option>
+                <option value="title-desc">Title Z-A</option>
               </select>
             </div>
             <div className="panel-form-group instructor-quiz-library__filter-group">
@@ -799,8 +801,8 @@ function InstructorQuizLibrary({ instructorId }: InstructorQuizLibraryProps) {
                 onChange={(e) => setQuizQuestionFilter(e.target.value as QuestionCountFilter)}
               >
                 <option value="all">Any count</option>
-                <option value="1-5">1–5 questions</option>
-                <option value="6-10">6–10 questions</option>
+                <option value="1-5">1-5 questions</option>
+                <option value="6-10">6-10 questions</option>
                 <option value="11+">11+ questions</option>
               </select>
             </div>
@@ -842,7 +844,7 @@ function InstructorQuizLibrary({ instructorId }: InstructorQuizLibraryProps) {
                 </p>
                 <div className="panel-row instructor-quiz-library__card-meta-row">
                   <span className="panel-meta">
-                    {quiz.class_id ? (quiz.class_title || 'Class quiz') : 'Library — all classes'}
+                    {quiz.class_id ? (quiz.class_title || 'Class quiz') : 'Library: all classes'}
                   </span>
                   <span className="panel-meta">
                     {quiz.questions.length} question{quiz.questions.length !== 1 ? 's' : ''}

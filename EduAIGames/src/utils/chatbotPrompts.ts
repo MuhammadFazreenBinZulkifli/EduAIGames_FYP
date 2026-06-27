@@ -8,7 +8,7 @@ export interface ChatSuggestion {
 }
 
 const SITE_HELP_NOTE =
-  ' I can explain how to use EduAIGames or help you study any topic — pick a suggestion below or type your own question.'
+  ' I can explain how to use EduAIGames or help you study any topic. Pick a suggestion below or type your own question.'
 
 export function getChatWelcome(role: ChatbotRole, pathname: string, username?: string): string {
   const hi = username ? `Hi, ${username}!` : 'Hi!'
@@ -21,7 +21,7 @@ export function getChatWelcome(role: ChatbotRole, pathname: string, username?: s
       return `${hi} You're on **Join Class**. I can explain join codes, browsing public classes, or how enrolment works.${SITE_HELP_NOTE}`
     }
     if (pathname.startsWith(ROUTES.student.courses)) {
-      return `${hi} You're on **Class Content** — pick a class to open topics, files, quizzes, and games.${SITE_HELP_NOTE}`
+      return `${hi} You're on **Class Content**. Pick a class to open topics, files, quizzes, and games.${SITE_HELP_NOTE}`
     }
     if (pathname.startsWith(ROUTES.student.quiz)) {
       return `${hi} You're viewing **Pending Quizzes**. I can help you find and complete quizzes, or explain how scoring works.${SITE_HELP_NOTE}`
@@ -30,7 +30,7 @@ export function getChatWelcome(role: ChatbotRole, pathname: string, username?: s
       return `${hi} You're on **My Grades**. Ask how to read scores, review answers, or filter by class.${SITE_HELP_NOTE}`
     }
     if (pathname.startsWith(ROUTES.student.classes)) {
-      return `${hi} You're on **Enrolled Classes** — see your memberships and join codes here.${SITE_HELP_NOTE}`
+      return `${hi} You're on **Enrolled Classes**. See your memberships and join codes here.${SITE_HELP_NOTE}`
     }
     if (pathname.startsWith(ROUTES.student.dashboard)) {
       return `${hi} You're on your **Student Dashboard** with quick actions and your getting-started checklist.${SITE_HELP_NOTE}`
@@ -39,16 +39,16 @@ export function getChatWelcome(role: ChatbotRole, pathname: string, username?: s
   }
 
   if (pathname.startsWith(ROUTES.instructor.classes)) {
-    return `${hi} You're in **My Classes** — create classes, share join codes, and manage students.${SITE_HELP_NOTE}`
+    return `${hi} You're in **My Classes**. Create classes, share join codes, and manage students.${SITE_HELP_NOTE}`
   }
   if (pathname.startsWith(ROUTES.instructor.library)) {
-    return `${hi} You're in the **Library** — all your quizzes and saved games in one place.${SITE_HELP_NOTE}`
+    return `${hi} You're in the **Library**. All your quizzes and saved games in one place.${SITE_HELP_NOTE}`
   }
   if (pathname.startsWith(ROUTES.instructor.studio)) {
-    return `${hi} You're in **Content Maker** — build quizzes and turn them into Maze, Snake, Breakout, or Trivia Race games.${SITE_HELP_NOTE}`
+    return `${hi} You're in **Content Maker**. Build quizzes and turn them into Maze, Snake, Breakout, or Trivia Race games.${SITE_HELP_NOTE}`
   }
   if (pathname.startsWith(ROUTES.instructor.performance)) {
-    return `${hi} You're on **Student Performance** — review scores and attempts across classes.${SITE_HELP_NOTE}`
+    return `${hi} You're on **Student Performance**. Review scores and attempts across classes.${SITE_HELP_NOTE}`
   }
   if (pathname.startsWith(ROUTES.instructor.dashboard)) {
     return `${hi} You're on your **Instructor Dashboard** with the teaching setup checklist.${SITE_HELP_NOTE}`
@@ -77,7 +77,7 @@ export function getChatSuggestions(role: ChatbotRole, pathname: string): ChatSug
       {
         id: 'guest-study',
         label: 'Help me study',
-        prompt: 'Explain a study topic to me — ask what subject I am learning.',
+        prompt: 'Explain a study topic to me. Ask what subject I am learning.',
       },
     ]
   }
@@ -107,7 +107,7 @@ export function getChatSuggestions(role: ChatbotRole, pathname: string): ChatSug
       { id: 'st-join', label: 'Join a class', prompt: 'How do I join a class with a join code?' },
       { id: 'st-content', label: 'Class Content', prompt: 'What is Class Content and how is it different from Enrolled Classes?' },
       { id: 'st-quiz', label: 'Take a quiz', prompt: 'How do I take a quiz assigned by my lecturer?' },
-      { id: 'st-study', label: 'Study help', prompt: 'Help me revise — ask what topic I am studying.' },
+      { id: 'st-study', label: 'Study help', prompt: 'Help me revise. Ask what topic I am studying.' },
     ]
   }
 

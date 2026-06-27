@@ -34,6 +34,20 @@ interface QuizOption {
   title: string
 }
 
+interface PreviewQuestion {
+  question_text: string
+  question_type: string
+  correct_answer: string
+  explanation?: string
+  options?: Array<{ option_text: string }>
+}
+
+interface PreviewQuiz {
+  id: number
+  title: string
+  questions: PreviewQuestion[]
+}
+
 interface SavedGame {
   id: number
   quiz_id: number
@@ -92,6 +106,22 @@ function InstructorManageClass({
   const [expandedTopics, setExpandedTopics] = useState<Set<number>>(new Set())
   const [uploadingTopicId, setUploadingTopicId] = useState<number | null>(null)
   const [selectedQuizByTopic, setSelectedQuizByTopic] = useState<Record<number, string>>({})
+  // Quiz settings popup shown when publishing a quiz to students.
+  const [publishTopicId, setPublishTopicId] = useState<number | null>(null)
+  const [publishing, setPublishing] = useState(false)
+  const [publishSettings, setPublishSettings] = useState({
+    time_limit_minutes: '',
+    max_attempts: '',
+    shuffle_questions: false,
+    shuffle_options: false,
+  })
+  // Quiz preview popup (student view) for published quizzes.
+  const [previewQuiz, setPreviewQuiz] = useState<PreviewQuiz | null>(null)
+  const [previewLoading, setPreviewLoading] = useState(false)
+  const [previewError, setPreviewError] = useState('')
+  const [previewIndex, setPreviewIndex] = useState(0)
+  const [previewAnswers, setPreviewAnswers] = useState<Record<number, string>>({})
+  const [previewConfirmed, setPreviewConfirmed] = useState<Set<number>>(new Set())
   const [gamesExpanded, setGamesExpanded] = useState(false)
   const [savedGames, setSavedGames] = useState<SavedGame[]>([])
   const [classGames, setClassGames] = useState<ClassGame[]>([])
@@ -322,23 +352,74 @@ function InstructorManageClass({
     }
   }
 
-  // Adds a selected quiz to the class quiz topic for students.
-  const handlePublishQuiz = async (topicId: number) => {
+  // Opens the quiz settings popup before publishing.
+  const openPublishSettings = (topicId: number) => {
+    if (!selectedQuizByTopic[topicId]) return
+    setPublishSettings({
+      time_limit_minutes: '',
+      max_attempts: '',
+      shuffle_questions: false,
+      shuffle_options: false,
+    })
+    setPublishTopicId(topicId)
+  }
+
+  // Adds the selected quiz to the class quiz topic for students, applying the
+  // play settings chosen in the popup so they take effect on the student side.
+  const handlePublishQuiz = async () => {
+    const topicId = publishTopicId
+    if (topicId == null) return
     const quizId = parseInt(selectedQuizByTopic[topicId] || '', 10)
     if (!quizId || !instructorId) return
     setError('')
+    setPublishing(true)
     try {
+      const settings = {
+        time_limit_minutes: publishSettings.time_limit_minutes
+          ? parseInt(publishSettings.time_limit_minutes, 10)
+          : null,
+        max_attempts: publishSettings.max_attempts
+          ? parseInt(publishSettings.max_attempts, 10)
+          : null,
+        shuffle_questions: publishSettings.shuffle_questions,
+        shuffle_options: publishSettings.shuffle_options,
+      }
       const res = await fetch(`${API_BASE_URL}/api/class-content/topics/${topicId}/quizzes`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ instructor_id: instructorId, quiz_id: quizId }),
+        body: JSON.stringify({ instructor_id: instructorId, quiz_id: quizId, settings }),
       })
       const data = await res.json().catch(() => ({}))
       if (!res.ok) throw new Error(data.error || 'Failed to publish quiz')
+      setPublishTopicId(null)
       await loadContent()
       flash('Quiz published to students')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to publish quiz')
+    } finally {
+      setPublishing(false)
+    }
+  }
+
+  // Loads a published quiz (with questions) and opens the student-view preview.
+  const openQuizPreview = async (quizId?: number | null, title?: string) => {
+    if (!quizId || !instructorId) return
+    setPreviewIndex(0)
+    setPreviewAnswers({})
+    setPreviewConfirmed(new Set())
+    setPreviewError('')
+    setPreviewLoading(true)
+    setPreviewQuiz({ id: quizId, title: title || 'Quiz', questions: [] })
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/quizzes/${quizId}?instructor_id=${instructorId}`)
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) throw new Error(data.error || 'Failed to load quiz')
+      const q = data.quiz
+      setPreviewQuiz({ id: q.id, title: q.title, questions: q.questions || [] })
+    } catch (err) {
+      setPreviewError(err instanceof Error ? err.message : 'Failed to load quiz')
+    } finally {
+      setPreviewLoading(false)
     }
   }
 
@@ -698,7 +779,7 @@ function InstructorManageClass({
                       <button
                         type="button"
                         className="panel-btn panel-btn-primary panel-btn-sm"
-                        onClick={() => handlePublishQuiz(quizTopic.id)}
+                        onClick={() => openPublishSettings(quizTopic.id)}
                         disabled={!selectedQuizByTopic[quizTopic.id]}
                       >
                         Publish to students
@@ -713,14 +794,23 @@ function InstructorManageClass({
                             <PanelIcon name="quiz" variant="inline" />
                           </span>
                           <span className="course-item-title">{item.title}</span>
-                          <button
-                            type="button"
-                            className="panel-icon-btn"
-                            title="Unpublish"
-                            onClick={() => handleDeleteItem(item.id)}
-                          >
-                            <PanelIcon name="trash" variant="inline" />
-                          </button>
+                          <div className="course-item-actions">
+                            <button
+                              type="button"
+                              className="panel-btn panel-btn-secondary panel-btn-sm course-quiz-preview-btn"
+                              onClick={() => openQuizPreview(item.quiz_id, item.title)}
+                            >
+                              Preview
+                            </button>
+                            <button
+                              type="button"
+                              className="panel-icon-btn"
+                              title="Unpublish"
+                              onClick={() => handleDeleteItem(item.id)}
+                            >
+                              <PanelIcon name="trash" variant="inline" />
+                            </button>
+                          </div>
                         </li>
                       ))}
                     </ul>
@@ -773,6 +863,222 @@ function InstructorManageClass({
               ))}
             </div>
           )}
+        </div>
+      )}
+
+      {/* ── Quiz settings popup (shown on Publish to students) ── */}
+      {publishTopicId != null && (
+        <div
+          className="quiz-publish-modal__overlay"
+          onClick={() => { if (!publishing) setPublishTopicId(null) }}
+        >
+          <div
+            className="quiz-publish-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Quiz settings"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="quiz-publish-modal__header">
+              <h3 className="quiz-publish-modal__title">Quiz Settings</h3>
+              <button
+                type="button"
+                className="quiz-publish-modal__close"
+                aria-label="Close"
+                onClick={() => { if (!publishing) setPublishTopicId(null) }}
+              >
+                ✕
+              </button>
+            </div>
+            <p className="quiz-publish-modal__subtitle">
+              Choose how students take{' '}
+              <strong>
+                {quizzes.find((q) => String(q.id) === selectedQuizByTopic[publishTopicId])?.title || 'this quiz'}
+              </strong>
+              . These settings apply to the student side.
+            </p>
+
+            <div className="quiz-publish-modal__grid">
+              <div className="panel-form-group">
+                <label className="panel-label">
+                  Time Limit <span className="quiz-publish-modal__hint">(minutes, blank = none)</span>
+                </label>
+                <input
+                  className="panel-input"
+                  type="number"
+                  min="0"
+                  max="300"
+                  value={publishSettings.time_limit_minutes}
+                  onChange={(e) => setPublishSettings((p) => ({ ...p, time_limit_minutes: e.target.value }))}
+                  placeholder="No limit"
+                />
+              </div>
+              <div className="panel-form-group">
+                <label className="panel-label">
+                  Max Attempts <span className="quiz-publish-modal__hint">(blank = unlimited)</span>
+                </label>
+                <input
+                  className="panel-input"
+                  type="number"
+                  min="0"
+                  max="100"
+                  value={publishSettings.max_attempts}
+                  onChange={(e) => setPublishSettings((p) => ({ ...p, max_attempts: e.target.value }))}
+                  placeholder="Unlimited"
+                />
+              </div>
+            </div>
+
+            <div className="quiz-publish-modal__toggles">
+              <label className="quiz-publish-modal__check">
+                <input
+                  type="checkbox"
+                  checked={publishSettings.shuffle_questions}
+                  onChange={(e) => setPublishSettings((p) => ({ ...p, shuffle_questions: e.target.checked }))}
+                />
+                Shuffle question order for each student
+              </label>
+              <label className="quiz-publish-modal__check">
+                <input
+                  type="checkbox"
+                  checked={publishSettings.shuffle_options}
+                  onChange={(e) => setPublishSettings((p) => ({ ...p, shuffle_options: e.target.checked }))}
+                />
+                Shuffle answer options for each student
+              </label>
+            </div>
+
+            <div className="quiz-publish-modal__actions">
+              <button
+                type="button"
+                className="panel-btn panel-btn-secondary"
+                onClick={() => setPublishTopicId(null)}
+                disabled={publishing}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="panel-btn panel-btn-primary"
+                onClick={handlePublishQuiz}
+                disabled={publishing}
+              >
+                {publishing ? 'Publishing…' : 'Publish to students'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Quiz preview popup (student view) ── */}
+      {previewQuiz && (
+        <div className="quiz-publish-modal__overlay" onClick={() => setPreviewQuiz(null)}>
+          <div
+            className="quiz-preview-pop"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Quiz preview"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="quiz-preview-pop__header">
+              <div>
+                <p className="quiz-preview-pop__kicker">Preview · Student view</p>
+                <h3 className="quiz-preview-pop__title">{previewQuiz.title}</h3>
+              </div>
+              <button
+                type="button"
+                className="quiz-publish-modal__close"
+                aria-label="Close"
+                onClick={() => setPreviewQuiz(null)}
+              >
+                ✕
+              </button>
+            </div>
+
+            {previewLoading ? (
+              <p className="quiz-preview-pop__status">Loading quiz…</p>
+            ) : previewError ? (
+              <p className="quiz-preview-pop__status quiz-preview-pop__status--error">{previewError}</p>
+            ) : previewQuiz.questions.length === 0 ? (
+              <p className="quiz-preview-pop__status">This quiz has no questions.</p>
+            ) : (
+              (() => {
+                const q = previewQuiz.questions[previewIndex]
+                const opts = q.question_type === 'true-false'
+                  ? ['True', 'False']
+                  : (q.options?.map((o) => o.option_text) ?? [])
+                const isConfirmed = previewConfirmed.has(previewIndex)
+                const answer = previewAnswers[previewIndex]
+                const isLast = previewIndex === previewQuiz.questions.length - 1
+                return (
+                  <div className="quiz-preview-pop__body">
+                    <div className="quiz-preview-pop__progress">
+                      <div
+                        className="quiz-preview-pop__progress-fill"
+                        style={{ width: `${((previewIndex + 1) / previewQuiz.questions.length) * 100}%` }}
+                      />
+                    </div>
+                    <p className="quiz-preview-pop__qnum">
+                      Question {previewIndex + 1} of {previewQuiz.questions.length}
+                    </p>
+                    <p className="quiz-preview-pop__qtext">{q.question_text}</p>
+                    <div className="quiz-preview-pop__options">
+                      {opts.map((opt) => {
+                        const isSelected = answer === opt
+                        const isCorrect = isConfirmed && opt === q.correct_answer
+                        const isWrong = isConfirmed && isSelected && opt !== q.correct_answer
+                        return (
+                          <button
+                            key={opt}
+                            type="button"
+                            className={`quiz-preview-pop__option${isSelected ? ' quiz-preview-pop__option--selected' : ''}${isCorrect ? ' quiz-preview-pop__option--correct' : ''}${isWrong ? ' quiz-preview-pop__option--wrong' : ''}`}
+                            onClick={() => !isConfirmed && setPreviewAnswers({ ...previewAnswers, [previewIndex]: opt })}
+                            disabled={isConfirmed}
+                          >
+                            {opt}
+                          </button>
+                        )
+                      })}
+                    </div>
+                    {isConfirmed && q.explanation && (
+                      <div className="quiz-preview-pop__explanation">
+                        <strong>Explanation:</strong> {q.explanation}
+                      </div>
+                    )}
+                    <div className="quiz-preview-pop__nav">
+                      <button
+                        type="button"
+                        className="panel-btn panel-btn-secondary panel-btn-sm"
+                        onClick={() => setPreviewIndex(Math.max(0, previewIndex - 1))}
+                        disabled={previewIndex === 0}
+                      >
+                        ← Previous
+                      </button>
+                      {!isConfirmed ? (
+                        <button
+                          type="button"
+                          className="panel-btn panel-btn-primary panel-btn-sm"
+                          onClick={() => answer && setPreviewConfirmed(new Set([...previewConfirmed, previewIndex]))}
+                          disabled={!answer}
+                        >
+                          Confirm Answer
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          className="panel-btn panel-btn-primary panel-btn-sm"
+                          onClick={() => { if (!isLast) setPreviewIndex(previewIndex + 1) }}
+                          disabled={isLast}
+                        >
+                          Next →
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                )
+              })()
+            )}
+          </div>
         </div>
       )}
     </div>

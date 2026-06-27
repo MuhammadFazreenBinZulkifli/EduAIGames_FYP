@@ -120,7 +120,14 @@
   font-family: Georgia, serif;
 }
 .trivia-race-game-quiz__lives { color: #fca5a5; font-weight: 700; }
-.trivia-race-game-quiz__stat { color: #cbd5e1; }
+.trivia-race-game-quiz__stat {
+  color: #cbd5e1;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+}
 .trivia-race-game-quiz__exit-btn-sm { padding: 4px 12px; }
 
 /* ─── Stage ─── */
@@ -132,52 +139,221 @@
   overflow: hidden;
   padding: 1.25rem;
 }
+/* ─── Racetrack (two lanes: rival on top, you on the bottom) ─── */
 .trivia-race-game-quiz__track {
   position: relative;
-  height: 60px;
-  margin-bottom: 1.1rem;
+  height: 108px;
+  margin-bottom: 0.85rem;
+  border-radius: 14px;
+  overflow: hidden;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.22), rgba(0, 0, 0, 0.42));
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
-.trivia-race-game-quiz__track-ground {
+.trivia-race-game-quiz__track--danger {
+  animation: trivia-danger-pulse 0.9s ease-in-out infinite;
+}
+@keyframes trivia-danger-pulse {
+  0%, 100% { box-shadow: inset 0 0 0 0 rgba(248, 113, 113, 0); }
+  50% { box-shadow: inset 0 0 26px 0 rgba(248, 113, 113, 0.4); }
+}
+
+/* Decorative themed backdrops (purely cosmetic). */
+.trivia-race-game-quiz__track-backdrop { position: absolute; inset: 0; opacity: 0.55; pointer-events: none; }
+.trivia-race-game-quiz__track-backdrop--space {
+  background:
+    radial-gradient(2px 2px at 18% 28%, rgba(255,255,255,0.6), transparent),
+    radial-gradient(1.6px 1.6px at 42% 62%, rgba(255,255,255,0.45), transparent),
+    radial-gradient(2px 2px at 68% 22%, rgba(255,255,255,0.55), transparent),
+    radial-gradient(1.4px 1.4px at 82% 70%, rgba(255,255,255,0.4), transparent),
+    radial-gradient(1.8px 1.8px at 32% 82%, rgba(255,255,255,0.45), transparent);
+}
+.trivia-race-game-quiz__track-backdrop--forest::after {
+  content: ''; position: absolute; inset: 0;
+  background:
+    radial-gradient(22px 28px at 12% 72%, rgba(16,185,129,0.28), transparent 70%),
+    radial-gradient(26px 32px at 34% 76%, rgba(16,185,129,0.22), transparent 70%),
+    radial-gradient(24px 30px at 62% 73%, rgba(16,185,129,0.24), transparent 70%),
+    radial-gradient(28px 34px at 86% 77%, rgba(16,185,129,0.2), transparent 70%);
+}
+.trivia-race-game-quiz__track-backdrop--city::after {
+  content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 45%;
+  background:
+    repeating-linear-gradient(90deg,
+      rgba(148,163,184,0.18) 0 11px, transparent 11px 18px,
+      rgba(148,163,184,0.12) 18px 25px, transparent 25px 38px);
+  -webkit-mask: linear-gradient(to top, #000 55%, transparent);
+  mask: linear-gradient(to top, #000 55%, transparent);
+}
+
+/* Lanes */
+.trivia-race-game-quiz__lane-row {
   position: absolute;
-  bottom: 0;
   left: 0;
   right: 0;
-  height: 6px;
-  border-radius: 3px;
-}
-.trivia-race-game-quiz__track-finish {
-  position: absolute;
-  bottom: 14px;
-  right: 4px;
-  font-size: 26px;
-}
-.trivia-race-game-quiz__track-chaser {
-  position: absolute;
-  bottom: 12px;
-  font-size: 24px;
-  transition: left 0.8s ease;
-  filter: drop-shadow(0 0 4px #ef4444);
-}
-.trivia-race-game-quiz__track-runner {
-  position: absolute;
-  bottom: 12px;
-  font-size: 28px;
-  transition: left 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.trivia-race-game-quiz__track-runner--hop {
-  transform: translateY(-10px);
-}
-.trivia-race-game-quiz__timer-bar {
-  height: 10px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 6px;
+  height: 42px;
+  background: rgba(255, 255, 255, 0.04);
+  border-top: 1px dashed rgba(255, 255, 255, 0.12);
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.12);
   overflow: hidden;
-  margin-bottom: 1rem;
 }
-.trivia-race-game-quiz__timer-fill {
-  height: 100%;
-  transition: width 0.1s linear, background 0.3s;
+.trivia-race-game-quiz__lane-row--rival { top: 7px; }
+.trivia-race-game-quiz__lane-row--you { bottom: 7px; }
+
+.trivia-race-game-quiz__lane-tag {
+  position: absolute;
+  top: 3px;
+  left: 6px;
+  z-index: 2;
+  font-size: 0.52rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  padding: 1px 6px;
+  border-radius: 6px;
+  font-family: system-ui, sans-serif;
 }
+.trivia-race-game-quiz__lane-tag--you { background: rgba(56, 189, 248, 0.9); color: #04263a; }
+.trivia-race-game-quiz__lane-tag--rival { background: rgba(245, 158, 11, 0.92); color: #3a2400; }
+
+/* Colored progress trail behind each runner */
+.trivia-race-game-quiz__trail {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+}
+.trivia-race-game-quiz__trail--you { background: linear-gradient(90deg, rgba(56,189,248,0.04), rgba(56,189,248,0.34)); }
+.trivia-race-game-quiz__trail--rival { background: linear-gradient(90deg, rgba(245,158,11,0.04), rgba(245,158,11,0.34)); }
+
+/* Checkpoints (one per question) along the player lane */
+.trivia-race-game-quiz__checkpoint {
+  position: absolute;
+  top: 50%;
+  width: 2px;
+  height: 16px;
+  transform: translate(-50%, -50%);
+  background: rgba(255, 255, 255, 0.22);
+  border-radius: 1px;
+  z-index: 1;
+}
+.trivia-race-game-quiz__checkpoint--done {
+  background: rgba(74, 222, 128, 0.95);
+  box-shadow: 0 0 6px rgba(74, 222, 128, 0.6);
+}
+
+/* Runner tokens */
+.trivia-race-game-quiz__token {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+}
+.trivia-race-game-quiz__token--you { transition: left 0.7s cubic-bezier(0.4, 0, 0.2, 1); z-index: 4; }
+.trivia-race-game-quiz__token--rival { transition: left 0.12s linear; }
+.trivia-race-game-quiz__token-emoji {
+  display: inline-block;
+  font-size: 24px;
+  transition: transform 0.2s ease;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.5));
+}
+/* Flip the runner so it faces forward (toward the finish line on the right). */
+.trivia-race-game-quiz__token--you .trivia-race-game-quiz__token-emoji { transform: scaleX(-1); }
+.trivia-race-game-quiz__token--rival .trivia-race-game-quiz__token-emoji { filter: drop-shadow(0 0 5px #f59e0b); }
+.trivia-race-game-quiz__token--hop .trivia-race-game-quiz__token-emoji { transform: translateY(-10px) scaleX(-1) scale(1.08); }
+.trivia-race-game-quiz__dust {
+  position: absolute;
+  right: 100%;
+  top: 62%;
+  width: 18px;
+  height: 6px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.6), transparent 70%);
+  border-radius: 50%;
+  animation: trivia-dust 0.5s ease-out forwards;
+}
+@keyframes trivia-dust {
+  0% { opacity: 0.8; transform: translateX(0) scale(1); }
+  100% { opacity: 0; transform: translateX(-14px) scale(0.4); }
+}
+
+/* Finish line — positioned (inline) at TRACK_FINISH% and centered on that point
+   so the runners land exactly on it when they finish. */
+.trivia-race-game-quiz__finish-line {
+  position: absolute;
+  top: 6px;
+  bottom: 6px;
+  width: 10px;
+  transform: translateX(-50%);
+  background: repeating-conic-gradient(#fff 0% 25%, #111 0% 50%) 0 0 / 8px 8px;
+  border-radius: 3px;
+  opacity: 0.92;
+  z-index: 2;
+}
+.trivia-race-game-quiz__finish-flag {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 15px;
+  line-height: 1;
+}
+
+/* Head-start countdown + GO flash */
+.trivia-race-game-quiz__countdown {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+  pointer-events: none;
+  font-family: Georgia, serif;
+  font-size: 2.6rem;
+  font-weight: 900;
+  color: #fde68a;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.6);
+  animation: trivia-cd-pop 1s ease-in-out infinite;
+}
+@keyframes trivia-cd-pop {
+  0%, 100% { transform: scale(1); opacity: 0.85; }
+  50% { transform: scale(1.25); opacity: 1; }
+}
+.trivia-race-game-quiz__go {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+  pointer-events: none;
+  font-family: Georgia, serif;
+  font-size: 2.8rem;
+  font-weight: 900;
+  color: #4ade80;
+  text-shadow: 0 0 18px rgba(74, 222, 128, 0.8);
+  animation: trivia-go 0.85s ease-out forwards;
+}
+@keyframes trivia-go {
+  0% { transform: scale(0.5); opacity: 0; }
+  30% { transform: scale(1.1); opacity: 1; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+
+/* Race status line */
+.trivia-race-game-quiz__race-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  margin-bottom: 0.85rem;
+  font-family: Georgia, serif;
+  font-weight: 700;
+  font-size: 0.82rem;
+}
+.trivia-race-game-quiz__race-status-you { color: #7dd3fc; }
+.trivia-race-game-quiz__race-status-rival { color: #fcd34d; }
+.trivia-race-game-quiz__race-status-rival--danger { color: #f87171; animation: trivia-blink 0.7s steps(2, end) infinite; }
+.trivia-race-game-quiz__race-status-sep { color: #64748b; font-size: 0.7rem; }
+@keyframes trivia-blink { 50% { opacity: 0.4; } }
 .trivia-race-game-quiz__question-box {
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.12);
@@ -199,6 +375,8 @@
 .trivia-race-game-quiz__lanes--two { grid-template-columns: 1fr 1fr; }
 .trivia-race-game-quiz__lanes--grid { grid-template-columns: repeat(2, 1fr); }
 .trivia-race-game-quiz__lane-btn {
+  position: relative;
+  overflow: hidden;
   display: flex;
   align-items: center;
   gap: 0.7rem;
@@ -208,10 +386,35 @@
   color: #fff;
   font-family: Georgia, serif;
   font-size: 0.95rem;
-  transition: all 0.15s;
+  transition: transform 0.12s ease, box-shadow 0.15s ease, background 0.15s;
+}
+/* Color accent strip keyed to the lane's color (matches the answer badge). */
+.trivia-race-game-quiz__lane-btn::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: var(--lane-color, #38bdf8);
+  opacity: 0.9;
 }
 .trivia-race-game-quiz__lane-btn--playing { cursor: pointer; }
+.trivia-race-game-quiz__lane-btn--playing:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35); }
+.trivia-race-game-quiz__lane-btn--playing:active { transform: translateY(0) scale(0.985); }
 .trivia-race-game-quiz__lane-btn--idle { cursor: default; }
+.trivia-race-game-quiz__lane-key {
+  margin-left: auto;
+  flex-shrink: 0;
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 5px;
+  padding: 0 5px;
+  line-height: 1.5;
+  font-family: system-ui, sans-serif;
+}
 .trivia-race-game-quiz__lane-badge {
   flex-shrink: 0;
   width: 30px;
@@ -292,5 +495,84 @@
   gap: 0.75rem;
   align-items: center;
 }
-.trivia-race-game-quiz__footer-meta { margin: 0; }
+.trivia-race-game-quiz__footer-meta { margin: 0; text-align: center; }
 .trivia-race-game-quiz__pause-btn { padding: 4px 14px; }
+.trivia-race-game-quiz__rules-note { margin: 0.85rem 0 0; line-height: 1.4; }
+.trivia-race-game-quiz__lane-text {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+/* ─── Keep the whole race on one screen (phones / short viewports) ─── */
+.trivia-race-game-quiz__page--gameplay { width: 100%; }
+
+@media (max-width: 600px) {
+  .trivia-race-game-quiz__header {
+    margin-bottom: 0.5rem;
+    gap: 0.5rem;
+    flex-wrap: nowrap;
+    align-items: center;
+  }
+  .trivia-race-game-quiz__header > div:first-child {
+    min-width: 0;
+    flex: 1;
+  }
+  .trivia-race-game-quiz__header-kicker {
+    font-size: 0.62rem;
+    letter-spacing: 0.07em;
+  }
+  .trivia-race-game-quiz__header-title {
+    font-size: 1.02rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .trivia-race-game-quiz__header-stats {
+    gap: 0.35rem;
+    flex-shrink: 0;
+    font-family: inherit;
+  }
+  .trivia-race-game-quiz__stat {
+    padding: 2px 8px;
+    font-size: 0.72rem;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+  .trivia-race-game-quiz__exit-btn-sm {
+    padding: 3px 10px;
+    font-size: 0.78rem;
+  }
+  .trivia-race-game-quiz__stage { padding: 0.8rem; border-radius: 14px; }
+  .trivia-race-game-quiz__track { height: 96px; margin-bottom: 0.7rem; }
+  .trivia-race-game-quiz__lane-row { height: 38px; }
+  .trivia-race-game-quiz__token-emoji { font-size: 21px; }
+  .trivia-race-game-quiz__countdown { font-size: 2.2rem; }
+  .trivia-race-game-quiz__go { font-size: 2.3rem; }
+  .trivia-race-game-quiz__race-status { font-size: 0.74rem; margin-bottom: 0.65rem; }
+  .trivia-race-game-quiz__question-box { padding: 0.7rem 0.85rem; margin-bottom: 0.7rem; }
+  .trivia-race-game-quiz__question-text { font-size: 1rem; }
+  .trivia-race-game-quiz__lanes { gap: 0.55rem; }
+  .trivia-race-game-quiz__lane-btn { padding: 0.65rem 0.7rem; font-size: 0.9rem; gap: 0.5rem; }
+  .trivia-race-game-quiz__lane-badge { width: 27px; height: 27px; border-radius: 7px; }
+  .trivia-race-game-quiz__footer { margin-top: 0.6rem; }
+  .trivia-race-game-quiz__footer-meta { font-size: 0.72rem; }
+}
+
+/* Narrow phones (iPhone SE / small Androids) */
+@media (max-width: 380px) {
+  .trivia-race-game-quiz__lanes--two,
+  .trivia-race-game-quiz__lanes--grid { grid-template-columns: 1fr; }
+  .trivia-race-game-quiz__lane-btn { font-size: 0.86rem; }
+  .trivia-race-game-quiz__lane-key { display: none; }
+  .trivia-race-game-quiz__question-text { font-size: 0.95rem; }
+}
+
+/* Short viewports (landscape phones / iPhone 12 Pro with browser chrome) */
+@media (max-height: 760px) {
+  .trivia-race-game-quiz__track { height: 88px; margin-bottom: 0.55rem; }
+  .trivia-race-game-quiz__lane-row { height: 34px; }
+  .trivia-race-game-quiz__question-box { margin-bottom: 0.6rem; }
+  .trivia-race-game-quiz__lanes { gap: 0.5rem; }
+  .trivia-race-game-quiz__lane-btn { padding: 0.6rem 0.7rem; }
+  .trivia-race-game-quiz__race-status { margin-bottom: 0.55rem; }
+}

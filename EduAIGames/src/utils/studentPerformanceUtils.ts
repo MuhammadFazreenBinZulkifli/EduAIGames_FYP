@@ -11,15 +11,11 @@ export interface PerformanceGrade {
   total_questions: number
   completed_at: string
   responses?: Record<string, string> | null
-  due_date?: string | null
-  allow_late_submit?: boolean | null
 }
 
 export interface PublishedQuizMeta {
   id: number
   title: string
-  due_date: string | null
-  allow_late_submit: boolean | null
   max_attempts: number | null
 }
 
@@ -62,27 +58,4 @@ export function aggregateGrades(
       a.username.localeCompare(b.username) ||
       new Date(b.completed_at).getTime() - new Date(a.completed_at).getTime()
   )
-}
-
-export function isSubmissionLate(grade: PerformanceGrade): boolean {
-  if (!grade.due_date) return false
-  return new Date(grade.completed_at).getTime() > new Date(grade.due_date).getTime()
-}
-
-export function formatDueDate(dueDate: string | null | undefined): string | null {
-  if (!dueDate) return null
-  const date = new Date(dueDate)
-  if (Number.isNaN(date.getTime())) return null
-  return date.toLocaleString(undefined, {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit',
-  })
-}
-
-export function isDueDatePast(dueDate: string | null | undefined): boolean {
-  if (!dueDate) return false
-  return new Date(dueDate).getTime() < Date.now()
 }

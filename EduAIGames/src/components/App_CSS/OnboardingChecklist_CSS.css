@@ -145,19 +145,3 @@ html[data-theme='light'] .dash-onboarding__step {
   line-height: 1.4;
 }
 
-.panel-error-boundary__hero {
-  margin-bottom: 1rem;
-}
-
-.panel-error-boundary__actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.65rem;
-}
-
-.panel-error-boundary__actions .panel-btn-secondary {
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}

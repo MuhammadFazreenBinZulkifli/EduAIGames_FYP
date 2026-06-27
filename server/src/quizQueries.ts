@@ -26,13 +26,20 @@ export interface Quiz {
   questions: Question[];
   created_at?: string;
   updated_at?: string;
-  due_date?: string | null;
   time_limit_minutes?: number | null;
   shuffle_questions?: boolean;
   shuffle_options?: boolean;
   max_attempts?: number | null;
-  show_results_after?: 'immediate' | 'due_date' | 'never';
+  show_results_after?: 'immediate' | 'never';
   allow_late_submit?: boolean;
+}
+
+/** Play settings chosen at publish time (Manage Class) and applied to students. */
+export interface QuizPlaySettings {
+  time_limit_minutes: number | null;
+  max_attempts: number | null;
+  shuffle_questions: boolean;
+  shuffle_options: boolean;
 }
 
 export async function createQuiz(quiz: Quiz): Promise<Quiz> {
@@ -42,12 +49,12 @@ export async function createQuiz(quiz: Quiz): Promise<Quiz> {
 
     // Insert quiz
     const quizResult = await client.query(
-      `INSERT INTO quizzes (instructor_id, course_id, class_id, title, description, due_date,
+      `INSERT INTO quizzes (instructor_id, course_id, class_id, title, description,
         time_limit_minutes, shuffle_questions, shuffle_options, max_attempts, show_results_after, allow_late_submit)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING id`,
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING id`,
       [
         quiz.instructor_id, quiz.course_id || null, quiz.class_id || null,
-        quiz.title, quiz.description, quiz.due_date || null,
+        quiz.title, quiz.description,
         quiz.time_limit_minutes ?? null, quiz.shuffle_questions ?? false,
         quiz.shuffle_options ?? false, quiz.max_attempts ?? null,
         quiz.show_results_after ?? 'immediate', quiz.allow_late_submit ?? true,
@@ -78,7 +85,6 @@ export async function createQuiz(quiz: Quiz): Promise<Quiz> {
     return {
       id: quizId,
       ...quiz,
-      due_date: quiz.due_date || null,
       time_limit_minutes: quiz.time_limit_minutes ?? null,
       shuffle_questions: quiz.shuffle_questions ?? false,
       shuffle_options: quiz.shuffle_options ?? false,
@@ -98,7 +104,7 @@ export async function createQuiz(quiz: Quiz): Promise<Quiz> {
 export async function getQuizzesByInstructor(instructorId: number): Promise<Quiz[]> {
   try {
     const result = await pool.query(
-      `SELECT q.id, q.instructor_id, q.course_id, q.class_id, q.title, q.description, q.created_at, q.updated_at, q.due_date,
+      `SELECT q.id, q.instructor_id, q.course_id, q.class_id, q.title, q.description, q.created_at, q.updated_at,
               q.time_limit_minutes, q.shuffle_questions, q.shuffle_options, q.max_attempts, q.show_results_after, q.allow_late_submit,
               c.title AS class_title
        FROM quizzes q
@@ -122,7 +128,6 @@ export async function getQuizzesByInstructor(instructorId: number): Promise<Quiz
         questions,
         created_at: quizRow.created_at,
         updated_at: quizRow.updated_at,
-        due_date: quizRow.due_date ?? null,
         time_limit_minutes: quizRow.time_limit_minutes ?? null,
         shuffle_questions: quizRow.shuffle_questions ?? false,
         shuffle_options: quizRow.shuffle_options ?? false,
@@ -143,7 +148,7 @@ export async function getQuizzesByInstructor(instructorId: number): Promise<Quiz
 export async function getQuizById(quizId: number): Promise<Quiz | null> {
   try {
     const result = await pool.query(
-      `SELECT id, instructor_id, course_id, class_id, title, description, created_at, updated_at, due_date,
+      `SELECT id, instructor_id, course_id, class_id, title, description, created_at, updated_at,
               time_limit_minutes, shuffle_questions, shuffle_options, max_attempts, show_results_after, allow_late_submit
        FROM quizzes WHERE id = $1`,
       [quizId]
@@ -166,7 +171,6 @@ export async function getQuizById(quizId: number): Promise<Quiz | null> {
       questions,
       created_at: quizRow.created_at,
       updated_at: quizRow.updated_at,
-      due_date: quizRow.due_date ?? null,
       time_limit_minutes: quizRow.time_limit_minutes ?? null,
       shuffle_questions: quizRow.shuffle_questions ?? false,
       shuffle_options: quizRow.shuffle_options ?? false,
@@ -238,12 +242,12 @@ export async function updateQuiz(quizId: number, quiz: Quiz): Promise<Quiz> {
 
     // Update quiz
     await client.query(
-      `UPDATE quizzes SET title = $1, description = $2, due_date = $3,
-        time_limit_minutes = $4, shuffle_questions = $5, shuffle_options = $6,
-        max_attempts = $7, show_results_after = $8, allow_late_submit = $9,
-        updated_at = CURRENT_TIMESTAMP WHERE id = $10`,
+      `UPDATE quizzes SET title = $1, description = $2,
+        time_limit_minutes = $3, shuffle_questions = $4, shuffle_options = $5,
+        max_attempts = $6, show_results_after = $7, allow_late_submit = $8,
+        updated_at = CURRENT_TIMESTAMP WHERE id = $9`,
       [
-        quiz.title, quiz.description, quiz.due_date ?? null,
+        quiz.title, quiz.description,
         quiz.time_limit_minutes ?? null, quiz.shuffle_questions ?? false,
         quiz.shuffle_options ?? false, quiz.max_attempts ?? null,
         quiz.show_results_after ?? 'immediate', quiz.allow_late_submit ?? true,
@@ -283,6 +287,27 @@ export async function updateQuiz(quizId: number, quiz: Quiz): Promise<Quiz> {
   } finally {
     client.release();
   }
+}
+
+/** Applies the play settings chosen when publishing a quiz to a class. */
+export async function updateQuizPlaySettings(
+  quizId: number,
+  settings: QuizPlaySettings
+): Promise<void> {
+  await pool.query(
+    `UPDATE quizzes
+     SET time_limit_minutes = $1, max_attempts = $2,
+         shuffle_questions = $3, shuffle_options = $4,
+         updated_at = CURRENT_TIMESTAMP
+     WHERE id = $5`,
+    [
+      settings.time_limit_minutes ?? null,
+      settings.max_attempts ?? null,
+      !!settings.shuffle_questions,
+      !!settings.shuffle_options,
+      quizId,
+    ]
+  );
 }
 
 export async function deleteQuiz(quizId: number): Promise<void> {
@@ -341,7 +366,7 @@ export async function getPublishedQuizzesForClass(
 ): Promise<any[]> {
   try {
     const result = await pool.query(
-      `SELECT DISTINCT q.id, q.title, q.due_date, q.allow_late_submit, q.max_attempts, q.created_at
+      `SELECT DISTINCT q.id, q.title, q.max_attempts, q.created_at
        FROM quizzes q
        LEFT JOIN class_topic_items cti ON cti.quiz_id = q.id AND cti.class_id = $1
        LEFT JOIN class_topics ct ON ct.id = cti.topic_id AND ct.is_quiz_topic = true
@@ -398,9 +423,7 @@ export async function getClassStudentPerformance(
         sqa.correct_answers,
         sqa.total_questions,
         sqa.completed_at,
-        sqa.responses,
-        q.due_date,
-        q.allow_late_submit
+        sqa.responses
       FROM student_quiz_attempts sqa
       JOIN quizzes q ON sqa.quiz_id = q.id
       JOIN users u ON sqa.student_id = u.id
@@ -479,7 +502,7 @@ export async function getStudentQuizAttempts(studentId: number, classId?: number
 export async function getQuizzesByClassId(classId: number): Promise<Quiz[]> {
   try {
     const result = await pool.query(
-      `SELECT id, instructor_id, course_id, class_id, title, description, created_at, updated_at, due_date,
+      `SELECT id, instructor_id, course_id, class_id, title, description, created_at, updated_at,
               time_limit_minutes, shuffle_questions, shuffle_options, max_attempts, show_results_after, allow_late_submit
        FROM quizzes WHERE class_id = $1 ORDER BY created_at DESC`,
       [classId]
@@ -499,7 +522,6 @@ export async function getQuizzesByClassId(classId: number): Promise<Quiz[]> {
         questions,
         created_at: quizRow.created_at,
         updated_at: quizRow.updated_at,
-        due_date: quizRow.due_date ?? null,
         time_limit_minutes: quizRow.time_limit_minutes ?? null,
         shuffle_questions: quizRow.shuffle_questions ?? false,
         shuffle_options: quizRow.shuffle_options ?? false,
@@ -519,7 +541,7 @@ export async function getQuizzesByClassId(classId: number): Promise<Quiz[]> {
 export async function getStudentAvailableQuizzes(studentId: number): Promise<Quiz[]> {
   try {
     const result = await pool.query(
-      `SELECT DISTINCT q.id, q.instructor_id, q.course_id, cti.class_id, q.title, q.description, q.created_at, q.updated_at, q.due_date,
+      `SELECT DISTINCT q.id, q.instructor_id, q.course_id, cti.class_id, q.title, q.description, q.created_at, q.updated_at,
               q.time_limit_minutes, q.shuffle_questions, q.shuffle_options, q.max_attempts, q.show_results_after, q.allow_late_submit
        FROM quizzes q
        INNER JOIN class_topic_items cti ON cti.quiz_id = q.id
@@ -544,7 +566,6 @@ export async function getStudentAvailableQuizzes(studentId: number): Promise<Qui
         questions,
         created_at: quizRow.created_at,
         updated_at: quizRow.updated_at,
-        due_date: quizRow.due_date ?? null,
         time_limit_minutes: quizRow.time_limit_minutes ?? null,
         shuffle_questions: quizRow.shuffle_questions ?? false,
         shuffle_options: quizRow.shuffle_options ?? false,
@@ -593,7 +614,6 @@ export async function duplicateQuiz(quizId: number, instructorId: number): Promi
     title: `Copy of ${original.title}`,
     description: original.description,
     questions: original.questions,
-    due_date: null,
     time_limit_minutes: original.time_limit_minutes,
     shuffle_questions: original.shuffle_questions,
     shuffle_options: original.shuffle_options,

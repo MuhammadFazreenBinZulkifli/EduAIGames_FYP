@@ -35,7 +35,7 @@ const FEATURE_CATALOG = [
     icon: 'quiz' as const,
     title: 'Course Quizzes',
     description:
-      'Your lecturer posts quizzes for your class. Do them online, submit when you are ready, and see your score straight away. No paper handouts.',
+      'Your Instructor posts quizzes for your class. Do them online, submit when you are ready, and see your score straight away. No paper handouts.',
   },
   {
     id: 'games',
@@ -67,7 +67,7 @@ const FEATURE_CATALOG = [
     icon: 'classes' as const,
     title: 'Join With a Class Code',
     description:
-      'Your lecturer gives you a short code. Enter it once and your quizzes, games, and course content show up in your dashboard.',
+      'Your Instructor gives you a short code. Enter it once and your quizzes, games, and course content show up in your dashboard.',
   },
   {
     id: 'ai_quiz',
@@ -75,7 +75,7 @@ const FEATURE_CATALOG = [
     icon: 'ai' as const,
     title: 'AI-Enhanced Learning',
     description:
-      'Some modules use AI to help lecturers build quizzes faster, so you get more practice material to work with.',
+      'Some modules use AI to help Instructors build quizzes faster, so you get more practice material to work with.',
   },
 ]
 
@@ -83,7 +83,7 @@ const HOW_IT_WORKS = [
   {
     title: 'Get your class code',
     description:
-      'Your lecturer or tutor shares a join code in class, on the LMS, or by email. That code connects you to the right module on EduAIGames.',
+      'Your Instructor or tutor shares a join code in class, on the LMS, or by email. That code connects you to the right module on EduAIGames.',
   },
   {
     title: 'Sign up and join',
@@ -359,9 +359,9 @@ function FrontPage({ onStartLogin, onStartRegister }: FrontPageProps) {
               <span className="frontpage-headline-line">One place.</span>
             </h1>
             <p className="frontpage-description">
-              <strong>EduAIGames</strong> is where your college or university may run class activities. Join with
-              a code from your lecturer, take quizzes, play revision games, and check your grades. Everything
-              stays in one desktop app.
+              <strong>EduAIGames</strong> is where your college or university runs class activities. Join with
+              a code from your Instructor, take quizzes, play revision games, and check your grades. Everything
+              stays in one place.
             </p>
             <div className="frontpage-actions">
               <button type="button" onClick={onStartRegister} className="frontpage-btn frontpage-btn-primary frontpage-btn-large">
@@ -419,7 +419,7 @@ function FrontPage({ onStartLogin, onStartRegister }: FrontPageProps) {
               <h2 id="intro-heading">Your class hub, not a social app</h2>
               <p>
                 Never heard of EduAIGames? That is fine. You do not download it just for fun on your own. Your{' '}
-                <strong>lecturer or tutor</strong> creates a class and invites you with a join code, a bit like
+                <strong>Instructor or tutor</strong> creates a class and invites you with a join code, a bit like
                 joining a private group for your module.
               </p>
               <p>
@@ -433,7 +433,7 @@ function FrontPage({ onStartLogin, onStartRegister }: FrontPageProps) {
                 <span className="frontpage-intro-point-icon" aria-hidden="true">1</span>
                 <div>
                   <strong>You need a class code</strong>
-                  <p>Not sure? Ask your lecturer. They create the class and share the code with your cohort.</p>
+                  <p>Not sure? Ask your Instructor. They create the class and share the code with your cohort.</p>
                 </div>
               </li>
               <li>
@@ -447,7 +447,7 @@ function FrontPage({ onStartLogin, onStartRegister }: FrontPageProps) {
                 <span className="frontpage-intro-point-icon" aria-hidden="true">3</span>
                 <div>
                   <strong>Your progress is saved</strong>
-                  <p>Scores and attempts are recorded so you and your lecturer can track learning over the semester.</p>
+                  <p>Scores and attempts are recorded so you and your Instructor can track learning over the semester.</p>
                 </div>
               </li>
             </ul>
@@ -463,7 +463,7 @@ function FrontPage({ onStartLogin, onStartRegister }: FrontPageProps) {
             <p className="frontpage-section-eyebrow">What You Can Do</p>
             <h2 id="features-heading">Built for the way students study</h2>
             <p>
-              Once you join a class, you get access to the tools below. Your lecturer chooses which ones are
+              Once you join a class, you get access to the tools below. Your Instructor chooses which ones are
               turned on for your module.
             </p>
           </div>
@@ -515,8 +515,8 @@ function FrontPage({ onStartLogin, onStartRegister }: FrontPageProps) {
               <h2 id="campus-heading">Used by colleges and universities that want engaging learning</h2>
               <p>
                 EduAIGames is built for colleges and universities. Your institution can run it across multiple
-                modules. Lecturers manage their own classes while admins keep the platform running, so you
-                always have one secure place to learn.
+                modules, with Instructors managing their own classes and content so you always have one secure
+                place to learn.
               </p>
               <ul className="frontpage-schools-list">
                 <li>Secure student registration and class enrollment</li>
@@ -555,9 +555,9 @@ function FrontPage({ onStartLogin, onStartRegister }: FrontPageProps) {
         >
           <div className="frontpage-section-header">
             <p className="frontpage-section-eyebrow">Who Is It For?</p>
-            <h2 id="roles-heading">Students sign up here. Lecturers have their own area too.</h2>
+            <h2 id="roles-heading">Students sign up here. Instructors have their own area too.</h2>
             <p>
-              Sign up as a <strong>Student</strong> if your class uses EduAIGames. Lecturers and tutors register
+              Sign up as a <strong>Student</strong> if your class uses EduAIGames. Instructors and tutors register
               separately to create content and manage classes.
             </p>
           </div>
@@ -566,7 +566,7 @@ function FrontPage({ onStartLogin, onStartRegister }: FrontPageProps) {
               <span className="frontpage-role-badge">Student</span>
               <h3>Join your class and start learning</h3>
               <p>
-                This is the path for you if a lecturer gave you a join code. Sign up, enter the code, and access
+                This is the path for you if an Instructor gave you a join code. Sign up, enter the code, and access
                 quizzes, games, and your grades from your student dashboard.
               </p>
               <button type="button" onClick={onStartRegister} className="frontpage-btn frontpage-btn-primary">
@@ -574,7 +574,7 @@ function FrontPage({ onStartLogin, onStartRegister }: FrontPageProps) {
               </button>
             </article>
             <article className="frontpage-role-card">
-              <span className="frontpage-role-badge">Lecturer / Tutor</span>
+              <span className="frontpage-role-badge">Instructor / Tutor</span>
               <h3>Create classes and assign work</h3>
               <p>
                 If you teach at a college or university, register as an Instructor to create classes, publish

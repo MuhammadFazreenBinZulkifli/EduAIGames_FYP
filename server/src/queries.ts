@@ -37,14 +37,23 @@ export async function createUser(
   email: string,
   hashedPassword: string,
   role: string,
-  accountStatus: AccountStatus = 'approved'
+  accountStatus: AccountStatus = 'approved',
+  institutionId: number | null = null
 ) {
   try {
+    // When institutionId is null we omit the column so the table's DEFAULT
+    // (the platform's Default Institution) is applied automatically.
     const insertResult = await pool.query(
-      `INSERT INTO users (username, email, password, role, account_status)
-       VALUES ($1, $2, $3, $4, $5)
-       RETURNING id, username, email, role, account_status, created_at`,
-      [username, email, hashedPassword, role, accountStatus]
+      institutionId == null
+        ? `INSERT INTO users (username, email, password, role, account_status)
+           VALUES ($1, $2, $3, $4, $5)
+           RETURNING id, username, email, role, account_status, created_at`
+        : `INSERT INTO users (username, email, password, role, account_status, institution_id)
+           VALUES ($1, $2, $3, $4, $5, $6)
+           RETURNING id, username, email, role, account_status, created_at`,
+      institutionId == null
+        ? [username, email, hashedPassword, role, accountStatus]
+        : [username, email, hashedPassword, role, accountStatus, institutionId]
     );
     return (insertResult.rows as any[])[0];
   } catch (error: any) {

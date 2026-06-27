@@ -118,6 +118,7 @@ export function StudentCoursesPage() {
             title,
             description,
             ghostEnabled,
+            settings,
           }
           navigate(ROUTES.student.gameMaze, { state: { studentGameData } })
         }

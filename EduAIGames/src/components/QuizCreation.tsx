@@ -10,9 +10,6 @@ import PanelBreadcrumbs from './PanelBreadcrumbs'
 import PanelEmptyState from './PanelEmptyState'
 import PanelSkeleton from './PanelSkeleton'
 import PanelIcon from './PanelIcon'
-import QuizDueBadge from './QuizDueBadge'
-import QuizDueDatePicker, { QuizDueDateSummary } from './QuizDueDatePicker'
-import { datetimeLocalToIso, isoToDatetimeLocal } from '../utils/quizDueDateUtils'
 import './App_CSS/PanelPages_CSS.css'
 import './App_CSS/QuizCreation_CSS.css'
 
@@ -33,31 +30,6 @@ interface Quiz {
   description: string
   questions: Question[]
   created_at: string
-  due_date?: string | null
-  time_limit_minutes?: number | null
-  shuffle_questions?: boolean
-  shuffle_options?: boolean
-  max_attempts?: number | null
-  show_results_after?: 'immediate' | 'due_date' | 'never'
-  allow_late_submit?: boolean
-}
-
-interface QuizSettings {
-  time_limit_minutes: number | null
-  shuffle_questions: boolean
-  shuffle_options: boolean
-  max_attempts: number | null
-  show_results_after: 'immediate' | 'due_date' | 'never'
-  allow_late_submit: boolean
-}
-
-const DEFAULT_SETTINGS: QuizSettings = {
-  time_limit_minutes: null,
-  shuffle_questions: false,
-  shuffle_options: false,
-  max_attempts: null,
-  show_results_after: 'immediate',
-  allow_late_submit: true,
 }
 
 interface ClassItem {
@@ -95,9 +67,6 @@ function QuizCreation({ instructorId, classId, libraryMode = false, editQuizId, 
   })
   const builderRef = useRef<HTMLDivElement>(null)
   const [saving, setSaving] = useState(false)
-  const [dueDate, setDueDate] = useState('')
-  const [settings, setSettings] = useState<QuizSettings>(DEFAULT_SETTINGS)
-  const [showSettings, setShowSettings] = useState(false)
   /** When set, the "Add a Question" form updates this index instead of appending. */
   const [editingQuestionIndex, setEditingQuestionIndex] = useState<number | null>(null)
   const [showAIGenerator, setShowAIGenerator] = useState(false)
@@ -153,15 +122,6 @@ function QuizCreation({ instructorId, classId, libraryMode = false, editQuizId, 
         resetQuestionForm()
         setFormData({ title: quiz.title, description: quiz.description, questions: quiz.questions })
         setEditingQuizId(quiz.id)
-        setDueDate(quiz.due_date ? isoToDatetimeLocal(quiz.due_date) : '')
-        setSettings({
-          time_limit_minutes: quiz.time_limit_minutes ?? null,
-          shuffle_questions: quiz.shuffle_questions ?? false,
-          shuffle_options: quiz.shuffle_options ?? false,
-          max_attempts: quiz.max_attempts ?? null,
-          show_results_after: quiz.show_results_after ?? 'immediate',
-          allow_late_submit: quiz.allow_late_submit ?? true,
-        })
         setShowForm(true)
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load quiz')
@@ -307,8 +267,6 @@ function QuizCreation({ instructorId, classId, libraryMode = false, editQuizId, 
           instructor_id: instructorId,
           class_id: libraryMode ? null : selectedClassId,
           ...formData,
-          due_date: dueDate ? datetimeLocalToIso(dueDate) : null,
-          ...settings,
         })
       })
 
@@ -321,8 +279,6 @@ function QuizCreation({ instructorId, classId, libraryMode = false, editQuizId, 
         resetQuestionForm()
         setFormData({ title: '', description: '', questions: [] })
         setEditingQuizId(null)
-        setDueDate('')
-        setSettings(DEFAULT_SETTINGS)
         toast(libraryMode ? 'Quiz saved to your library!' : 'Quiz saved successfully!', 'success')
         onExit?.()
         return
@@ -349,15 +305,6 @@ function QuizCreation({ instructorId, classId, libraryMode = false, editQuizId, 
     resetQuestionForm()
     setFormData({ title: quiz.title, description: quiz.description, questions: quiz.questions })
     setEditingQuizId(quiz.id)
-    setDueDate(quiz.due_date ? isoToDatetimeLocal(quiz.due_date) : '')
-    setSettings({
-      time_limit_minutes: quiz.time_limit_minutes ?? null,
-      shuffle_questions: quiz.shuffle_questions ?? false,
-      shuffle_options: quiz.shuffle_options ?? false,
-      max_attempts: quiz.max_attempts ?? null,
-      show_results_after: quiz.show_results_after ?? 'immediate',
-      allow_late_submit: quiz.allow_late_submit ?? true,
-    })
     setShowForm(true)
   }
 
@@ -390,9 +337,6 @@ function QuizCreation({ instructorId, classId, libraryMode = false, editQuizId, 
     setShowForm(false)
     setFormData({ title: '', description: '', questions: [] })
     setEditingQuizId(null)
-    setDueDate('')
-    setSettings(DEFAULT_SETTINGS)
-    setShowSettings(false)
     setError(null)
   }
 
@@ -400,8 +344,6 @@ function QuizCreation({ instructorId, classId, libraryMode = false, editQuizId, 
     resetQuestionForm()
     setEditingQuizId(null)
     setFormData({ title: '', description: '', questions: [] })
-    setSettings(DEFAULT_SETTINGS)
-    setShowSettings(false)
     setShowForm(true)
   }
 
@@ -432,7 +374,7 @@ function QuizCreation({ instructorId, classId, libraryMode = false, editQuizId, 
   }
 
   // Saves an AI-generated quiz directly to the selected class.
-  const handleAIPublish = async (title: string, description: string, questions: any[], aiDueDate?: string | null) => {
+  const handleAIPublish = async (title: string, description: string, questions: any[]) => {
     if (!instructorId) { void showAlert('Instructor ID is required'); return }
     if (!libraryMode && !selectedClassId) { void showAlert('Please select a class before generating an AI quiz'); return }
     try {
@@ -447,8 +389,6 @@ function QuizCreation({ instructorId, classId, libraryMode = false, editQuizId, 
           title,
           description,
           questions,
-          due_date: aiDueDate ? datetimeLocalToIso(aiDueDate) : null,
-          ...settings,
         }),
       })
       if (!response.ok) {
@@ -503,7 +443,7 @@ function QuizCreation({ instructorId, classId, libraryMode = false, editQuizId, 
           <h1>{editingQuizId ? 'Edit Quiz' : 'Create New Quiz'}</h1>
           {libraryMode ? (
             <p className="panel-hero-greeting">
-              Saved to your library — publish this quiz to any of your classes from Manage Class.
+              Saved to your library. Publish this quiz to any of your classes from Manage Class.
             </p>
           ) : selectedClassTitle ? (
             <p className="panel-hero-greeting">For class: {selectedClassTitle}</p>
@@ -556,12 +496,6 @@ function QuizCreation({ instructorId, classId, libraryMode = false, editQuizId, 
                   placeholder="Enter quiz title"
                 />
               </div>
-              <div className="panel-form-group">
-                <label className="panel-label" htmlFor="quiz-due-date">
-                  Due Date <span className="quiz-creation__label-hint">(optional)</span>
-                </label>
-                <QuizDueDatePicker id="quiz-due-date" value={dueDate} onChange={setDueDate} />
-              </div>
               <div className="panel-form-group" style={{ marginBottom: 0 }}>
                 <label className="panel-label">
                   Description <span className="quiz-creation__label-hint">(optional)</span>
@@ -574,100 +508,6 @@ function QuizCreation({ instructorId, classId, libraryMode = false, editQuizId, 
                   placeholder="Brief description of this quiz"
                 />
               </div>
-            </div>
-
-            {/* Quiz Settings */}
-            <div className="panel-card quiz-settings">
-              <button
-                type="button"
-                className="quiz-settings__toggle"
-                onClick={() => setShowSettings(!showSettings)}
-                aria-expanded={showSettings}
-              >
-                <span className="quiz-settings__toggle-label">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93A10 10 0 0 0 4.93 19.07"/><path d="M4.93 4.93A10 10 0 0 1 19.07 19.07"/></svg>
-                  Quiz Settings
-                </span>
-                <span className="quiz-settings__toggle-hint">
-                  {[
-                    settings.time_limit_minutes ? `${settings.time_limit_minutes} min limit` : null,
-                    settings.max_attempts ? `${settings.max_attempts} attempt${settings.max_attempts > 1 ? 's' : ''}` : null,
-                    settings.shuffle_questions ? 'shuffled' : null,
-                  ].filter(Boolean).join(' · ') || 'defaults'}
-                  <svg className={`quiz-settings__chevron${showSettings ? ' quiz-settings__chevron--open' : ''}`} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
-                </span>
-              </button>
-              {showSettings && (
-                <div className="quiz-settings__body">
-                  <div className="quiz-settings__grid">
-                    <div className="panel-form-group">
-                      <label className="panel-label">Time Limit <span className="quiz-creation__label-hint">(minutes, 0 = none)</span></label>
-                      <input
-                        className="panel-input"
-                        type="number"
-                        min="0"
-                        max="300"
-                        value={settings.time_limit_minutes ?? ''}
-                        onChange={(e) => setSettings({ ...settings, time_limit_minutes: e.target.value ? parseInt(e.target.value) : null })}
-                        placeholder="No limit"
-                      />
-                    </div>
-                    <div className="panel-form-group">
-                      <label className="panel-label">Max Attempts <span className="quiz-creation__label-hint">(0 = unlimited)</span></label>
-                      <input
-                        className="panel-input"
-                        type="number"
-                        min="0"
-                        max="100"
-                        value={settings.max_attempts ?? ''}
-                        onChange={(e) => setSettings({ ...settings, max_attempts: e.target.value ? parseInt(e.target.value) : null })}
-                        placeholder="Unlimited"
-                      />
-                    </div>
-                    <div className="panel-form-group">
-                      <label className="panel-label">Show Results</label>
-                      <select
-                        className="panel-select"
-                        value={settings.show_results_after}
-                        onChange={(e) => setSettings({ ...settings, show_results_after: e.target.value as QuizSettings['show_results_after'] })}
-                      >
-                        <option value="immediate">Immediately after submit</option>
-                        <option value="due_date">After due date passes</option>
-                        <option value="never">Never (instructor reviews)</option>
-                      </select>
-                    </div>
-                    <div className="panel-form-group">
-                      <label className="panel-label">Late Submission</label>
-                      <select
-                        className="panel-select"
-                        value={settings.allow_late_submit ? 'yes' : 'no'}
-                        onChange={(e) => setSettings({ ...settings, allow_late_submit: e.target.value === 'yes' })}
-                      >
-                        <option value="yes">Allow (mark as late)</option>
-                        <option value="no">Block after due date</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div className="quiz-settings__toggles">
-                    <label className="quiz-settings__check">
-                      <input
-                        type="checkbox"
-                        checked={settings.shuffle_questions}
-                        onChange={(e) => setSettings({ ...settings, shuffle_questions: e.target.checked })}
-                      />
-                      Shuffle question order for each student
-                    </label>
-                    <label className="quiz-settings__check">
-                      <input
-                        type="checkbox"
-                        checked={settings.shuffle_options}
-                        onChange={(e) => setSettings({ ...settings, shuffle_options: e.target.checked })}
-                      />
-                      Shuffle answer options for each student
-                    </label>
-                  </div>
-                </div>
-              )}
             </div>
 
             {/* Question Builder */}
@@ -904,8 +744,6 @@ function QuizCreation({ instructorId, classId, libraryMode = false, editQuizId, 
                 )}
               </div>
 
-              <QuizDueDateSummary value={dueDate} />
-
               <div className="quiz-creation__save-bar">
                 <button
                   className="panel-btn panel-btn-success quiz-creation__save-bar-btn"
@@ -999,7 +837,7 @@ function QuizCreation({ instructorId, classId, libraryMode = false, editQuizId, 
           <div className="quiz-preview-modal">
             <div className="quiz-preview-header">
               <div>
-                <p className="panel-kicker">Preview — Student View</p>
+                <p className="panel-kicker">Preview: Student View</p>
                 <h2>{previewQuiz.title}</h2>
               </div>
               <button
@@ -1082,20 +920,6 @@ function QuizCreation({ instructorId, classId, libraryMode = false, editQuizId, 
               <h3>{quiz.title}</h3>
               <p>{quiz.description || 'No description'}</p>
               <span className="panel-meta">{quiz.questions.length} question{quiz.questions.length !== 1 ? 's' : ''}</span>
-              {quiz.due_date && <QuizDueBadge dueDate={quiz.due_date} />}
-              {(quiz.time_limit_minutes || quiz.max_attempts || quiz.shuffle_questions) && (
-                <div className="quiz-creation__settings-badges">
-                  {quiz.time_limit_minutes && (
-                    <span className="quiz-creation__setting-tag">⏱ {quiz.time_limit_minutes}m</span>
-                  )}
-                  {quiz.max_attempts && (
-                    <span className="quiz-creation__setting-tag">{quiz.max_attempts} attempt{quiz.max_attempts > 1 ? 's' : ''}</span>
-                  )}
-                  {quiz.shuffle_questions && (
-                    <span className="quiz-creation__setting-tag">shuffled</span>
-                  )}
-                </div>
-              )}
               <div className="panel-row quiz-creation__import-row">
                 <button
                   className="panel-btn panel-btn-secondary panel-btn-sm quiz-creation__import-btn"

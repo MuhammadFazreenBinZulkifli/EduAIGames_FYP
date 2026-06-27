@@ -299,12 +299,13 @@ function InstructorShell() {
         )}
       </div>
 
-      {/* Floating chatbot — hidden on desktop when side panel is active */}
+      {/* Floating chatbot — instructors keep it available during test-play/quiz
+          (immersive); only hidden when the docked side panel is active. */}
       <AIChatbot
         role={'Instructor' as ChatbotRole}
         username={user.username}
         userId={user.id}
-        hidden={!chatbotVisible || showSideEdubot || immersive}
+        hidden={!chatbotVisible || showSideEdubot}
       />
     </>
   )

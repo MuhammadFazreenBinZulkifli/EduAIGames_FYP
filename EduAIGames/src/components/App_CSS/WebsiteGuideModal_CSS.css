@@ -1,0 +1,208 @@
+/* Step-by-step "How it works" guide modal (students + instructors). */
+
+.site-guide__overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 11000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(8, 6, 16, 0.62);
+  backdrop-filter: blur(3px);
+  animation: site-guide-fade 0.18s ease-out;
+}
+
+@keyframes site-guide-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.site-guide__modal {
+  position: relative;
+  width: min(560px, 100%);
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
+  background: var(--bg-card, #1a1622);
+  color: var(--text-secondary, #cfc7d0);
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.12));
+  border-radius: 18px;
+  padding: 1.6rem 1.6rem 1.4rem;
+  box-shadow: 0 24px 60px var(--shadow-card, rgba(0, 0, 0, 0.55));
+  animation: site-guide-pop 0.2s cubic-bezier(0.34, 1.3, 0.64, 1);
+}
+
+@keyframes site-guide-pop {
+  from { opacity: 0; transform: scale(0.94) translateY(8px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.site-guide__close {
+  position: absolute;
+  top: 0.85rem;
+  right: 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.14));
+  border-radius: 9px;
+  background: var(--bg-btn-secondary, rgba(255, 255, 255, 0.06));
+  color: var(--text-secondary, #cfc7d0);
+  font-size: 0.95rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.site-guide__close:hover {
+  background: rgba(239, 68, 68, 0.18);
+  color: #fca5a5;
+}
+
+.site-guide__header {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.9rem;
+  margin-bottom: 1.2rem;
+  padding-right: 2rem;
+}
+
+.site-guide__badge {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 14px;
+  background: rgba(232, 106, 16, 0.14);
+  border: 1px solid rgba(232, 106, 16, 0.4);
+  font-size: 1.5rem;
+}
+
+.site-guide__kicker {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent-soft, #e89550);
+}
+
+.site-guide__title {
+  margin: 0.12rem 0 0;
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--text-primary, #fff4e8);
+  line-height: 1.2;
+}
+
+.site-guide__subtitle {
+  margin: 0.35rem 0 0;
+  font-size: 0.88rem;
+  line-height: 1.45;
+  color: var(--text-muted, #9993a3);
+}
+
+.site-guide__steps {
+  list-style: none;
+  margin: 0 0 1.2rem;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.site-guide__step {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem;
+  padding: 0.75rem 0.85rem;
+  border-radius: 12px;
+  background: var(--bg-card-soft, rgba(255, 255, 255, 0.04));
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+}
+
+.site-guide__step-num {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.7rem;
+  height: 1.7rem;
+  border-radius: 50%;
+  background: linear-gradient(145deg, var(--accent-hover, #ff7a1a), var(--accent, #e86a10));
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+.site-guide__step-body {
+  min-width: 0;
+}
+
+.site-guide__step-title {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary, #fff4e8);
+}
+
+.site-guide__step-detail {
+  margin: 0.2rem 0 0;
+  font-size: 0.86rem;
+  line-height: 1.45;
+  color: var(--text-secondary, #cfc7d0);
+}
+
+.site-guide__actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.site-guide__primary {
+  min-width: 10rem;
+}
+
+/* ── Mobile ── */
+@media (max-width: 540px) {
+  .site-guide__overlay {
+    padding: 0;
+    align-items: flex-end;
+  }
+
+  .site-guide__modal {
+    width: 100%;
+    max-height: 92vh;
+    border-radius: 18px 18px 0 0;
+    padding: 1.3rem 1.1rem calc(1.2rem + env(safe-area-inset-bottom, 0px));
+    animation: site-guide-sheet 0.24s cubic-bezier(0.34, 1.2, 0.64, 1);
+  }
+
+  .site-guide__header {
+    gap: 0.7rem;
+    margin-bottom: 1rem;
+  }
+
+  .site-guide__badge {
+    width: 2.6rem;
+    height: 2.6rem;
+    font-size: 1.3rem;
+  }
+
+  .site-guide__title {
+    font-size: 1.15rem;
+  }
+
+  .site-guide__primary {
+    width: 100%;
+  }
+}
+
+@keyframes site-guide-sheet {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
