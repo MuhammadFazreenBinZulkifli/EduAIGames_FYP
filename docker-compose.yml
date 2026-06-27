@@ -64,8 +64,13 @@ services:
       SMTP_USER: ${SMTP_USER:-}
       SMTP_PASS: ${SMTP_PASS:-}
       SMTP_FROM: ${SMTP_FROM:-}
+    volumes:
+      # Persist uploaded class materials across container recreation/rebuilds.
+      # The server writes to /app/server/uploads (see classContent.ts).
+      - uploads:/app/server/uploads
     ports:
       - "5000:5000"
 
 volumes:
   pgdata:
+  uploads:

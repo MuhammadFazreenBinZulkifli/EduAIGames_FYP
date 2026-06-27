@@ -26,16 +26,15 @@ services:
     dockerfilePath: ./Dockerfile
     dockerContext: .
     region: singapore
-    plan: starter        # a persistent disk requires a paid (>= starter) plan
+    plan: free           # free tier: spins down when idle, no persistent disk
     autoDeploy: true     # redeploy automatically on every git push
     healthCheckPath: /api/health
 
-    # Persistent storage for uploaded class materials.
-    # The server writes to /app/server/uploads/... (see classContent.ts).
-    disk:
-      name: uploads
-      mountPath: /app/server/uploads
-      sizeGB: 1
+    # NOTE: The free plan does NOT support a persistent disk, so the disk block
+    # has been removed. Uploaded class materials are written to the container's
+    # ephemeral filesystem and are LOST on every redeploy and whenever the
+    # service spins down after inactivity. Upgrade to the "starter" plan and
+    # re-add a `disk:` block here if you need uploads to persist.
 
     envVars:
       - key: NODE_ENV
