@@ -14,6 +14,7 @@ import { useGameHowTo } from '../hooks/useUserPreferences'
 import {
   countPlayableQuestions,
   getOptionsForQuestion,
+  isTypingTarget,
   normalizeQuestionsForGame,
   type RawQuizQuestion,
 } from '../utils/gameQuizUtils'
@@ -655,6 +656,9 @@ export default function MazeGameQuiz({ instructorId, studentGameData, onExit }: 
     }
 
     const onKey = (e: KeyboardEvent) => {
+      // Don't hijack keys while the user is typing in a form field
+      // (e.g. naming/saving the game in the content maker).
+      if (isTypingTarget(e.target)) return
       if (e.key === 'Escape') {
         handleTouchPause()
         return

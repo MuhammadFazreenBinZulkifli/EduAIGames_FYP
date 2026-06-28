@@ -32,6 +32,21 @@ function norm(s: string): string {
   return s.trim().toLowerCase()
 }
 
+/**
+ * True when a keyboard event originates from an editable field (input, textarea,
+ * select, or contenteditable). Games listen on `window`, so without this guard
+ * their WASD/arrow handlers would swallow keystrokes while an instructor types
+ * in a text box (e.g. naming/saving a game in the content maker).
+ */
+export function isTypingTarget(target: EventTarget | null): boolean {
+  const el = target as HTMLElement | null
+  if (!el || typeof el.tagName !== 'string') return false
+  const tag = el.tagName.toLowerCase()
+  if (tag === 'input' || tag === 'textarea' || tag === 'select') return true
+  if (el.isContentEditable) return true
+  return false
+}
+
 /** Build playable options with is_correct for maze gates and snake fruits. */
 export function getOptionsForQuestion(q: RawQuizQuestion): GamePlayOption[] {
   if (q.question_type === 'true-false') {

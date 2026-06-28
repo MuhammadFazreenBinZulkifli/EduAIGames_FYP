@@ -13,6 +13,7 @@ import GameHowToModal, { type HowToStep } from './GameHowToModal'
 import { useGameHowTo } from '../hooks/useUserPreferences'
 import {
   countPlayableQuestions,
+  isTypingTarget,
   normalizeQuestionsForGame,
   type GamePlayQuestion,
   type RawQuizQuestion,
@@ -1018,6 +1019,9 @@ export default function SnakeGameQuiz({ instructorId, studentGameData, onExit }:
   // ── Keyboard input ──
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      // Don't hijack keys while the user is typing in a form field
+      // (e.g. naming/saving the game in the content maker).
+      if (isTypingTarget(e.target)) return
       const key = e.key
       if (key === 'Escape' || key === 'p' || key === 'P') {
         handleTouchPause()
