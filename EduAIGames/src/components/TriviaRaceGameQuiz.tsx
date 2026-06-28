@@ -568,7 +568,6 @@ export default function TriviaRaceGameQuiz({ instructorId, studentGameData, onEx
             <h1>Trivia Race</h1>
             <p>Turn any quiz into a head-to-head race. Answer correctly to outrun the rival to the finish line.</p>
           </div>
-          <button className="panel-btn panel-btn-secondary" type="button" onClick={onExit}>Back to Studio</button>
         </div>
 
         {listError && <div className="panel-alert panel-alert-error">{listError}</div>}
@@ -646,8 +645,8 @@ export default function TriviaRaceGameQuiz({ instructorId, studentGameData, onEx
         </div>
 
         <div className="panel-row trivia-race-game-quiz__actions">
-          <button className="panel-btn trivia-race-game-quiz__test-btn" style={{ background: `linear-gradient(135deg,${theme.accent},#6366f1)` }} onClick={startGame} disabled={!selectedQuizId || playableCount === 0}>▶ Test Play</button>
-          <button className="panel-btn panel-btn-success" onClick={openSaveDialog} disabled={!selectedQuizId || playableCount === 0}>💾 Save to Library</button>
+          <button className="panel-btn panel-btn-success trivia-race-game-quiz__action-btn" type="button" onClick={startGame} disabled={!selectedQuizId || playableCount === 0}>▶ Test Play</button>
+          <button className="panel-btn panel-btn-secondary trivia-race-game-quiz__action-btn" type="button" onClick={openSaveDialog} disabled={!selectedQuizId || playableCount === 0}>💾 Save Game</button>
         </div>
         {howToModalEl}
       </div>

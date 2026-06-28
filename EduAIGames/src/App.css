@@ -1361,8 +1361,23 @@
 }
 
 .success-icon {
-  font-size: 2.5rem;
-  margin-bottom: 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 1.25rem;
+  border-radius: 50%;
+  color: #16a34a;
+  background: rgba(34, 197, 94, 0.12);
+  border: 1px solid rgba(34, 197, 94, 0.35);
+  box-shadow: 0 0 0 6px rgba(34, 197, 94, 0.06);
+}
+
+.success-icon svg {
+  width: 32px;
+  height: 32px;
+  display: block;
 }
 
 .auth-card .form-group label {
@@ -1676,7 +1691,6 @@
   }
 
   .success-icon {
-    font-size: 3rem;
     margin-bottom: 0;
   }
 }
@@ -3423,6 +3437,14 @@ html[data-theme='light'] .course-item .panel-icon-btn:hover {
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
+}
+
+/* When the action button is removed, stretch the lone hero to full width
+   so it lines up with the panel cards underneath. */
+.panel-top-row > .panel-hero:only-child {
+  flex: 1 1 100%;
+  width: 100%;
+  margin-bottom: 0;
 }
 
 @media (max-width: 600px) {

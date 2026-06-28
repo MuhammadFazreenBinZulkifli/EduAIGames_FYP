@@ -220,18 +220,7 @@ JSON format:
     return (
       <div className="panel-page aiq-review-page">
         <div className="aiq-review-topbar">
-          <button type="button" className="panel-btn panel-btn-secondary panel-btn-sm" onClick={onCancel}>
-            ← Exit
-          </button>
           <span className="aiq-review-topbar__title">Review Quiz</span>
-          <button
-            type="button"
-            className="panel-btn panel-btn-success panel-btn-sm aiq-review-topbar__publish"
-            onClick={handlePublish}
-            disabled={questions.length === 0}
-          >
-            Publish
-          </button>
         </div>
 
         <div className="aiq-review-two-col">
@@ -268,10 +257,13 @@ JSON format:
               <div className="panel-row aiq-review-actions__secondary">
                 <button
                   type="button"
-                  className="panel-btn panel-btn-secondary"
+                  className="panel-btn aiq-regenerate-btn"
                   onClick={() => { setReviewMode(false); setQuestions([]); setPreviewIdx(null) }}
                 >
-                  ← Regenerate
+                  <svg className="aiq-regenerate-btn__icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M21 12a9 9 0 1 1-2.64-6.36M21 4v4h-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                  Regenerate
                 </button>
                 <button
                   type="button"
@@ -466,11 +458,7 @@ JSON format:
   return (
     <div className="panel-page aiq-generate-page">
       <div className="aiq-review-topbar aiq-generate-topbar">
-        <button type="button" className="panel-btn panel-btn-secondary panel-btn-sm" onClick={onCancel}>
-          ← Exit
-        </button>
         <span className="aiq-review-topbar__title">AI Quiz Generator</span>
-        <span className="aiq-review-topbar__spacer" aria-hidden="true" />
       </div>
       {generating && <AIQuizGeneratingLoader topic={topic.trim()} />}
 

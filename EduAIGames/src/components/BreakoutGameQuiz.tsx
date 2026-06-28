@@ -1121,7 +1121,6 @@ export default function BreakoutGameQuiz({ instructorId, studentGameData, onExit
             <h1>Brick Breaker</h1>
             <p>Turn any quiz into an arcade brick breaker. Bounce the ball into the correct answer brick to advance.</p>
           </div>
-          <button className="panel-btn panel-btn-secondary" type="button" onClick={onExit}>Back to Studio</button>
         </div>
 
         {listError && <div className="panel-alert panel-alert-error">{listError}</div>}
@@ -1212,11 +1211,11 @@ export default function BreakoutGameQuiz({ instructorId, studentGameData, onExit
         </div>
 
         <div className="panel-row breakout-game-quiz__actions">
-          <button className="panel-btn breakout-game-quiz__test-btn" onClick={startGame} disabled={!selectedQuizId || playableCount === 0}>
+          <button className="panel-btn panel-btn-success breakout-game-quiz__action-btn" type="button" onClick={startGame} disabled={!selectedQuizId || playableCount === 0}>
             ▶ Test Play
           </button>
-          <button className="panel-btn panel-btn-success" onClick={openSaveDialog} disabled={!selectedQuizId || playableCount === 0}>
-            💾 Save to Library
+          <button className="panel-btn panel-btn-secondary breakout-game-quiz__action-btn" type="button" onClick={openSaveDialog} disabled={!selectedQuizId || playableCount === 0}>
+            💾 Save Game
           </button>
         </div>
       </div>

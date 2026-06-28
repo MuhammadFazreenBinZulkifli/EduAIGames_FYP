@@ -1274,9 +1274,6 @@ export default function SnakeGameQuiz({ instructorId, studentGameData, onExit }:
             <h1>Snake Quest</h1>
             <p>Turn any quiz into a Knowledge Snake game. Eat the correct answer fruit to move on.</p>
           </div>
-          <button className="panel-btn panel-btn-secondary" type="button" onClick={onExit}>
-            Back to Studio
-          </button>
         </div>
 
         {listError && <div className="panel-alert panel-alert-error">{listError}</div>}

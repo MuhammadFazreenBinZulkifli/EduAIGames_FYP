@@ -205,8 +205,12 @@ function Registration({ onSwitchToLogin, onBackToFrontPage }: RegistrationProps)
       <div className="auth-page">
         <div className="auth-layout auth-layout-centered">
           <div className="auth-card auth-success-card">
-            <div className="success-icon">✅</div>
-            <h1 className="auth-title">Registration Submitted!</h1>
+            <div className="success-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M5 12.5l4.5 4.5L19 7.5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
+            <h1 className="auth-title">Registration Submitted</h1>
             <p className="auth-subtitle">
               Your account request has been sent to the administrator. You will be able to log in
               after your registration is approved.

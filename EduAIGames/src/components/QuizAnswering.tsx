@@ -51,6 +51,7 @@ interface JoinedClass {
   id: number
   title: string
   description?: string
+  background_image?: string | null
 }
 
 interface QuizAnsweringProps {
@@ -156,7 +157,7 @@ function QuizAnswering({ studentId, initialClassId, initialQuizId, onSessionEnd 
         clearProgressForQuizzes(studentId, submittedQuizIds)
         setCompletedQuizIds(completed)
         setAttemptScores(scores)
-        setJoinedClasses((classesData.classes || []).map((c: any) => ({ id: c.id, title: c.title, description: c.description })))
+        setJoinedClasses((classesData.classes || []).map((c: any) => ({ id: c.id, title: c.title, description: c.description, background_image: c.background_image })))
         const mappedQuizzes = (quizData.quizzes || []).map((quiz: any) => ({
           id: quiz.id,
           class_id: quiz.class_id != null ? Number(quiz.class_id) : null,
@@ -590,10 +591,9 @@ function QuizAnswering({ studentId, initialClassId, initialQuizId, onSessionEnd 
                 return (
                   <ClassCard
                     key={c.id}
-                    variant="icon"
+                    variant="banner"
                     classItem={c}
-                    cardIcon="quiz"
-                    cardIconColor="orange"
+                    bannerFallbackIcon="quiz"
                     clickable
                     onClick={() => setSelectedClassId(c.id)}
                     descriptionFallback="View published quizzes for this class"

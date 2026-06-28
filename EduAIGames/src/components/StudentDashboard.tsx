@@ -372,7 +372,7 @@ function StudentDashboard({
                   key={cls.id}
                   type="button"
                   className="dash-class-item"
-                  onClick={() => onOpenClassContent?.(cls.id) ?? onCourseClick?.()}
+                  onClick={() => { if (onOpenClassContent) onOpenClassContent(cls.id); else onCourseClick?.() }}
                 >
                   <div className="dash-class-item__thumb">
                     {cls.background_image ? <img src={cls.background_image} alt="" /> : <DashboardIcon name="classes" variant="thumb" />}

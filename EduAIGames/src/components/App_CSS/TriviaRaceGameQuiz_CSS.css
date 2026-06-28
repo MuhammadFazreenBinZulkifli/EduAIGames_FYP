@@ -90,6 +90,11 @@
   margin-top: 1rem;
 }
 .trivia-race-game-quiz__actions { gap: 0.75rem; flex-wrap: wrap; }
+.trivia-race-game-quiz__action-btn {
+  flex: 1 1 160px;
+  font-size: 1rem;
+  padding: 0.8rem 1.5rem;
+}
 .trivia-race-game-quiz__test-btn {
   color: #fff;
   border: none;

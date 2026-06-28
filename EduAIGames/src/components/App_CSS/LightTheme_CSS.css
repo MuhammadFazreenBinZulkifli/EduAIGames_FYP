@@ -115,6 +115,18 @@ html[data-theme='light'] .dash-banner__stat:hover {
   background: #ffffff !important;
 }
 
+/* "How it works" guide button — white-on-white is invisible on the light hero,
+   so give it a readable accent style in light mode. */
+html[data-theme='light'] .dash-banner__guide-btn {
+  color: var(--accent) !important;
+  background: rgba(194, 65, 12, 0.10) !important;
+  border-color: rgba(194, 65, 12, 0.32) !important;
+}
+
+html[data-theme='light'] .dash-banner__guide-btn:hover {
+  background: rgba(194, 65, 12, 0.18) !important;
+}
+
 html[data-theme='light'] .panel-dash-spotlight {
   background: var(--panel-context-bg) !important;
   border-color: var(--panel-context-border) !important;

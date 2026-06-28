@@ -1053,9 +1053,6 @@ export default function MazeGameQuiz({ instructorId, studentGameData, onExit }: 
             <h1>Maze Quest</h1>
             <p>Turn any quiz from your library into a procedurally generated maze adventure.</p>
           </div>
-          <button className="panel-btn panel-btn-secondary" type="button" onClick={onExit}>
-            Back to Studio
-          </button>
         </div>
 
         {listError && <div className="panel-alert panel-alert-error">{listError}</div>}
