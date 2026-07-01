@@ -1,5 +1,7 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { API_BASE_URL } from '../config'
+import { ROUTES } from '../routes/paths'
 import { usePlatformFeatures } from '../hooks/usePlatformFeatures'
 import './App_CSS/StudentStudyCoach_CSS.css'
 
@@ -72,6 +74,10 @@ export default function StudentStudyCoach({ studentId, classId, className }: Stu
             <h3 className="study-coach__title">Study Coach</h3>
             <p className="study-coach__subtitle">
               Personalized tips for {className ? <strong>{className}</strong> : 'this class'} based on your quiz results.
+              {' '}
+              <Link to={ROUTES.student.studyCoach} className="study-coach__hub-link">
+                Open full Study Coach →
+              </Link>
             </p>
           </div>
         </div>

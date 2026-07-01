@@ -1,0 +1,601 @@
+/* AI Study Coach hub — full page with tabs; mobile-first layout */
+
+/* Breadcrumb trail must stay visible above the hero (matches Class Content / Grades pages). */
+.student-study-coach-page > .panel-breadcrumbs {
+  display: block;
+  width: 100%;
+  flex-shrink: 0;
+  margin-bottom: 1.15rem;
+  position: relative;
+  z-index: 2;
+  animation: none;
+}
+
+.student-study-coach-page > .panel-breadcrumbs .panel-breadcrumbs__list {
+  animation: none;
+}
+
+.coach-hub.student-study-coach-page {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.coach-hub__hero {
+  margin-bottom: 1rem;
+}
+
+.coach-hub__toolbar {
+  margin-bottom: 1rem;
+  padding: 1rem 1.1rem;
+}
+
+.coach-hub__class-label {
+  margin-bottom: 0.35rem;
+}
+
+.coach-hub__class-select {
+  width: 100%;
+  max-width: 420px;
+}
+
+.coach-hub__class-search {
+  width: 100%;
+  max-width: 480px;
+}
+
+.coach-hub__class-meta {
+  margin: 0.5rem 0 0;
+}
+
+/* Tab bar — scroll on mobile, equal grid on desktop */
+.coach-hub__tabs {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+  padding: 0.15rem 0 0.5rem;
+  margin: 0 -0.15rem 1rem;
+}
+
+.coach-hub__tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.coach-hub__tab {
+  flex: 0 0 min(11.5rem, 44vw);
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.15rem;
+  min-height: 3.5rem;
+  padding: 0.7rem 0.75rem;
+  border-radius: 12px;
+  border: 1px solid var(--panel-surface-border);
+  background: var(--panel-surface-bg);
+  cursor: pointer;
+  text-align: center;
+  transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+}
+
+.coach-hub__tab--active {
+  border-color: var(--accent);
+  background: rgba(255, 122, 26, 0.1);
+  box-shadow: 0 0 0 1px rgba(255, 122, 26, 0.15);
+}
+
+.coach-hub__tab-label {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.2;
+  width: 100%;
+}
+
+.coach-hub__tab-hint {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  line-height: 1.25;
+  width: 100%;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.coach-hub__panel {
+  min-height: 200px;
+}
+
+/* Section cards (insights uses .study-coach styling instead) */
+.coach-hub__panel > .coach-hub__section:not(.study-coach) {
+  padding: 1.15rem 1.2rem;
+  border-radius: 16px;
+  border: 1px solid var(--panel-surface-border);
+  background: var(--card-bg);
+  box-shadow: var(--panel-card-shadow, 0 4px 16px rgba(0, 0, 0, 0.18));
+}
+
+.coach-hub .study-coach.coach-hub__section {
+  margin: 0;
+}
+
+.coach-hub__section {
+  margin-bottom: 0;
+}
+
+.coach-hub__section-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: auto auto;
+  column-gap: 1rem;
+  row-gap: 0.35rem;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.coach-hub__section-head h2 {
+  grid-column: 1;
+  grid-row: 1;
+  margin: 0;
+  font-size: 1.15rem;
+  color: var(--text-primary);
+}
+
+.coach-hub__section-head .panel-meta {
+  grid-column: 1;
+  grid-row: 2;
+  margin: 0;
+  line-height: 1.45;
+}
+
+.coach-hub__section-head .panel-btn {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  margin: 0;
+  align-self: center;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.coach-hub__mistake-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.coach-hub__mistake {
+  padding: 1rem 1.1rem;
+  border-radius: 14px;
+  border: 1px solid var(--panel-surface-border);
+  background: var(--panel-surface-bg);
+}
+
+.coach-hub__mistake-quiz {
+  margin: 0 0 0.4rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--accent-soft);
+}
+
+.coach-hub__wrong {
+  color: #ef4444;
+}
+
+.coach-hub__right {
+  color: #22c55e;
+}
+
+.coach-hub__ai-explain {
+  margin-top: 0.85rem;
+  padding: 0.85rem 1rem;
+  border-radius: 10px;
+  background: var(--panel-context-bg);
+  border: 1px solid var(--panel-context-border);
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.coach-hub__ai-explain p {
+  margin: 0 0 0.5rem;
+}
+
+.coach-hub__tip {
+  margin-bottom: 0 !important;
+  font-style: italic;
+}
+
+.coach-hub__qlist {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  margin-top: 1rem;
+}
+
+.coach-hub__set-meta {
+  margin: 0 0 0.5rem;
+}
+
+.coach-hub__qcard {
+  padding: 1rem 1.1rem;
+  border-radius: 14px;
+  border: 1px solid var(--panel-surface-border);
+  background: var(--panel-surface-bg);
+}
+
+.coach-hub__qnum {
+  margin: 0 0 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+
+.coach-hub__qtext {
+  margin: 0 0 0.75rem;
+  font-size: 0.95rem;
+  line-height: 1.45;
+  color: var(--text-primary);
+}
+
+.coach-hub__options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin-bottom: 0.75rem;
+}
+
+.coach-hub__opt {
+  width: 100%;
+  text-align: left;
+  padding: 0.65rem 0.85rem;
+  border-radius: 10px;
+  border: 1px solid var(--panel-surface-border);
+  background: var(--panel-surface-bg);
+  color: var(--text-primary);
+  font-size: 0.88rem;
+  cursor: pointer;
+  min-height: 44px;
+}
+
+.coach-hub__opt--picked {
+  border-color: var(--accent);
+  background: rgba(255, 122, 26, 0.12);
+}
+
+.coach-hub__opt-list {
+  margin: 0 0 0.75rem;
+  padding-left: 1.2rem;
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+}
+
+.coach-hub__rubric {
+  margin-bottom: 0.75rem;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.coach-hub__rubric-title {
+  margin: 0 0 0.35rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.coach-hub__reveal-btn {
+  width: 100%;
+  max-width: 200px;
+}
+
+.coach-hub__answer {
+  margin-top: 0.75rem;
+  padding: 0.75rem 0.9rem;
+  border-radius: 10px;
+  background: var(--panel-context-bg);
+  border: 1px solid var(--panel-context-border);
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+.coach-hub__explain {
+  margin-top: 0.5rem;
+  color: var(--text-secondary);
+}
+
+.coach-hub__verdict {
+  margin: 0.5rem 0 0;
+  font-weight: 700;
+}
+
+.coach-hub__verdict--ok {
+  color: #22c55e;
+}
+
+.coach-hub__verdict--miss {
+  color: #f97316;
+}
+
+.coach-hub__create-form {
+  margin-bottom: 0;
+  padding: 1rem 1.1rem;
+}
+
+.coach-hub__create-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.65rem;
+}
+
+.coach-hub__create-field {
+  margin-bottom: 0;
+  min-width: 0;
+}
+
+.coach-hub__create-btn {
+  width: 100%;
+  margin-top: 0.5rem;
+  min-height: 48px;
+}
+
+/* Ask Coach chat */
+.coach-hub__ask {
+  display: flex;
+  flex-direction: column;
+  min-height: 380px;
+}
+
+.coach-hub__ask .coach-hub__section-head {
+  margin-bottom: 0.85rem;
+}
+
+.coach-hub__chat-panel {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  border-radius: 14px;
+  border: 1px solid var(--panel-surface-border);
+  background: var(--panel-surface-bg);
+  overflow: hidden;
+  min-height: 320px;
+}
+
+.coach-hub__chat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  min-height: 200px;
+  max-height: min(52vh, 420px);
+  overflow-y: auto;
+  padding: 1rem 1.1rem;
+}
+
+.coach-hub__chat-empty {
+  margin: auto;
+  text-align: center;
+  max-width: 340px;
+  padding: 1.5rem 0.5rem;
+}
+
+.coach-hub__chat-empty-title {
+  margin: 0 0 0.4rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.coach-hub__chat-empty-hint {
+  margin: 0;
+  font-size: 0.84rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.coach-hub__chat-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  max-width: 88%;
+}
+
+.coach-hub__chat-row--user {
+  align-self: flex-end;
+  align-items: flex-end;
+}
+
+.coach-hub__chat-row--assistant {
+  align-self: flex-start;
+  align-items: flex-start;
+}
+
+.coach-hub__chat-role {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  padding: 0 0.15rem;
+}
+
+.coach-hub__chat-bubble {
+  padding: 0.7rem 0.95rem;
+  border-radius: 14px;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  word-break: break-word;
+  white-space: pre-wrap;
+}
+
+.coach-hub__chat-bubble--user {
+  background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+  color: var(--accent-text-on);
+  border-bottom-right-radius: 4px;
+}
+
+.coach-hub__chat-bubble--assistant {
+  background: var(--card-bg);
+  border: 1px solid var(--panel-surface-border);
+  color: var(--text-primary);
+  border-bottom-left-radius: 4px;
+}
+
+.coach-hub__chat-typing {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  min-height: 2.5rem;
+  padding: 0.85rem 1rem;
+}
+
+.coach-hub__chat-typing span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  opacity: 0.65;
+  animation: coach-chat-dot 1.2s ease-in-out infinite;
+}
+
+.coach-hub__chat-typing span:nth-child(2) { animation-delay: 0.15s; }
+.coach-hub__chat-typing span:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes coach-chat-dot {
+  0%, 80%, 100% { transform: scale(0.7); opacity: 0.4; }
+  40% { transform: scale(1); opacity: 1; }
+}
+
+.coach-hub__chat-composer {
+  border-top: 1px solid var(--panel-surface-border);
+  background: var(--card-bg);
+  padding: 0.85rem 1rem;
+}
+
+.coach-hub__chat-error {
+  margin: 0 0 0.5rem !important;
+}
+
+.coach-hub__chat-input-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.coach-hub__chat-input {
+  width: 100%;
+  min-height: 72px;
+  resize: vertical;
+  margin: 0;
+}
+
+.coach-hub__chat-send {
+  width: 100%;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (min-width: 640px) {
+  .coach-hub__create-row {
+    grid-template-columns: 2fr 1fr 1fr;
+  }
+
+  .coach-hub__chat-input-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.65rem;
+    align-items: stretch;
+  }
+
+  .coach-hub__chat-input {
+    min-height: 52px;
+    margin: 0;
+  }
+
+  .coach-hub__chat-send {
+    width: auto;
+    min-width: 7.5rem;
+    padding: 0 1.35rem;
+    align-self: stretch;
+    height: auto;
+  }
+}
+
+@media (min-width: 900px) {
+  .coach-hub__tabs {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 0.55rem;
+    overflow: visible;
+    scroll-snap-type: none;
+    padding: 0;
+    margin: 0 0 1.15rem;
+  }
+
+  .coach-hub__tab {
+    flex: unset;
+    min-width: 0;
+    width: 100%;
+    min-height: 4rem;
+    padding: 0.75rem 0.5rem;
+  }
+
+  .coach-hub__tab-label {
+    font-size: 0.9rem;
+  }
+
+  .coach-hub__tab-hint {
+    font-size: 0.72rem;
+  }
+}
+
+@media (max-width: 639px) {
+  .coach-hub__section-head {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+  }
+
+  .coach-hub__section-head h2 {
+    grid-row: 1;
+  }
+
+  .coach-hub__section-head .panel-meta {
+    grid-row: 2;
+  }
+
+  .coach-hub__section-head .panel-btn {
+    grid-column: 1;
+    grid-row: 3;
+    width: 100%;
+    justify-content: center;
+    min-height: 44px;
+    margin-top: 0.35rem;
+  }
+
+  .coach-hub__panel > .coach-hub__section:not(.study-coach) {
+    padding: 1rem;
+  }
+
+  .coach-hub__create-row {
+    grid-template-columns: 1fr;
+  }
+
+  .coach-hub__reveal-btn {
+    max-width: none;
+    width: 100%;
+  }
+}
+
+@media (max-width: 520px) {
+  .study-coach.coach-hub__section {
+    padding: 0.95rem;
+  }
+}

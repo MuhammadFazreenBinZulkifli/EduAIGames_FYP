@@ -185,11 +185,14 @@ export async function leaveClass(studentId: number, classId: number) {
   }
 }
 
-// Get all classes for a student
+// Get all classes for a student (with member count and join date)
 export async function getStudentClasses(studentId: number) {
   try {
     const result = await pool.query(
-      `SELECT c.id, c.instructor_id, c.title, c.description, c.join_code, c.visibility, c.background_image, c.created_at, u.username AS instructor_name
+      `SELECT c.id, c.instructor_id, c.title, c.description, c.join_code, c.visibility, c.background_image,
+              cm.joined_at,
+              u.username AS instructor_name,
+              (SELECT COUNT(*)::int FROM class_memberships cm2 WHERE cm2.class_id = c.id) AS student_count
        FROM classes c
        JOIN class_memberships cm ON c.id = cm.class_id
        JOIN users u ON c.instructor_id = u.id

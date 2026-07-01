@@ -57,6 +57,7 @@ services:
       FRONTEND_URL: ${FRONTEND_URL:-http://localhost:5000}
 
       # Optional integrations — leave blank to disable
+      # OPENAI_API_KEY powers EduBot, AI Study Coach, class Analyse, and AI quiz tools.
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
       SMTP_HOST: ${SMTP_HOST:-}
       SMTP_PORT: ${SMTP_PORT:-587}

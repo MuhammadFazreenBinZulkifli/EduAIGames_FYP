@@ -590,3 +590,130 @@ html[data-theme='light'] .breakout-game-quiz__question-text {
 html[data-theme='light'] .breakout-game-quiz__legend-text {
   color: var(--text-secondary) !important;
 }
+
+/* ── AI Study Coach (hub chat) ── */
+html[data-theme='light'] .coach-hub__chat-panel {
+  background: #ffffff !important;
+  border-color: var(--border) !important;
+  box-shadow: 0 2px 12px rgba(15, 23, 42, 0.06) !important;
+}
+
+html[data-theme='light'] .coach-hub__chat {
+  background: #f8f9fb !important;
+}
+
+html[data-theme='light'] .coach-hub__chat-composer {
+  background: #ffffff !important;
+  border-top-color: var(--border) !important;
+}
+
+html[data-theme='light'] .coach-hub__chat-bubble--assistant {
+  background: #ffffff !important;
+  border-color: var(--border) !important;
+  color: var(--text-primary) !important;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05) !important;
+}
+
+html[data-theme='light'] .coach-hub__chat-bubble--user {
+  background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%) !important;
+  color: #ffffff !important;
+}
+
+html[data-theme='light'] .coach-hub__chat-role {
+  color: var(--text-muted) !important;
+}
+
+html[data-theme='light'] .coach-hub__chat-input {
+  background: var(--bg-input) !important;
+  border-color: var(--border) !important;
+  color: var(--text-primary) !important;
+}
+
+html[data-theme='light'] .coach-hub__chat-input::placeholder {
+  color: var(--text-muted) !important;
+}
+
+html[data-theme='light'] .coach-hub__chat::-webkit-scrollbar-thumb {
+  background: rgba(194, 65, 12, 0.22) !important;
+}
+
+html[data-theme='light'] .coach-hub__tab--active {
+  background: rgba(194, 65, 12, 0.08) !important;
+  border-color: var(--accent) !important;
+}
+
+/* ── Class overview modal (Enrolled Classes) ── */
+html[data-theme='light'] .class-overview__overlay {
+  background: rgba(15, 23, 42, 0.45) !important;
+}
+
+html[data-theme='light'] .class-overview__modal {
+  background: #ffffff !important;
+  border-color: var(--border) !important;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.18) !important;
+}
+
+html[data-theme='light'] .class-overview__header {
+  border-bottom-color: var(--border) !important;
+}
+
+html[data-theme='light'] .class-overview__title {
+  color: var(--text-primary) !important;
+}
+
+html[data-theme='light'] .class-overview__subtitle,
+html[data-theme='light'] .class-overview__kicker {
+  color: var(--text-muted) !important;
+}
+
+html[data-theme='light'] .class-overview__close {
+  background: var(--bg-btn-secondary) !important;
+  color: var(--text-secondary) !important;
+}
+
+html[data-theme='light'] .class-overview__section p,
+html[data-theme='light'] .class-overview__steps {
+  color: var(--text-secondary) !important;
+}
+
+html[data-theme='light'] .class-overview__section h3 {
+  color: var(--accent-soft) !important;
+}
+
+html[data-theme='light'] .class-overview__notice {
+  background: rgba(194, 65, 12, 0.08) !important;
+  border-color: rgba(194, 65, 12, 0.22) !important;
+  color: var(--text-secondary) !important;
+}
+
+html[data-theme='light'] .class-overview__error {
+  color: var(--error-text) !important;
+  background: var(--error-bg) !important;
+  border-color: rgba(220, 38, 38, 0.25) !important;
+}
+
+html[data-theme='light'] .class-overview__footer {
+  border-top-color: var(--border) !important;
+}
+
+html[data-theme='light'] .class-overview__loading p {
+  color: var(--text-muted) !important;
+}
+
+html[data-theme='light'] .student-my-classes__code {
+  background: var(--bg-input) !important;
+  border-color: var(--border) !important;
+  color: var(--text-primary) !important;
+}
+
+html[data-theme='light'] .student-my-classes__stat {
+  color: var(--text-muted) !important;
+}
+
+html[data-theme='light'] .student-my-classes__stat--progress {
+  color: var(--text-secondary) !important;
+}
+
+html[data-theme='light'] .student-my-classes__stat strong {
+  color: var(--accent-soft) !important;
+}

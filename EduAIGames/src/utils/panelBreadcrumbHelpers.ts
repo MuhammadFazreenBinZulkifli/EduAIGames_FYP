@@ -7,6 +7,7 @@ export const STUDENT_NAV = {
   classContent: 'Class Content',
   pendingQuizzes: 'Pending Quizzes',
   myGrades: 'My Grades',
+  studyCoach: 'AI Study Coach',
 } as const
 
 export const INSTRUCTOR_NAV = {
@@ -36,4 +37,11 @@ export function studentClassContentCrumb(classId?: number | null, classTitle?: s
     })
   }
   return items
+}
+
+export function studentStudyCoachCrumb(): BreadcrumbItem[] {
+  return [
+    studentDashboardCrumb(),
+    { label: STUDENT_NAV.studyCoach },
+  ]
 }

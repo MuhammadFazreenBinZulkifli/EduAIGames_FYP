@@ -187,6 +187,7 @@ function AdminDashboard({ adminId, adminEmail, onLogout, isSuperAdmin = false, i
   const [pendingUsers, setPendingUsers] = useState<PendingUserRow[]>([])
   const [classes, setClasses] = useState<ClassRow[]>([])
   const [quizzes, setQuizzes] = useState<QuizRow[]>([])
+  const [gamesCount, setGamesCount] = useState(0)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
@@ -272,28 +273,31 @@ function AdminDashboard({ adminId, adminEmail, onLogout, isSuperAdmin = false, i
       setLoading(true)
       setError(null)
       const headers = adminHeaders(adminId)
-      const [usersRes, pendingRes, classesRes, quizzesRes, loginRes] = await Promise.all([
+      const [usersRes, pendingRes, classesRes, quizzesRes, gamesRes, loginRes] = await Promise.all([
         fetch(`${API_BASE_URL}/api/admin/users`, { headers }),
         fetch(`${API_BASE_URL}/api/admin/users/pending`, { headers }),
         fetch(`${API_BASE_URL}/api/admin/classes`, { headers }),
         fetch(`${API_BASE_URL}/api/admin/quizzes`, { headers }),
+        fetch(`${API_BASE_URL}/api/admin/games`, { headers }),
         fetch(`${API_BASE_URL}/api/admin/login-activity?days=14`, { headers }),
       ])
       if (!usersRes.ok || !pendingRes.ok || !classesRes.ok || !quizzesRes.ok) {
         const err = await usersRes.json().catch(() => ({}))
         throw new Error(err.error || 'Failed to fetch admin data')
       }
-      const [u, p, c, q, loginData] = await Promise.all([
+      const [u, p, c, q, g, loginData] = await Promise.all([
         usersRes.json(),
         pendingRes.json(),
         classesRes.json(),
         quizzesRes.json(),
+        gamesRes.ok ? gamesRes.json() : Promise.resolve({ games: [] }),
         loginRes.ok ? loginRes.json() : Promise.resolve({ activity: [] }),
       ])
       setUsers(u.users || [])
       setPendingUsers(p.pending || [])
       setClasses(c.classes || [])
       setQuizzes(q.quizzes || [])
+      setGamesCount((g.games as unknown[])?.length ?? 0)
       setLoginActivity(loginData.activity || [])
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load admin data')
@@ -723,6 +727,7 @@ function AdminDashboard({ adminId, adminEmail, onLogout, isSuperAdmin = false, i
             pendingUsers={pendingUsers}
             classes={classes}
             quizzes={quizzes}
+            gamesCount={gamesCount}
             loginActivity={loginActivity}
             onOpenApprovals={() => switchTab('approvals')}
           />

@@ -31,6 +31,7 @@ export const ROUTES = {
     quizSession: (classId: number | string, quizId: number | string) =>
       `/student/quiz/${classId}/${quizId}`,
     grades: '/student/grades',
+    studyCoach: '/student/study-coach',
     gameMaze: '/student/games/maze',
     gameSnake: '/student/games/snake',
     gameBreakout: '/student/games/breakout',

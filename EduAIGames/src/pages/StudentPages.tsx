@@ -8,6 +8,7 @@ import QuizAnswering from '../components/QuizAnswering'
 import StudentCourses from '../components/StudentCourses'
 import StudentDashboard from '../components/StudentDashboard'
 import StudentGrades from '../components/StudentGrades'
+import StudentStudyCoachHub from '../components/StudentStudyCoachHub'
 import StudentJoinClass from '../components/StudentJoinClass'
 import StudentMyClasses from '../components/StudentMyClasses'
 import ProfileSettings from '../components/ProfileSettings'
@@ -39,6 +40,7 @@ export function StudentDashboardPage() {
       onMyClassesClick={() => navigate(ROUTES.student.classes)}
       onAnswerQuizClick={() => navigate(ROUTES.student.quiz)}
       onGradesClick={() => navigate(ROUTES.student.grades)}
+      onStudyCoachClick={() => navigate(ROUTES.student.studyCoach)}
       onReviewQuiz={(classId, quizId) =>
         navigate(ROUTES.student.grades, { state: { reviewClassId: classId, reviewQuizId: quizId } })
       }
@@ -160,6 +162,13 @@ export function StudentGradesPage() {
       initialReviewQuizId={state?.reviewQuizId ?? null}
     />
   )
+}
+
+// AI Study Coach hub — insights, review, practice, create, ask.
+export function StudentStudyCoachPage() {
+  const { user } = useAuth()
+  if (!user?.id) return null
+  return <StudentStudyCoachHub studentId={user.id} />
 }
 
 // Profile and account settings for student.

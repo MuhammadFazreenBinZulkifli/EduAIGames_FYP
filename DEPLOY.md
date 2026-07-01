@@ -39,7 +39,8 @@ The app needs to know its own URL for CORS and email links.
 1. Copy your service URL, e.g. `https://eduaigames.onrender.com`.
 2. In the service -> **Environment**, set `FRONTEND_URL` to that URL.
 3. (Optional) Also fill in `OPENAI_API_KEY` and the `SMTP_*` values for AI
-   features and email.
+   features and email. `OPENAI_API_KEY` is required for **EduBot**, **AI Study Coach**
+   (insights, practice, chat), and the **Analyse** button on Enrolled Classes.
 4. Saving env vars triggers an automatic redeploy.
 
 ---

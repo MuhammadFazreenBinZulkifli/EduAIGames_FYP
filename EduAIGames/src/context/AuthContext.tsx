@@ -11,6 +11,7 @@ import {
   SESSION_ACTIVITY_STORAGE_KEY,
 } from '../hooks/useSessionTimeout'
 import { clearChatSession } from '../utils/chatSessionStorage'
+import { clearStudyCoachSession } from '../utils/studyCoachSessionStorage'
 import type { User, UserRole } from '../types/user'
 
 const USER_STORAGE_KEY = 'user'
@@ -57,6 +58,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser((current) => {
       if (current?.id != null) {
         clearChatSession(current.id)
+        clearStudyCoachSession(current.id)
       }
       return null
     })

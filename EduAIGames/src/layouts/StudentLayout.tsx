@@ -205,6 +205,14 @@ function StudentShell() {
               hint="Scores & feedback"
               icon={<SidebarIcon name="grades" />}
             />
+            {features.openai_enabled && (
+              <SidebarNavItem
+                to={ROUTES.student.studyCoach}
+                label={STUDENT_NAV.studyCoach}
+                hint="Insights, practice & AI questions"
+                icon={<SidebarIcon name="ai" />}
+              />
+            )}
           </nav>
 
           {/* Desktop collapse toggle (hidden on mobile by CSS) */}

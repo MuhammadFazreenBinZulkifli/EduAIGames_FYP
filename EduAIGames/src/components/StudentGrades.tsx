@@ -5,11 +5,14 @@ import StudentStudyCoach from './StudentStudyCoach'
 import PanelBreadcrumbs from './PanelBreadcrumbs'
 import PanelEmptyState from './PanelEmptyState'
 import ClassCard from './ClassCard'
+import QuizSearchSelect from './QuizSearchSelect'
 import PanelSkeleton from './PanelSkeleton'
 import { ROUTES } from '../routes/paths'
 import { STUDENT_NAV, studentDashboardCrumb } from '../utils/panelBreadcrumbHelpers'
 import './App_CSS/PanelPages_CSS.css'
 import './App_CSS/StudentGrades_CSS.css'
+import './App_CSS/QuizSearchSelect_CSS.css'
+import './App_CSS/StudentClassPicker_CSS.css'
 
 interface QuizResult {
   id: number
@@ -28,6 +31,8 @@ interface JoinedClass {
   id: number
   title: string
   description?: string
+  instructor_name?: string
+  background_image?: string | null
 }
 
 interface StudentGradesProps {
@@ -65,7 +70,15 @@ function StudentGrades({ studentId, initialClassId = null, initialReviewQuizId =
         const res = await fetch(`${API_BASE_URL}/api/classes/student/${studentId}/my-classes`)
         if (!res.ok) throw new Error('Failed to load classes')
         const data = await res.json()
-        setJoinedClasses((data.classes || []).map((c: any) => ({ id: c.id, title: c.title, description: c.description })))
+        setJoinedClasses(
+          (data.classes || []).map((c: any) => ({
+            id: c.id,
+            title: c.title,
+            description: c.description,
+            instructor_name: c.instructor_name ?? undefined,
+            background_image: c.background_image ?? null,
+          }))
+        )
       } catch {
         setJoinedClasses([])
       } finally {
@@ -322,42 +335,37 @@ function StudentGrades({ studentId, initialClassId = null, initialReviewQuizId =
         <>
           <p className="panel-section-kicker">Select a class</p>
           <div className="panel-card panel-toolbar-card student-grades__class-select-card">
-            <label className="panel-label" htmlFor="grades-class">Quick pick</label>
+            <label className="panel-label">Quick pick</label>
             <p className="panel-meta student-grades__meta--hint">
               Grades are shown one class at a time so you can focus on each course.
             </p>
-            <select
-              id="grades-class"
-              className="panel-select"
+            <QuizSearchSelect
+              options={joinedClasses.map((c) => ({ id: c.id, title: c.title }))}
               value=""
-              onChange={(e) => {
-                const v = e.target.value
-                if (v) setSelectedClassId(Number(v))
-              }}
-            >
-              <option value="">Choose a class…</option>
-              {joinedClasses.map((c) => (
-                <option key={c.id} value={c.id}>{c.title}</option>
-              ))}
-            </select>
+              onChange={(idStr) => { if (idStr) setSelectedClassId(Number(idStr)) }}
+              placeholder="Type a class name to search…"
+              emptyText="No matching classes"
+              ariaLabel="Search classes to view grades"
+              optionIcon="classes"
+            />
           </div>
-          <div className="panel-grid">
+          <div className="panel-grid student-class-picker__grid">
             {joinedClasses.map((c) => (
               <ClassCard
                 key={c.id}
-                variant="icon"
+                variant="banner"
                 classItem={c}
-                cardIcon="grades"
-                cardIconColor="orange"
+                bannerFallbackIcon="grades"
                 clickable
                 className="student-grades__class-card--clickable"
                 onClick={() => setSelectedClassId(c.id)}
                 descriptionFallback="View quiz grades for this class"
-                footer={
-                  <button type="button" className="panel-btn panel-btn-primary panel-btn-sm student-grades__view-grades-btn">
-                    View grades →
-                  </button>
+                bodyExtra={
+                  c.instructor_name ? (
+                    <span className="panel-meta panel-class-card-submeta">Instructor: {c.instructor_name}</span>
+                  ) : undefined
                 }
+                actionLabel="View grades →"
               />
             ))}
           </div>

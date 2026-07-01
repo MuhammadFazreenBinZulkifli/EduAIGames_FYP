@@ -11,6 +11,7 @@ import { STUDENT_NAV, studentClassContentCrumb } from '../utils/panelBreadcrumbH
 import { pushRecent } from '../utils/sidebarRecents'
 import './App_CSS/PanelPages_CSS.css'
 import './App_CSS/StudentCourses_CSS.css'
+import './App_CSS/StudentClassPicker_CSS.css'
 
 interface Announcement {
   id: number
@@ -242,7 +243,7 @@ function StudentCourses({ studentId, onStartQuiz, onStartGame }: StudentCoursesP
       ) : selectedClassId === null ? (
         <>
           <p className="panel-section-kicker">Pick a class</p>
-          <div className="panel-grid">
+          <div className="panel-grid student-class-picker__grid">
             {classes.map((c) => (
               <ClassCard
                 key={c.id}

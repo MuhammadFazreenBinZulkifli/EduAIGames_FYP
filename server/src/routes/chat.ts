@@ -1,10 +1,23 @@
 import express from 'express';
 import type { Request, Response } from 'express';
-import { createChatCompletion, moderateEducationalContent, generateStudyInsights, EDUBOT_SYSTEM_PROMPT, type ChatMessage } from '../openai.ts';
+import {
+  createChatCompletion,
+  moderateEducationalContent,
+  generateStudyInsights,
+  explainQuizMistake,
+  generateStudyQuestions,
+  generatePracticeFromMistakes,
+  generateClassOverview,
+  STUDY_COACH_CHAT_PROMPT,
+  EDUBOT_SYSTEM_PROMPT,
+  type ChatMessage,
+  type StudyQuestionFormat,
+} from '../openai.ts';
 import { requireFeature } from '../featureGate.ts';
 import { logModerationBlock } from '../adminServices.ts';
 import { getStudentClasses } from '../classQueries.ts';
 import { getStudentQuizAttempts, getPublishedQuizzesForClass } from '../quizQueries.ts';
+import { collectStudentMistakes, buildStudyCoachContext, gatherClassOverviewContext } from '../studyCoachService.ts';
 
 const router = express.Router();
 
@@ -95,6 +108,7 @@ function describePage(pathname: string | undefined, role: string | undefined): s
     ['/student/courses', 'Class Content (materials, quizzes, games)'],
     ['/student/quiz', 'Pending Quizzes overview'],
     ['/student/grades', 'My Grades'],
+    ['/student/study-coach', 'AI Study Coach'],
     ['/student/settings', 'Student Settings'],
   ];
 
@@ -235,7 +249,22 @@ router.post('/study-coach', requireFeature('openai_enabled'), async (req: Reques
       const date = a.completed_at ? new Date(a.completed_at).toLocaleDateString() : 'unknown date';
       return `- "${a.quiz_title}": ${score.toFixed(0)}% (${a.correct_answers}/${a.total_questions}) on ${date}`;
     });
-    const performanceText = `Student's recent quiz results:\n${lines.join('\n')}`;
+    const scores = attempts.map((a: any) => Number(a.score) || 0);
+    const avg = scores.reduce((sum: number, s: number) => sum + s, 0) / scores.length;
+    const weak = attempts.filter((a: any) => (Number(a.score) || 0) < 70);
+    const performanceText = [
+      classId ? 'Scope: single selected class.' : 'Scope: all enrolled classes.',
+      `Average score: ${avg.toFixed(0)}% across ${attempts.length} recent attempt(s).`,
+      weak.length > 0
+        ? `Quizzes below 70%: ${weak
+            .slice(0, 6)
+            .map((a: any) => `"${a.quiz_title}" ${Math.round(Number(a.score) || 0)}%`)
+            .join('; ')}.`
+        : '',
+      `Student's recent quiz results:\n${lines.join('\n')}`,
+    ]
+      .filter(Boolean)
+      .join('\n\n');
 
     // Ask the AI study coach for structured insights.
     const insights = await generateStudyInsights(performanceText);
@@ -243,6 +272,287 @@ router.post('/study-coach', requireFeature('openai_enabled'), async (req: Reques
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'Failed to generate study insights';
     console.error('Study coach error:', message);
+    res.status(500).json({ error: message });
+  }
+});
+
+// Wrong answers from recent quiz attempts (for Review tab).
+router.post('/study-coach/mistakes', requireFeature('openai_enabled'), async (req: Request, res: Response) => {
+  try {
+    const bodyId = Number((req.body as { student_id?: number }).student_id);
+    const studentId = Number.isFinite(bodyId) && bodyId > 0 ? bodyId : resolveUserId(req);
+    if (!studentId) {
+      res.status(400).json({ error: 'student_id is required.' });
+      return;
+    }
+    const rawClassId = Number((req.body as { class_id?: number }).class_id);
+    const classId = Number.isFinite(rawClassId) && rawClassId > 0 ? rawClassId : null;
+    const mistakes = await collectStudentMistakes(studentId, classId);
+    res.json({ mistakes });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Failed to load mistakes';
+    console.error('Study coach mistakes error:', message);
+    res.status(500).json({ error: message });
+  }
+});
+
+// AI explanation for a single wrong answer.
+router.post('/study-coach/explain', requireFeature('openai_enabled'), async (req: Request, res: Response) => {
+  try {
+    const body = req.body as {
+      question_text?: string;
+      question_type?: string;
+      student_answer?: string;
+      correct_answer?: string;
+      options?: string[];
+      explanation?: string;
+    };
+    if (!body.question_text?.trim() || !body.correct_answer?.trim()) {
+      res.status(400).json({ error: 'question_text and correct_answer are required.' });
+      return;
+    }
+    const textToModerate = [body.question_text, body.student_answer, body.correct_answer].join(' ');
+    const mod = await moderateEducationalContent(textToModerate);
+    if (!mod.allowed) {
+      res.status(422).json({ error: mod.reason });
+      return;
+    }
+    const result = await explainQuizMistake({
+      question_text: body.question_text,
+      question_type: body.question_type || 'multiple-choice',
+      student_answer: body.student_answer || '(no answer)',
+      correct_answer: body.correct_answer,
+      options: body.options,
+      existing_explanation: body.explanation,
+    });
+    res.json(result);
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Failed to explain mistake';
+    console.error('Study coach explain error:', message);
+    res.status(500).json({ error: message });
+  }
+});
+
+const VALID_FORMATS: StudyQuestionFormat[] = [
+  'multiple-choice',
+  'true-false',
+  'short-answer',
+  'essay',
+  'fill-blank',
+];
+
+// Generate practice questions from weak areas / mistakes.
+router.post('/study-coach/practice', requireFeature('openai_enabled'), async (req: Request, res: Response) => {
+  try {
+    const body = req.body as { student_id?: number; class_id?: number; count?: number };
+    const studentId = Number.isFinite(Number(body.student_id)) && Number(body.student_id) > 0
+      ? Number(body.student_id)
+      : resolveUserId(req);
+    if (!studentId) {
+      res.status(400).json({ error: 'student_id is required.' });
+      return;
+    }
+    const classId = Number.isFinite(Number(body.class_id)) && Number(body.class_id) > 0
+      ? Number(body.class_id)
+      : null;
+    const count = Math.min(Math.max(Number(body.count) || 5, 1), 10);
+
+    const mistakes = await collectStudentMistakes(studentId, classId);
+    let context: string;
+    if (mistakes.length > 0) {
+      context = mistakes
+        .slice(0, 12)
+        .map(
+          (m) =>
+            `- From "${m.quiz_title}": Q: ${m.question_text} | Student said: ${m.student_answer} | Correct: ${m.correct_answer}`
+        )
+        .join('\n');
+    } else {
+      const attempts = await getStudentQuizAttempts(studentId, classId);
+      if (attempts.length === 0) {
+        res.status(400).json({
+          error: 'Complete at least one quiz first, or use Create to generate questions from a topic.',
+        });
+        return;
+      }
+      context = attempts
+        .slice(0, 10)
+        .map((a: { quiz_title?: string; score?: number }) => `- "${a.quiz_title}": ${Math.round(Number(a.score) || 0)}%`)
+        .join('\n');
+    }
+
+    const mod = await moderateEducationalContent(context);
+    if (!mod.allowed) {
+      res.status(422).json({ error: mod.reason });
+      return;
+    }
+
+    const set = await generatePracticeFromMistakes(context, count);
+    const outputMod = await moderateEducationalContent(JSON.stringify(set.questions));
+    if (!outputMod.allowed) {
+      res.status(422).json({ error: `Generated content was blocked: ${outputMod.reason}` });
+      return;
+    }
+    res.json(set);
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Failed to generate practice';
+    console.error('Study coach practice error:', message);
+    res.status(500).json({ error: message });
+  }
+});
+
+// Create study questions in various formats (quiz, essay, etc.).
+router.post('/study-coach/create', requireFeature('openai_enabled'), async (req: Request, res: Response) => {
+  try {
+    const body = req.body as {
+      topic?: string;
+      format?: StudyQuestionFormat;
+      count?: number;
+      difficulty?: 'easy' | 'normal' | 'hard';
+      class_id?: number;
+      student_id?: number;
+    };
+    if (!body.topic?.trim()) {
+      res.status(400).json({ error: 'topic is required.' });
+      return;
+    }
+    const format = VALID_FORMATS.includes(body.format as StudyQuestionFormat)
+      ? (body.format as StudyQuestionFormat)
+      : 'multiple-choice';
+    const count = Math.min(Math.max(Number(body.count) || 5, 1), 10);
+    const difficulty =
+      body.difficulty === 'easy' || body.difficulty === 'hard' ? body.difficulty : 'normal';
+
+    const promptCheck = await moderateEducationalContent(body.topic);
+    if (!promptCheck.allowed) {
+      res.status(422).json({ error: promptCheck.reason });
+      return;
+    }
+
+    let context: string | undefined;
+    const studentId = Number.isFinite(Number(body.student_id)) && Number(body.student_id) > 0
+      ? Number(body.student_id)
+      : resolveUserId(req);
+    if (studentId) {
+      const classId =
+        Number.isFinite(Number(body.class_id)) && Number(body.class_id) > 0
+          ? Number(body.class_id)
+          : null;
+      const coachCtx = await buildStudyCoachContext(studentId, classId);
+      if (coachCtx) context = coachCtx;
+    }
+
+    const set = await generateStudyQuestions({
+      topic: body.topic.trim(),
+      format,
+      count,
+      difficulty,
+      context,
+    });
+
+    const outputCheck = await moderateEducationalContent(JSON.stringify(set.questions));
+    if (!outputCheck.allowed) {
+      res.status(422).json({ error: `Generated content was blocked: ${outputCheck.reason}` });
+      return;
+    }
+
+    res.json(set);
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Failed to create questions';
+    console.error('Study coach create error:', message);
+    res.status(500).json({ error: message });
+  }
+});
+
+// AI overview of a single enrolled class (Analyse button on Enrolled Classes).
+router.post('/study-coach/class-overview', requireFeature('openai_enabled'), async (req: Request, res: Response) => {
+  try {
+    const body = req.body as { student_id?: number; class_id?: number };
+    const studentId =
+      Number.isFinite(Number(body.student_id)) && Number(body.student_id) > 0
+        ? Number(body.student_id)
+        : resolveUserId(req);
+    const classId = Number(body.class_id);
+
+    if (!studentId) {
+      res.status(400).json({ error: 'student_id is required.' });
+      return;
+    }
+    if (!Number.isFinite(classId) || classId <= 0) {
+      res.status(400).json({ error: 'class_id is required.' });
+      return;
+    }
+
+    const snapshot = await gatherClassOverviewContext(studentId, classId);
+    const overview = await generateClassOverview(snapshot.context_text, snapshot.is_sparse);
+
+    res.json({ overview, is_sparse: snapshot.is_sparse });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Failed to analyse class';
+    console.error('Class overview error:', message);
+    res.status(500).json({ error: message });
+  }
+});
+
+// Focused study chat (learning-only coach).
+router.post('/study-coach/ask', requireFeature('openai_enabled'), async (req: Request, res: Response) => {
+  try {
+    const { messages, class_id, student_id } = req.body as {
+      messages?: Array<{ role: string; content: string }>;
+      class_id?: number;
+      student_id?: number;
+    };
+    if (!Array.isArray(messages) || messages.length === 0) {
+      res.status(400).json({ error: 'messages array is required.' });
+      return;
+    }
+
+    const studentId =
+      Number.isFinite(Number(student_id)) && Number(student_id) > 0
+        ? Number(student_id)
+        : resolveUserId(req);
+
+    const trimmed = messages.slice(-MAX_HISTORY).map((m) => ({
+      role: m.role === 'assistant' ? ('assistant' as const) : ('user' as const),
+      content: String(m.content || '').slice(0, MAX_MESSAGE_LENGTH),
+    }));
+
+    const lastUser = [...trimmed].reverse().find((m) => m.role === 'user');
+    if (lastUser) {
+      const mod = await moderateEducationalContent(lastUser.content);
+      if (!mod.allowed) {
+        res.status(422).json({ error: mod.reason });
+        return;
+      }
+    }
+
+    let contextParts: string[] = [];
+    if (studentId) {
+      const classId =
+        Number.isFinite(Number(class_id)) && Number(class_id) > 0 ? Number(class_id) : null;
+      const coachCtx = await buildStudyCoachContext(studentId, classId);
+      if (coachCtx) contextParts.push(coachCtx);
+    }
+
+    const systemContent =
+      STUDY_COACH_CHAT_PROMPT +
+      (contextParts.length > 0 ? `\n\n## Student context\n${contextParts.join('\n\n')}` : '');
+
+    const apiMessages: ChatMessage[] = [
+      { role: 'system', content: systemContent },
+      ...trimmed,
+    ];
+
+    const reply = await createChatCompletion({
+      messages: apiMessages,
+      temperature: 0.55,
+      max_tokens: 1200,
+    });
+
+    res.json({ reply });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Study coach chat failed';
+    console.error('Study coach ask error:', message);
     res.status(500).json({ error: message });
   }
 });

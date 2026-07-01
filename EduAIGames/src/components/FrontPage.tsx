@@ -73,9 +73,17 @@ const FEATURE_CATALOG = [
     id: 'ai_quiz',
     flag: 'ai_quiz_enabled' as const,
     icon: 'ai' as const,
-    title: 'AI-Enhanced Learning',
+    title: 'AI Quiz Creator',
     description:
-      'Some modules use AI to help Instructors build quizzes faster, so you get more practice material to work with.',
+      'Instructors use AI to build quizzes faster, so you get more varied practice material tied to what you are actually studying.',
+  },
+  {
+    id: 'study_coach',
+    flag: 'openai_enabled' as const,
+    icon: 'ai' as const,
+    title: 'AI Study Coach',
+    description:
+      'Your personal study coach reviews your quiz performance, explains mistakes, generates practice drills, and answers study questions based on your actual class results.',
   },
 ]
 
@@ -447,7 +455,7 @@ function FrontPage({ onStartLogin, onStartRegister }: FrontPageProps) {
                 <span className="frontpage-intro-point-icon" aria-hidden="true">3</span>
                 <div>
                   <strong>Your progress is saved</strong>
-                  <p>Scores and attempts are recorded so you and your Instructor can track learning over the semester.</p>
+                  <p>Scores and attempts are recorded so you and your Instructor can track learning throughout your module. Revisit any result for a full question-by-question review.</p>
                 </div>
               </li>
             </ul>
@@ -519,10 +527,11 @@ function FrontPage({ onStartLogin, onStartRegister }: FrontPageProps) {
                 place to learn.
               </p>
               <ul className="frontpage-schools-list">
-                <li>Secure student registration and class enrollment</li>
-                <li>Quizzes and games aligned to your module content</li>
-                <li>Grade tracking across the semester</li>
-                <li>Optional AI tools for study help and quiz creation</li>
+                <li>Secure student registration and class enrollment via join codes</li>
+                <li>Quizzes, games, and learning materials aligned to module content</li>
+                <li>Grade tracking with per-question review and explanations</li>
+                <li>AI tools for study coaching, mistake review, and quiz creation</li>
+                <li>Class announcements and content notifications</li>
               </ul>
               <button type="button" onClick={onStartRegister} className="frontpage-btn frontpage-btn-primary frontpage-btn-large">
                 Sign Up as a Student
@@ -545,6 +554,10 @@ function FrontPage({ onStartLogin, onStartRegister }: FrontPageProps) {
                 <strong>EduBot</strong>
                 <span>Study help</span>
               </div>
+              <div className="frontpage-stat-card">
+                <strong>AI Coach</strong>
+                <span>Personalised</span>
+              </div>
             </div>
           </div>
         </section>
@@ -566,8 +579,7 @@ function FrontPage({ onStartLogin, onStartRegister }: FrontPageProps) {
               <span className="frontpage-role-badge">Student</span>
               <h3>Join your class and start learning</h3>
               <p>
-                This is the path for you if an Instructor gave you a join code. Sign up, enter the code, and access
-                quizzes, games, and your grades from your student dashboard.
+                This is the path for you if an Instructor gave you a join code. Sign up, enter the code, and access quizzes, games, grades, and your personal AI Study Coach from your student dashboard.
               </p>
               <button type="button" onClick={onStartRegister} className="frontpage-btn frontpage-btn-primary">
                 Sign Up as Student
@@ -577,8 +589,7 @@ function FrontPage({ onStartLogin, onStartRegister }: FrontPageProps) {
               <span className="frontpage-role-badge">Instructor / Tutor</span>
               <h3>Create classes and assign work</h3>
               <p>
-                If you teach at a college or university, register as an Instructor to create classes, publish
-                quizzes and games, and monitor student performance.
+                If you teach at a college or university, register as an Instructor to create classes, build quizzes and games with optional AI assistance, publish content, and track student performance and quiz results.
               </p>
               <button type="button" onClick={onStartRegister} className="frontpage-btn frontpage-btn-ghost">
                 Sign Up as Instructor

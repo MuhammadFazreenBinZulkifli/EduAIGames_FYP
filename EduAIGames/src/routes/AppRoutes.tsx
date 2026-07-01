@@ -39,6 +39,7 @@ import {
   StudentRaceGamePage,
   StudentSettingsPage,
   StudentSnakeGamePage,
+  StudentStudyCoachPage,
 } from '../pages/StudentPages'
 import ProtectedRoute from './ProtectedRoute'
 import GuestRoute from './GuestRoute'
@@ -116,6 +117,7 @@ export default function AppRoutes() {
         <Route path="quiz" element={<StudentQuizPage />} />
         <Route path="quiz/:classId/:quizId" element={<StudentQuizPage />} />
         <Route path="grades" element={<StudentGradesPage />} />
+        <Route path="study-coach" element={<StudentStudyCoachPage />} />
         <Route path="settings" element={<StudentSettingsPage />} />
         <Route path="games/maze" element={<StudentMazeGamePage />} />
         <Route path="games/snake" element={<StudentSnakeGamePage />} />

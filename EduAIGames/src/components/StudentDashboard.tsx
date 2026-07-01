@@ -37,6 +37,7 @@ interface StudentDashboardProps {
   onMyClassesClick?: () => void
   onAnswerQuizClick?: () => void
   onGradesClick?: () => void
+  onStudyCoachClick?: () => void
   onReviewQuiz?: (classId: number, quizId: number) => void
   onEduBotClick?: () => void
 }
@@ -77,6 +78,7 @@ function StudentDashboard({
   onMyClassesClick,
   onAnswerQuizClick,
   onGradesClick,
+  onStudyCoachClick,
   onReviewQuiz,
   onEduBotClick,
 }: StudentDashboardProps) {
@@ -487,6 +489,15 @@ function StudentDashboard({
             <DashboardIcon name="grades" variant="tile" />
             <p className="dash-tile__label">My Grades</p>
             <p className="dash-tile__sub">Review scores and quiz feedback</p>
+            <span className="dash-tile__arrow">→</span>
+          </button>
+        )}
+
+        {features.openai_enabled && onStudyCoachClick && (
+          <button type="button" className="dash-tile dash-tile--purple" onClick={onStudyCoachClick}>
+            <DashboardIcon name="ai" variant="tile" />
+            <p className="dash-tile__label">AI Study Coach</p>
+            <p className="dash-tile__sub">Insights, practice drills, and AI question maker</p>
             <span className="dash-tile__arrow">→</span>
           </button>
         )}

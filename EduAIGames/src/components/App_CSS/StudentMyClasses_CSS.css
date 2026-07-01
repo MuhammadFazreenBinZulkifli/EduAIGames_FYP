@@ -10,22 +10,137 @@
   color: var(--text-primary, #ffe8d4);
 }
 
-.student-my-classes__footer {
+.student-my-classes__stats {
   display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.student-my-classes__stat {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.student-my-classes__stat strong {
+  color: var(--accent-soft, #ffb37a);
+  font-weight: 700;
+}
+
+.student-my-classes__stat--progress {
+  color: var(--text-secondary);
+}
+
+.student-my-classes__join-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-top: 0.15rem;
+}
+
+.student-my-classes__join-label {
+  margin: 0;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.student-my-classes__join-code {
+  display: flex;
+  align-items: center;
   gap: 0.5rem;
   flex-wrap: wrap;
 }
 
+.student-my-classes__code {
+  font-family: ui-monospace, 'Cascadia Code', 'Segoe UI Mono', monospace;
+  font-size: 0.88rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  padding: 0.35rem 0.55rem;
+  border-radius: 8px;
+  background: var(--panel-surface-bg, rgba(255, 255, 255, 0.05));
+  border: 1px solid var(--panel-surface-border, rgba(255, 255, 255, 0.1));
+  color: var(--text-primary);
+}
+
+.student-my-classes__copy-btn {
+  flex-shrink: 0;
+  min-height: 34px;
+  padding: 0.35rem 0.75rem;
+}
+
+.student-my-classes__footer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  width: 100%;
+}
+
 .student-my-classes__footer .panel-btn {
-  flex: 1 1 0;
-  width: auto;
+  width: 100%;
+  min-height: 40px;
+  justify-content: center;
+}
+
+.student-my-classes__leave-btn {
+  grid-column: 1 / -1;
+}
+
+.student-my-classes__analyse-btn {
+  /* sits beside Open Class in grid */
+}
+
+/* Equal-height class cards — footer buttons align across the row */
+.student-my-classes-page .panel-grid {
+  align-items: stretch;
+}
+
+.student-my-classes-page .panel-grid > .panel-class-card {
+  height: 100%;
+  min-height: 420px;
+}
+
+.student-my-classes-page .panel-class-card-description,
+.student-my-classes-page .panel-class-card > .panel-meta {
+  flex: 1 1 auto;
+  min-height: 2.75em;
+  max-height: 4.65em;
+  margin-top: 0;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  white-space: normal;
+  overflow-y: hidden;
+  word-break: break-word;
+}
+
+.student-my-classes-page .panel-class-card-meta {
+  margin-top: auto;
+  padding-top: 0.65rem;
+}
+
+.student-my-classes-page .panel-class-card-footer {
+  margin-top: 0.5rem;
 }
 
 @media (max-width: 600px) {
-  .student-my-classes-page .panel-class-card-footer .panel-btn {
-    width: 100%;
+  .student-my-classes-page .panel-grid > .panel-class-card {
+    min-height: auto;
+  }
+
+  .student-my-classes__footer .panel-btn {
     min-height: 44px;
-    justify-content: center;
+  }
+
+  .student-my-classes__join-code {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .student-my-classes__copy-btn {
+    width: 100%;
   }
 }
 
@@ -37,5 +152,13 @@
 
   .student-my-classes-page .panel-grid > .panel-class-card {
     height: auto;
+  }
+
+  .student-my-classes-page .panel-class-card-description,
+  .student-my-classes-page .panel-class-card > .panel-meta {
+    max-height: none;
+    -webkit-line-clamp: unset;
+    display: block;
+    overflow-y: auto;
   }
 }

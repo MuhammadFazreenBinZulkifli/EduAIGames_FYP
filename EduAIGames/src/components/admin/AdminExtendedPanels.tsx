@@ -39,6 +39,7 @@ interface OverviewPanelProps {
   pendingUsers: { id: number; username: string; email: string; role: string; created_at?: string }[]
   classes: { id: number; instructor_username: string }[]
   quizzes: { id: number }[]
+  gamesCount?: number
   loginActivity: LoginDayBucket[]
   onOpenApprovals?: () => void
 }
@@ -89,7 +90,7 @@ function DonutChart({ segments, size = 120 }: {
 }
 
 // Dashboard overview with KPIs, role breakdown, and recent login activity.
-export function OverviewPanel({ users, pendingUsers, classes, quizzes, loginActivity, onOpenApprovals }: OverviewPanelProps) {
+export function OverviewPanel({ users, pendingUsers, classes, quizzes, gamesCount = 0, loginActivity, onOpenApprovals }: OverviewPanelProps) {
   const approvedUsers = users.filter((u) => u.role !== 'Admin' && u.role !== 'SuperAdmin')
   const students = approvedUsers.filter((u) => u.role === 'Student' && u.account_status !== 'pending')
   const instructors = approvedUsers.filter((u) => u.role === 'Instructor' && u.account_status !== 'pending')
@@ -105,6 +106,7 @@ export function OverviewPanel({ users, pendingUsers, classes, quizzes, loginActi
     { label: 'Total instructors', value: instructors.length, icon: 'library', color: '#2563eb', bg: '#eff6ff' },
     { label: 'Active classes', value: classes.length, icon: 'classes', color: '#7c3aed', bg: '#f5f3ff' },
     { label: 'Total quizzes', value: quizzes.length, icon: 'quiz', color: '#c2410c', bg: '#fff7ed' },
+    { label: 'Total games', value: gamesCount, icon: 'games', color: '#0891b2', bg: '#ecfeff' },
     { label: 'Pending approvals', value: pendingUsers.length, icon: 'clock', color: '#b45309', bg: '#fffbeb' },
     { label: 'New this week', value: newUsers.length, icon: 'calendar', color: '#0284c7', bg: '#f0f9ff' },
   ]

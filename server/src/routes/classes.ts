@@ -17,6 +17,7 @@ import {
   removeStudentFromClassByInstructor,
 } from '../classQueries.ts';
 import { notifyInstructorStudentJoined } from '../notificationService.ts';
+import { getStudentAvailableQuizzes, getStudentQuizAttempts } from '../quizQueries.ts';
 
 const router = express.Router();
 const CLASS_DESCRIPTION_MAX_LENGTH = 250;
@@ -308,12 +309,49 @@ router.delete('/student/:classId', async (req: Request, res: Response) => {
   }
 });
 
-// Get all classes for a student
+// Get all classes for a student (with quiz progress stats)
 router.get('/student/:studentId/my-classes', async (req: Request, res: Response) => {
   try {
-    const { studentId } = req.params;
-    const classes = await getStudentClasses(parseInt(studentId));
-    res.json({ classes });
+    const studentId = parseInt(req.params.studentId);
+    const [classes, quizzes, attempts] = await Promise.all([
+      getStudentClasses(studentId),
+      getStudentAvailableQuizzes(studentId).catch(() => []),
+      getStudentQuizAttempts(studentId).catch(() => []),
+    ]);
+
+    const completedIds = new Set(attempts.map((a: { quiz_id: number }) => a.quiz_id));
+
+    const enriched = classes.map((c: Record<string, unknown>) => {
+      const classId = Number(c.id);
+      const classQuizzes = quizzes.filter((q: { class_id?: number | null }) => q.class_id === classId);
+      const classAttempts = attempts.filter(
+        (a: { quiz_class_id?: number | null }) => Number(a.quiz_class_id) === classId
+      );
+      const pending = classQuizzes.filter((q: { id: number }) => !completedIds.has(q.id)).length;
+      const avgScore =
+        classAttempts.length > 0
+          ? Math.round(
+              classAttempts.reduce(
+                (sum: number, a: { score?: number }) => sum + (Number(a.score) || 0),
+                0
+              ) / classAttempts.length
+            )
+          : null;
+      const latest = classAttempts[0] as
+        | { quiz_title?: string; score?: number }
+        | undefined;
+
+      return {
+        ...c,
+        pending_quizzes: pending,
+        quizzes_completed: classAttempts.length,
+        avg_score: avgScore,
+        latest_quiz_title: latest?.quiz_title ?? null,
+        latest_score: latest?.score != null ? Math.round(Number(latest.score)) : null,
+      };
+    });
+
+    res.json({ classes: enriched });
   } catch (error: any) {
     console.error('Error fetching student classes:', error);
     res.status(500).json({ error: error.message || 'Failed to fetch classes' });
