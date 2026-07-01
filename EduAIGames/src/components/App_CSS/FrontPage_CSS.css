@@ -318,13 +318,42 @@
   line-height: 1.55;
 }
 
-.frontpage-features-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+/* ── Features marquee ───────────────────────────────────────────────────── */
+
+@keyframes frontpage-marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.frontpage-features-marquee {
+  overflow: hidden;
+  width: 100%;
+  /* Fade edges so cards don't hard-clip */
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%);
+          mask-image: linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%);
+}
+
+.frontpage-features-marquee__track {
+  display: flex;
   gap: 1rem;
+  width: max-content;
+  animation: frontpage-marquee 45s linear infinite;
+}
+
+/* Pause while the user hovers so they can read comfortably */
+.frontpage-features-marquee:hover .frontpage-features-marquee__track {
+  animation-play-state: paused;
+}
+
+/* Static fallback for prefers-reduced-motion */
+.frontpage-features-marquee--static .frontpage-features-marquee__track {
+  animation: none;
+  flex-wrap: wrap;
+  width: 100%;
 }
 
 .frontpage-feature-card {
+  flex: 0 0 280px;          /* fixed width inside the marquee track */
   border: 1px solid var(--border, rgba(255, 255, 255, 0.12));
   border-radius: 16px;
   background: var(--bg-card-soft, rgba(255, 255, 255, 0.04));
@@ -799,7 +828,6 @@ html[data-theme='light'] .frontpage-feature-icon {
 /* ─── Staggered card / step reveals ─────────────────────────────────────── */
 
 /* Cards start slightly below position when their section is about to reveal */
-.frontpage-section--reveal .frontpage-feature-card,
 .frontpage-section--reveal .frontpage-step,
 .frontpage-section--reveal .frontpage-role-card,
 .frontpage-section--reveal .frontpage-stat-card,
@@ -808,22 +836,22 @@ html[data-theme='light'] .frontpage-feature-icon {
   transition: transform 0.55s ease;
 }
 
+/* The marquee wrapper fades in as a whole (cards can't do Y-slide inside a scrolling track) */
+.frontpage-section--reveal .frontpage-features-marquee {
+  opacity: 0;
+  transition: opacity 0.7s ease;
+}
+.frontpage-section--visible .frontpage-features-marquee {
+  opacity: 1;
+}
+
 /* Slide into place when the section becomes visible */
-.frontpage-section--visible .frontpage-feature-card,
 .frontpage-section--visible .frontpage-step,
 .frontpage-section--visible .frontpage-role-card,
 .frontpage-section--visible .frontpage-stat-card,
 .frontpage-section--visible .frontpage-intro-points li {
   transform: translateY(0);
 }
-
-/* Feature cards — 6 items */
-.frontpage-section--visible .frontpage-feature-card:nth-child(1) { transition-delay: 0.08s; }
-.frontpage-section--visible .frontpage-feature-card:nth-child(2) { transition-delay: 0.16s; }
-.frontpage-section--visible .frontpage-feature-card:nth-child(3) { transition-delay: 0.24s; }
-.frontpage-section--visible .frontpage-feature-card:nth-child(4) { transition-delay: 0.32s; }
-.frontpage-section--visible .frontpage-feature-card:nth-child(5) { transition-delay: 0.40s; }
-.frontpage-section--visible .frontpage-feature-card:nth-child(6) { transition-delay: 0.48s; }
 
 /* Steps — 3 items */
 .frontpage-section--visible .frontpage-step:nth-child(1) { transition-delay: 0.10s; }
@@ -1124,10 +1152,9 @@ html[data-theme='light'] .frontpage-feature-icon {
     font-size: clamp(1.35rem, 6vw, 1.9rem);
   }
 
-  /* Features: 1 column on small mobile, 2 col on tablet */
-  .frontpage-features-grid {
-    grid-template-columns: 1fr 1fr;
-    gap: 0.75rem;
+  /* Features marquee: slightly narrower cards on tablet */
+  .frontpage-feature-card {
+    flex: 0 0 240px;
   }
 
   /* Steps */
@@ -1196,8 +1223,9 @@ html[data-theme='light'] .frontpage-feature-icon {
     font-size: clamp(1.65rem, 9vw, 2.2rem);
   }
 
-  .frontpage-features-grid {
-    grid-template-columns: 1fr;
+  /* Features marquee: compact card width on small phones */
+  .frontpage-feature-card {
+    flex: 0 0 210px;
   }
 
   .frontpage-actions {
@@ -1282,7 +1310,6 @@ html[data-theme='light'] .frontpage-typing-dots span {
   }
 
   /* Stagger on mobile still works but uses shorter delays */
-  .frontpage-section--reveal .frontpage-feature-card,
   .frontpage-section--reveal .frontpage-step,
   .frontpage-section--reveal .frontpage-role-card,
   .frontpage-section--reveal .frontpage-stat-card,
@@ -1304,8 +1331,18 @@ html[data-theme='light'] .frontpage-typing-dots span {
   .frontpage-step-connector,
   .frontpage-particle,
   .frontpage-hero-badge,
-  .frontpage-typing-dots span {
+  .frontpage-typing-dots span,
+  .frontpage-features-marquee__track {
     animation: none;
+  }
+
+  /* In reduced-motion, show marquee as a wrapped grid instead of scrolling */
+  .frontpage-features-marquee__track {
+    flex-wrap: wrap;
+    width: 100%;
+  }
+  .frontpage-feature-card {
+    flex: 0 0 calc(33.333% - 0.75rem);
   }
 
   .frontpage-particles {
@@ -1323,11 +1360,12 @@ html[data-theme='light'] .frontpage-typing-dots span {
   }
 
   /* Also disable the stagger transforms in reduced-motion */
-  .frontpage-section--reveal .frontpage-feature-card,
+  .frontpage-section--reveal .frontpage-features-marquee,
   .frontpage-section--reveal .frontpage-step,
   .frontpage-section--reveal .frontpage-role-card,
   .frontpage-section--reveal .frontpage-stat-card,
   .frontpage-section--reveal .frontpage-intro-points li {
+    opacity: 1;
     transform: none;
     transition: none;
   }

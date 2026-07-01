@@ -475,16 +475,26 @@ function FrontPage({ onStartLogin, onStartRegister }: FrontPageProps) {
               turned on for your module.
             </p>
           </div>
-          <div className="frontpage-features-grid">
-            {visibleFeatures.map((feature) => (
-              <article key={feature.id} className="frontpage-feature-card">
-                <div className="frontpage-feature-icon" aria-hidden="true">
-                  <FrontPageIcon name={feature.icon} />
-                </div>
-                <h3>{feature.title}</h3>
-                <p>{feature.description}</p>
-              </article>
-            ))}
+          <div
+            className={`frontpage-features-marquee${noMotion ? ' frontpage-features-marquee--static' : ''}`}
+            aria-label="Platform features"
+          >
+            <div className="frontpage-features-marquee__track">
+              {/* Render twice to create a seamless infinite loop */}
+              {[...visibleFeatures, ...visibleFeatures].map((feature, i) => (
+                <article
+                  key={`${feature.id}-${i}`}
+                  className="frontpage-feature-card"
+                  aria-hidden={i >= visibleFeatures.length ? true : undefined}
+                >
+                  <div className="frontpage-feature-icon" aria-hidden="true">
+                    <FrontPageIcon name={feature.icon} />
+                  </div>
+                  <h3>{feature.title}</h3>
+                  <p>{feature.description}</p>
+                </article>
+              ))}
+            </div>
           </div>
         </section>
 
