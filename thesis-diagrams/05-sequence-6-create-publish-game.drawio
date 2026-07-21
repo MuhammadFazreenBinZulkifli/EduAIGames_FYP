@@ -1,0 +1,50 @@
+<mxfile host="app.diagrams.net" modified="2026-07-09T12:00:00.000Z" agent="EduAIGames Thesis" version="24.0.0">
+  <diagram id="seq-publish-game" name="Sequence - Create and Publish Game">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="title" value="Sequence Diagram: Instructor Creates a Game and Publishes It to a Class" style="text;html=1;fontSize=16;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="10" width="750" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- Participants -->
+        <mxCell id="p1" value="Instructor" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="80" y="50" width="30" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="p2" value="Game Builder&#10;(MazeGameQuiz.tsx etc.)" style="rounded=0;whiteSpace=wrap;html=1;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="230" y="60" width="180" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="p3" value="Express API&#10;(/api/games)" style="rounded=0;whiteSpace=wrap;html=1;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="540" y="60" width="150" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="p4" value="PostgreSQL" style="rounded=0;whiteSpace=wrap;html=1;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="850" y="60" width="140" height="45" as="geometry" />
+        </mxCell>
+
+        <!-- Lifelines -->
+        <mxCell id="l1" style="endArrow=none;dashed=1;html=1;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="95" y="110" as="sourcePoint" /><mxPoint x="95" y="850" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="l2" style="endArrow=none;dashed=1;html=1;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="320" y="105" as="sourcePoint" /><mxPoint x="320" y="850" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="l3" style="endArrow=none;dashed=1;html=1;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="615" y="105" as="sourcePoint" /><mxPoint x="615" y="850" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="l4" style="endArrow=none;dashed=1;html=1;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="920" y="105" as="sourcePoint" /><mxPoint x="920" y="850" as="targetPoint" /></mxGeometry></mxCell>
+
+        <!-- Messages -->
+        <mxCell id="m1" value="1: Open builder, select quiz, configure game (type, ghost mode, settings)" style="html=1;verticalAlign=bottom;endArrow=block;fontSize=11;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="95" y="150" as="sourcePoint" /><mxPoint x="320" y="150" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="m2" value="2: GET /api/quizzes/instructor/:instructorId (list quizzes to link)" style="html=1;verticalAlign=bottom;endArrow=block;fontSize=11;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="320" y="200" as="sourcePoint" /><mxPoint x="615" y="200" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="m3" value="3: quizzes[]" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;fontSize=11;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="615" y="245" as="sourcePoint" /><mxPoint x="320" y="245" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="m4" value="4: Click Save Game" style="html=1;verticalAlign=bottom;endArrow=block;fontSize=11;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="95" y="295" as="sourcePoint" /><mxPoint x="320" y="295" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="m5" value="5: POST /api/games {instructor_id, quiz_id, title, game_type, ghost_enabled, settings}" style="html=1;verticalAlign=bottom;endArrow=block;fontSize=11;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="320" y="345" as="sourcePoint" /><mxPoint x="615" y="345" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="m6" value="6: INSERT INTO games" style="html=1;verticalAlign=bottom;endArrow=block;fontSize=11;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="615" y="395" as="sourcePoint" /><mxPoint x="920" y="395" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="m7" value="7: 201 {game}" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;fontSize=11;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="615" y="440" as="sourcePoint" /><mxPoint x="320" y="440" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="m8" value="8: Choose class and click Publish" style="html=1;verticalAlign=bottom;endArrow=block;fontSize=11;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="95" y="490" as="sourcePoint" /><mxPoint x="320" y="490" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="m9" value="9: POST /api/games/:gameId/publish/:classId" style="html=1;verticalAlign=bottom;endArrow=block;fontSize=11;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="320" y="540" as="sourcePoint" /><mxPoint x="615" y="540" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="m10" value="10: INSERT INTO class_games ... ON CONFLICT UPDATE published_at" style="html=1;verticalAlign=bottom;endArrow=block;fontSize=11;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="615" y="590" as="sourcePoint" /><mxPoint x="920" y="590" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="m11" value="11: INSERT INTO notifications for each enrolled student (new game)" style="html=1;verticalAlign=bottom;endArrow=block;fontSize=11;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="615" y="640" as="sourcePoint" /><mxPoint x="920" y="640" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="m12" value="12: 200 published" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;fontSize=11;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="615" y="690" as="sourcePoint" /><mxPoint x="320" y="690" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="m13" value="13: Show &quot;Game published to class&quot;" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;fontSize=11;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="320" y="740" as="sourcePoint" /><mxPoint x="95" y="740" as="targetPoint" /></mxGeometry></mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

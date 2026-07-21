@@ -1,0 +1,110 @@
+<mxfile host="app.diagrams.net" modified="2026-07-09T12:00:00.000Z" agent="EduAIGames Thesis" version="24.0.0">
+  <diagram id="act-login" name="Activity - Login">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="1400" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="title" value="Activity Diagram: User Login with Account Status Checks and Role-Based Redirect" style="text;html=1;fontSize=16;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="10" width="760" height="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="laneUser" value="User" style="swimlane;html=1;startSize=30;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="50" width="380" height="1300" as="geometry" />
+        </mxCell>
+        <mxCell id="laneSystem" value="EduAIGames System" style="swimlane;html=1;startSize=30;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="420" y="50" width="600" height="1300" as="geometry" />
+        </mxCell>
+
+        <!-- User lane -->
+        <mxCell id="start" style="ellipse;html=1;fillColor=#000000;" vertex="1" parent="laneUser">
+          <mxGeometry x="170" y="50" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="a1" value="Open /login and enter&#10;email and password" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="laneUser">
+          <mxGeometry x="90" y="120" width="200" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="a2" value="Submit login form" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="laneUser">
+          <mxGeometry x="90" y="220" width="200" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="a9" value="Land on role dashboard&#10;(15-min inactivity timeout starts&#10;for Student / Instructor)" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="laneUser">
+          <mxGeometry x="90" y="1090" width="200" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- System lane -->
+        <mxCell id="d1" value="User found and&#10;bcrypt password&#10;match?" style="rhombus;whiteSpace=wrap;html=1;" vertex="1" parent="laneSystem">
+          <mxGeometry x="210" y="205" width="180" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="a3" value="Show 401 &quot;Invalid email&#10;or password&quot;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="laneSystem">
+          <mxGeometry x="30" y="220" width="160" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="d2" value="account_status?" style="rhombus;whiteSpace=wrap;html=1;" vertex="1" parent="laneSystem">
+          <mxGeometry x="210" y="340" width="180" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="a4" value="403 ACCOUNT_PENDING:&#10;&quot;waiting for admin approval&quot;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="laneSystem">
+          <mxGeometry x="30" y="355" width="160" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="a5" value="403 ACCOUNT_REJECTED /&#10;ACCOUNT_SUSPENDED message" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="laneSystem">
+          <mxGeometry x="30" y="440" width="160" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="d3" value="Institution suspended&#10;(Student / Instructor&#10;only)?" style="rhombus;whiteSpace=wrap;html=1;" vertex="1" parent="laneSystem">
+          <mxGeometry x="210" y="490" width="180" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="a6" value="403 INSTITUTION_SUSPENDED&#10;message" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="laneSystem">
+          <mxGeometry x="30" y="540" width="160" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="a7" value="Record row in user_login_events;&#10;return user object with role and&#10;institution / plan info" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="laneSystem">
+          <mxGeometry x="190" y="630" width="220" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="a8" value="Store user in localStorage&#10;(AuthContext.login)" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="laneSystem">
+          <mxGeometry x="190" y="740" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="d4" value="User role?" style="rhombus;whiteSpace=wrap;html=1;" vertex="1" parent="laneSystem">
+          <mxGeometry x="210" y="840" width="180" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="r1" value="Redirect to&#10;/student/dashboard" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="laneSystem">
+          <mxGeometry x="20" y="980" width="130" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="r2" value="Redirect to&#10;/instructor/dashboard" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="laneSystem">
+          <mxGeometry x="165" y="980" width="130" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="r3" value="Redirect to&#10;/admin" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="laneSystem">
+          <mxGeometry x="310" y="980" width="130" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="r4" value="Redirect to&#10;/super-admin" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="laneSystem">
+          <mxGeometry x="455" y="980" width="130" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="end1" style="ellipse;html=1;shape=endState;fillColor=#000000;" vertex="1" parent="laneSystem">
+          <mxGeometry x="285" y="1180" width="30" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- Edges -->
+        <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;" edge="1" parent="1" source="start" target="a1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;" edge="1" parent="1" source="a1" target="a2"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e3" value="POST /api/auth/login" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=10;" edge="1" parent="1" source="a2" target="d1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e4" value="no" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;" edge="1" parent="1" source="d1" target="a3"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e5" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;" edge="1" parent="1" source="a3" target="a1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e6" value="yes" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;" edge="1" parent="1" source="d1" target="d2"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e7" value="pending" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;" edge="1" parent="1" source="d2" target="a4"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e8" value="rejected / suspended" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=10;" edge="1" parent="1" source="d2" target="a5"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e9" value="approved" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;" edge="1" parent="1" source="d2" target="d3"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e10" value="yes" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;" edge="1" parent="1" source="d3" target="a6"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e11" value="no" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;" edge="1" parent="1" source="d3" target="a7"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e12" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;" edge="1" parent="1" source="a7" target="a8"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e13" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;" edge="1" parent="1" source="a8" target="d4"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e14" value="Student" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=10;" edge="1" parent="1" source="d4" target="r1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e15" value="Instructor" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=10;" edge="1" parent="1" source="d4" target="r2"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e16" value="Admin" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=10;" edge="1" parent="1" source="d4" target="r3"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e17" value="SuperAdmin" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;fontSize=10;" edge="1" parent="1" source="d4" target="r4"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e18" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;" edge="1" parent="1" source="r1" target="a9"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e19" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;" edge="1" parent="1" source="r2" target="a9"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e20" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;" edge="1" parent="1" source="r3" target="end1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e21" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;" edge="1" parent="1" source="r4" target="end1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e22" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;" edge="1" parent="1" source="a9" target="end1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e23" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;" edge="1" parent="1" source="a4" target="end1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e24" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;" edge="1" parent="1" source="a5" target="end1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e25" style="edgeStyle=orthogonalEdgeStyle;html=1;rounded=0;" edge="1" parent="1" source="a6" target="end1"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

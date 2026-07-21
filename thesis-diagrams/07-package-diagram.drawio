@@ -1,0 +1,314 @@
+<mxfile host="app.diagrams.net" modified="2026-07-15T12:00:00.000Z" agent="EduAIGames Thesis" version="24.0.0">
+  <diagram id="package-eduaigames" name="Package Diagram">
+    <mxGraphModel dx="2200" dy="1400" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2400" pageHeight="1700" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="title" value="Package Diagram: EduAIGames System Architecture&#10;(derived from EduAIGames/src and server/src)" style="text;html=1;fontSize=18;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="10" width="900" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- ===== System boundary ===== -->
+        <mxCell id="sysBoundary" value="&lt;&lt;subsystem&gt;&gt;&#10;EduAIGames System" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;fontSize=16;fontStyle=1;fillColor=none;strokeWidth=2;strokeColor=#2E3352;" vertex="1" parent="1">
+          <mxGeometry x="40" y="70" width="2320" height="1580" as="geometry" />
+        </mxCell>
+
+        <!-- ===== PRESENTATION LAYER ===== -->
+        <mxCell id="pkgPresentation" value="&lt;&lt;layer&gt;&gt;&#10;Presentation Layer&#10;EduAIGames/ (React 19 + TypeScript + Vite)" style="shape=folder;fontStyle=1;spacingLeft=10;tabWidth=40;tabHeight=14;tabPosition=left;html=1;whiteSpace=wrap;fillColor=#FFF8EE;strokeColor=#E8890C;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="80" y="120" width="1080" height="720" as="geometry" />
+        </mxCell>
+
+        <mxCell id="pkgRoutes" value="&lt;&lt;package&gt;&gt;&#10;routes&#10;─────────────&#10;AppRoutes.tsx&#10;paths.ts&#10;ProtectedRoute.tsx&#10;GuestRoute.tsx" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11;fillColor=#FFFFFF;strokeColor=#E8890C;" vertex="1" parent="1">
+          <mxGeometry x="110" y="170" width="180" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="pkgPages" value="&lt;&lt;package&gt;&gt;&#10;pages&#10;─────────────&#10;PublicPages.tsx&#10;StudentPages.tsx&#10;InstructorPages.tsx" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11;fillColor=#FFFFFF;strokeColor=#E8890C;" vertex="1" parent="1">
+          <mxGeometry x="310" y="170" width="180" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="pkgLayouts" value="&lt;&lt;package&gt;&gt;&#10;layouts&#10;─────────────&#10;StudentLayout.tsx&#10;InstructorLayout.tsx" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11;fillColor=#FFFFFF;strokeColor=#E8890C;" vertex="1" parent="1">
+          <mxGeometry x="510" y="170" width="180" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="pkgContext" value="&lt;&lt;package&gt;&gt;&#10;context&#10;─────────────&#10;AuthContext.tsx&#10;SidebarContext.tsx&#10;PanelUIContext.tsx&#10;MobileNavContext.tsx" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11;fillColor=#FFFFFF;strokeColor=#E8890C;" vertex="1" parent="1">
+          <mxGeometry x="710" y="170" width="200" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="pkgApiClient" value="&lt;&lt;package&gt;&gt;&#10;api&#10;─────────────&#10;client.ts&#10;(apiGet / apiPost / apiPut / apiDelete)" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11;fillColor=#FFFFFF;strokeColor=#E8890C;" vertex="1" parent="1">
+          <mxGeometry x="930" y="170" width="200" height="90" as="geometry" />
+        </mxCell>
+
+        <mxCell id="pkgComponents" value="&lt;&lt;package&gt;&gt;&#10;components" style="shape=folder;fontStyle=1;spacingLeft=10;tabWidth=40;tabHeight=14;tabPosition=left;html=1;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#E8890C;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="110" y="310" width="1020" height="500" as="geometry" />
+        </mxCell>
+
+        <mxCell id="pkgAuthUI" value="&lt;&lt;package&gt;&gt;&#10;auth&#10;─────────────&#10;Login.tsx&#10;Registration.tsx&#10;LoginRobot.tsx&#10;FrontPage.tsx" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11;fillColor=#FFF8EE;strokeColor=#E8890C;" vertex="1" parent="1">
+          <mxGeometry x="140" y="360" width="170" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="pkgStudentUI" value="&lt;&lt;package&gt;&gt;&#10;student&#10;─────────────&#10;StudentDashboard.tsx&#10;StudentJoinClass.tsx&#10;StudentCourses.tsx&#10;QuizAnswering.tsx&#10;StudentGrades.tsx&#10;StudentStudyCoach.tsx" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11;fillColor=#FFF8EE;strokeColor=#E8890C;" vertex="1" parent="1">
+          <mxGeometry x="330" y="360" width="190" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="pkgInstructorUI" value="&lt;&lt;package&gt;&gt;&#10;instructor&#10;─────────────&#10;InstructorDashboard.tsx&#10;InstructorManageClass.tsx&#10;QuizCreation.tsx&#10;EditQuiz.tsx&#10;InstructorQuizLibrary.tsx&#10;StudentPerformance.tsx" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11;fillColor=#FFF8EE;strokeColor=#E8890C;" vertex="1" parent="1">
+          <mxGeometry x="540" y="360" width="200" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="pkgGamesUI" value="&lt;&lt;package&gt;&gt;&#10;games&#10;─────────────&#10;MazeGameQuiz.tsx&#10;SnakeGameQuiz.tsx&#10;BreakoutGameQuiz.tsx&#10;TriviaRaceGameQuiz.tsx&#10;GameTouchControls.tsx" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11;fillColor=#FFF8EE;strokeColor=#E8890C;" vertex="1" parent="1">
+          <mxGeometry x="760" y="360" width="190" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="pkgAiUI" value="&lt;&lt;package&gt;&gt;&#10;ai&#10;─────────────&#10;AIChatbot.tsx&#10;SideEduBot.tsx&#10;AIQuizGenerator.tsx&#10;StudentStudyCoachHub.tsx" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11;fillColor=#FFF8EE;strokeColor=#E8890C;" vertex="1" parent="1">
+          <mxGeometry x="970" y="360" width="190" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="pkgAdminUI" value="&lt;&lt;package&gt;&gt;&#10;admin&#10;─────────────&#10;AdminDashboard.tsx&#10;AdminExtendedPanels.tsx&#10;adminExport.ts" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11;fillColor=#FFF8EE;strokeColor=#E8890C;" vertex="1" parent="1">
+          <mxGeometry x="140" y="500" width="190" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="pkgSharedUI" value="&lt;&lt;package&gt;&gt;&#10;shared&#10;─────────────&#10;NotificationBell.tsx&#10;ProfileSettings.tsx&#10;PanelBreadcrumbs.tsx&#10;ThemeToggle.tsx&#10;OnboardingChecklist.tsx" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11;fillColor=#FFF8EE;strokeColor=#E8890C;" vertex="1" parent="1">
+          <mxGeometry x="350" y="500" width="200" height="110" as="geometry" />
+        </mxCell>
+
+        <mxCell id="pkgHooks" value="&lt;&lt;package&gt;&gt;&#10;hooks&#10;─────────────&#10;usePlatformFeatures.ts&#10;useSessionTimeout.ts&#10;useGameViewport.ts&#10;usePageTitle.ts" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11;fillColor=#FFFFFF;strokeColor=#E8890C;" vertex="1" parent="1">
+          <mxGeometry x="580" y="500" width="200" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="pkgUtils" value="&lt;&lt;package&gt;&gt;&#10;utils&#10;─────────────&#10;quizSessionUtils.ts&#10;chatbotUtils.ts&#10;studentPerformanceUtils.ts&#10;notificationNavigation.ts" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11;fillColor=#FFFFFF;strokeColor=#E8890C;" vertex="1" parent="1">
+          <mxGeometry x="800" y="500" width="210" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="pkgTypes" value="&lt;&lt;package&gt;&gt;&#10;types&#10;─────────────&#10;user.ts&#10;(UserRole, User, AccountStatus)" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11;fillColor=#FFFFFF;strokeColor=#E8890C;" vertex="1" parent="1">
+          <mxGeometry x="1030" y="500" width="180" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- ===== APPLICATION LAYER ===== -->
+        <mxCell id="pkgApplication" value="&lt;&lt;layer&gt;&gt;&#10;Application Layer&#10;server/ (Node.js + Express + TypeScript)" style="shape=folder;fontStyle=1;spacingLeft=10;tabWidth=40;tabHeight=14;tabPosition=left;html=1;whiteSpace=wrap;fillColor=#E8F0FD;strokeColor=#2C5AA0;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="80" y="880" width="1080" height="720" as="geometry" />
+        </mxCell>
+
+        <mxCell id="pkgIndex" value="&lt;&lt;package&gt;&gt;&#10;application&#10;─────────────&#10;index.ts&#10;(Express bootstrap,&#10;route mounting,&#10;CORS, static serve)" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11;fillColor=#FFFFFF;strokeColor=#2C5AA0;" vertex="1" parent="1">
+          <mxGeometry x="110" y="930" width="180" height="110" as="geometry" />
+        </mxCell>
+
+        <mxCell id="pkgRoutesBE" value="&lt;&lt;package&gt;&gt;&#10;routes" style="shape=folder;fontStyle=1;spacingLeft=10;tabWidth=40;tabHeight=14;tabPosition=left;html=1;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#2C5AA0;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="310" y="930" width="820" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="pkgRouteAuth" value="auth.ts&#10;(register OTP, login,&#10;password reset)" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fontSize=10;fillColor=#E8F0FD;strokeColor=#2C5AA0;" vertex="1" parent="1">
+          <mxGeometry x="330" y="970" width="130" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="pkgRouteClasses" value="classes.ts&#10;classContent.ts&#10;announcements.ts" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fontSize=10;fillColor=#E8F0FD;strokeColor=#2C5AA0;" vertex="1" parent="1">
+          <mxGeometry x="470" y="970" width="130" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="pkgRouteQuiz" value="quizzes.ts&#10;(CRUD, attempts,&#10;performance)" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fontSize=10;fillColor=#E8F0FD;strokeColor=#2C5AA0;" vertex="1" parent="1">
+          <mxGeometry x="610" y="970" width="120" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="pkgRouteGames" value="games.ts&#10;(create, publish,&#10;class games)" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fontSize=10;fillColor=#E8F0FD;strokeColor=#2C5AA0;" vertex="1" parent="1">
+          <mxGeometry x="740" y="970" width="120" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="pkgRouteChat" value="chat.ts&#10;(EduBot, Study Coach,&#10;AI quiz generate)" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fontSize=10;fillColor=#E8F0FD;strokeColor=#2C5AA0;" vertex="1" parent="1">
+          <mxGeometry x="870" y="970" width="130" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="pkgRouteAdmin" value="admin.ts&#10;adminExtended.ts&#10;superAdmin.ts" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fontSize=10;fillColor=#E8F0FD;strokeColor=#2C5AA0;" vertex="1" parent="1">
+          <mxGeometry x="1010" y="970" width="110" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="pkgServices" value="&lt;&lt;package&gt;&gt;&#10;services" style="shape=folder;fontStyle=1;spacingLeft=10;tabWidth=40;tabHeight=14;tabPosition=left;html=1;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#2C5AA0;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="110" y="1160" width="500" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="pkgSvcAdmin" value="adminServices.ts&#10;superAdminServices.ts&#10;adminAuth.ts" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fontSize=10;fillColor=#E8F0FD;strokeColor=#2C5AA0;" vertex="1" parent="1">
+          <mxGeometry x="130" y="1200" width="140" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="pkgSvcInstitution" value="institutionServices.ts&#10;platformFeatures.ts&#10;featureGate.ts" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fontSize=10;fillColor=#E8F0FD;strokeColor=#2C5AA0;" vertex="1" parent="1">
+          <mxGeometry x="280" y="1200" width="150" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="pkgSvcNotify" value="notificationService.ts&#10;emailService.ts&#10;studyCoachService.ts" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fontSize=10;fillColor=#E8F0FD;strokeColor=#2C5AA0;" vertex="1" parent="1">
+          <mxGeometry x="440" y="1200" width="150" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="pkgPersistence" value="&lt;&lt;package&gt;&gt;&#10;persistence (queries)" style="shape=folder;fontStyle=1;spacingLeft=10;tabWidth=40;tabHeight=14;tabPosition=left;html=1;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#2C5AA0;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="630" y="1160" width="500" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="pkgQUser" value="queries.ts&#10;userAccountStatus.ts" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fontSize=10;fillColor=#E8F0FD;strokeColor=#2C5AA0;" vertex="1" parent="1">
+          <mxGeometry x="650" y="1200" width="130" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="pkgQClass" value="classQueries.ts&#10;classTopicQueries.ts" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fontSize=10;fillColor=#E8F0FD;strokeColor=#2C5AA0;" vertex="1" parent="1">
+          <mxGeometry x="790" y="1200" width="130" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="pkgQQuiz" value="quizQueries.ts&#10;gameQueries.ts&#10;courseQueries.ts" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fontSize=10;fillColor=#E8F0FD;strokeColor=#2C5AA0;" vertex="1" parent="1">
+          <mxGeometry x="930" y="1200" width="130" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="pkgQNotify" value="notificationQueries.ts&#10;loginEvents.ts" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fontSize=10;fillColor=#E8F0FD;strokeColor=#2C5AA0;" vertex="1" parent="1">
+          <mxGeometry x="650" y="1270" width="140" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="pkgInfra" value="&lt;&lt;package&gt;&gt;&#10;infrastructure" style="shape=folder;fontStyle=1;spacingLeft=10;tabWidth=40;tabHeight=14;tabPosition=left;html=1;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#2C5AA0;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="110" y="1390" width="1020" height="180" as="geometry" />
+        </mxCell>
+        <mxCell id="pkgDb" value="db.ts&#10;setupDatabase.ts&#10;adminInfrastructure.ts" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fontSize=10;fillColor=#E8F0FD;strokeColor=#2C5AA0;" vertex="1" parent="1">
+          <mxGeometry x="130" y="1430" width="150" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="pkgOpenai" value="openai.ts&#10;(gpt-4o-mini client)" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fontSize=10;fillColor=#E8F0FD;strokeColor=#2C5AA0;" vertex="1" parent="1">
+          <mxGeometry x="300" y="1430" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="pkgEnv" value="envConfig.ts&#10;ensureAdmin.ts&#10;ensureSuperAdmin.ts" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fontSize=10;fillColor=#E8F0FD;strokeColor=#2C5AA0;" vertex="1" parent="1">
+          <mxGeometry x="460" y="1430" width="150" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- ===== DATA LAYER ===== -->
+        <mxCell id="pkgData" value="&lt;&lt;layer&gt;&gt;&#10;Data Layer" style="shape=folder;fontStyle=1;spacingLeft=10;tabWidth=40;tabHeight=14;tabPosition=left;html=1;whiteSpace=wrap;fillColor=#E8FDE8;strokeColor=#27AE60;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="1220" y="120" width="520" height="720" as="geometry" />
+        </mxCell>
+        <mxCell id="pkgPostgres" value="&lt;&lt;package&gt;&gt;&#10;PostgreSQL Database (fyp)&#10;─────────────────────────────&#10;users, email_otp_codes&#10;plans, institutions&#10;classes, class_memberships&#10;class_topics, class_topic_items&#10;class_announcements&#10;quizzes, questions, question_options&#10;student_quiz_attempts&#10;games, class_games&#10;courses, student_enrollments&#10;notifications, user_login_events&#10;admin_audit_log, platform_settings&#10;admin_notifications" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=6;fontSize=11;fillColor=#FFFFFF;strokeColor=#27AE60;" vertex="1" parent="1">
+          <mxGeometry x="1250" y="180" width="460" height="320" as="geometry" />
+        </mxCell>
+        <mxCell id="pkgFileStore" value="&lt;&lt;package&gt;&gt;&#10;File Storage&#10;─────────────────────────────&#10;server/uploads/&#10;(class material files via multer)" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=6;fontSize=11;fillColor=#FFFFFF;strokeColor=#27AE60;" vertex="1" parent="1">
+          <mxGeometry x="1250" y="530" width="460" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="pkgBrowserStore" value="&lt;&lt;package&gt;&gt;&#10;Browser Storage (client-side)&#10;─────────────────────────────&#10;localStorage: user session, chat session&#10;session activity marker" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=6;fontSize=11;fillColor=#FFFFFF;strokeColor=#27AE60;" vertex="1" parent="1">
+          <mxGeometry x="1250" y="640" width="460" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- ===== EXTERNAL SYSTEMS ===== -->
+        <mxCell id="pkgExternal" value="&lt;&lt;layer&gt;&gt;&#10;External Systems" style="shape=folder;fontStyle=1;spacingLeft=10;tabWidth=40;tabHeight=14;tabPosition=left;html=1;whiteSpace=wrap;fillColor=#EDE7F6;strokeColor=#7E57C2;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="1220" y="880" width="520" height="720" as="geometry" />
+        </mxCell>
+        <mxCell id="pkgOpenAIExt" value="&lt;&lt;external&gt;&gt;&#10;OpenAI API&#10;─────────────────────────────&#10;EduBot chatbot&#10;AI Quiz Generator&#10;Study Coach (insights, explain, practice)" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=6;fontSize=11;fillColor=#FFFFFF;strokeColor=#7E57C2;" vertex="1" parent="1">
+          <mxGeometry x="1250" y="940" width="460" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="pkgSmtpExt" value="&lt;&lt;external&gt;&gt;&#10;SMTP Email Service (Nodemailer)&#10;─────────────────────────────&#10;Registration OTP&#10;Password reset OTP" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=6;fontSize=11;fillColor=#FFFFFF;strokeColor=#7E57C2;" vertex="1" parent="1">
+          <mxGeometry x="1250" y="1080" width="460" height="90" as="geometry" />
+        </mxCell>
+
+        <!-- ===== DEPENDENCIES (dashed arrows) ===== -->
+        <!-- Presentation -> Application -->
+        <mxCell id="dep1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;endArrow=open;endFill=0;strokeWidth=2;strokeColor=#555555;" edge="1" parent="1" source="pkgApiClient" target="pkgIndex">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1030" y="860" />
+              <mxPoint x="200" y="860" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="dep1Label" value="HTTP / REST&#10;/api/*" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=2;" vertex="1" connectable="0" parent="dep1">
+          <mxGeometry x="-0.1" y="1" relative="1" as="geometry">
+            <mxPoint x="10" y="-12" as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- routes -> services -->
+        <mxCell id="dep2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;endArrow=open;endFill=0;strokeColor=#555555;" edge="1" parent="1" source="pkgRoutesBE" target="pkgServices">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="dep2Label" value="&lt;&lt;uses&gt;&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;" vertex="1" connectable="0" parent="dep2">
+          <mxGeometry x="-0.2" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- routes -> persistence -->
+        <mxCell id="dep3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;endArrow=open;endFill=0;strokeColor=#555555;" edge="1" parent="1" source="pkgRoutesBE" target="pkgPersistence">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- services -> persistence -->
+        <mxCell id="dep4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;endArrow=open;endFill=0;strokeColor=#555555;" edge="1" parent="1" source="pkgServices" target="pkgPersistence">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- persistence -> infrastructure/db -->
+        <mxCell id="dep5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;endArrow=open;endFill=0;strokeWidth=2;strokeColor=#27AE60;" edge="1" parent="1" source="pkgPersistence" target="pkgDb">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="880" y="1380" />
+              <mxPoint x="205" y="1380" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="dep5Label" value="pg pool / SQL" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;fontStyle=2;" vertex="1" connectable="0" parent="dep5">
+          <mxGeometry x="-0.1" relative="1" as="geometry">
+            <mxPoint x="20" y="-10" as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- db -> postgres -->
+        <mxCell id="dep6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;endArrow=open;endFill=0;strokeWidth=2;strokeColor=#27AE60;" edge="1" parent="1" source="pkgDb" target="pkgPostgres">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="205" y="1520" />
+              <mxPoint x="1180" y="1520" />
+              <mxPoint x="1180" y="340" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- classContent -> file storage -->
+        <mxCell id="dep7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;endArrow=open;endFill=0;strokeColor=#27AE60;" edge="1" parent="1" source="pkgRouteClasses" target="pkgFileStore">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="535" y="850" />
+              <mxPoint x="1180" y="850" />
+              <mxPoint x="1180" y="575" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="dep7Label" value="multer upload" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;fontStyle=2;" vertex="1" connectable="0" parent="dep7">
+          <mxGeometry x="0.3" relative="1" as="geometry">
+            <mxPoint x="10" y="-8" as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- chat -> openai -->
+        <mxCell id="dep8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;endArrow=open;endFill=0;strokeColor=#7E57C2;" edge="1" parent="1" source="pkgRouteChat" target="pkgOpenAIExt">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="935" y="850" />
+              <mxPoint x="1180" y="850" />
+              <mxPoint x="1180" y="995" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="dep8Label" value="openai.ts" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;fontStyle=2;" vertex="1" connectable="0" parent="dep8">
+          <mxGeometry x="0.4" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- auth -> smtp -->
+        <mxCell id="dep9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;endArrow=open;endFill=0;strokeColor=#7E57C2;" edge="1" parent="1" source="pkgRouteAuth" target="pkgSmtpExt">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="395" y="850" />
+              <mxPoint x="1180" y="850" />
+              <mxPoint x="1180" y="1125" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="dep9Label" value="emailService.ts" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;fontStyle=2;" vertex="1" connectable="0" parent="dep9">
+          <mxGeometry x="0.5" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Frontend internal deps -->
+        <mxCell id="dep10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;endArrow=open;endFill=0;strokeColor=#E8890C;" edge="1" parent="1" source="pkgPages" target="pkgComponents">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="dep11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;endArrow=open;endFill=0;strokeColor=#E8890C;" edge="1" parent="1" source="pkgRoutes" target="pkgPages">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="dep12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;endArrow=open;endFill=0;strokeColor=#E8890C;" edge="1" parent="1" source="pkgComponents" target="pkgApiClient">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="620" y="290" />
+              <mxPoint x="1030" y="290" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="dep13" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;endArrow=open;endFill=0;strokeColor=#E8890C;" edge="1" parent="1" source="pkgComponents" target="pkgContext">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="810" y="290" />
+              <mxPoint x="810" y="280" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Legend -->
+        <mxCell id="legend" value="&lt;b&gt;Legend&lt;/b&gt;&lt;br/&gt;─── dashed arrow = &amp;lt;&amp;lt;dependency&amp;gt;&amp;gt; (package A uses package B)&lt;br/&gt;Presentation Layer calls Application Layer via REST API (/api/*)&lt;br/&gt;Application Layer reads/writes Data Layer via pg pool and file uploads&lt;br/&gt;External systems are accessed only from backend services" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=6;fontSize=11;fillColor=#F5F5F5;strokeColor=#999999;" vertex="1" parent="1">
+          <mxGeometry x="1220" y="1220" width="520" height="100" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

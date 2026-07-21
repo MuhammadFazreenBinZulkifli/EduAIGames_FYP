@@ -1,0 +1,230 @@
+<mxfile host="app.diagrams.net" modified="2026-07-09T12:00:00.000Z" agent="EduAIGames Thesis" version="24.0.0">
+  <diagram id="class-eduaigames" name="Class Diagram">
+    <mxGraphModel dx="2000" dy="1200" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2350" pageHeight="1900" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="title" value="Class Diagram: EduAIGames Data Model (PostgreSQL, derived from server/src)" style="text;html=1;fontSize=18;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="10" width="900" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Column 1: Tenancy & Users ===== -->
+        <mxCell id="cPlan" value="&lt;p style=&quot;margin:4px;text-align:center&quot;&gt;&lt;b&gt;Plan&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:4px;margin-left:6px&quot;&gt;+ id: int «PK»&lt;br/&gt;+ name: varchar(80) «unique»&lt;br/&gt;+ price: numeric(10,2)&lt;br/&gt;+ features: jsonb&lt;br/&gt;+ is_default: boolean&lt;br/&gt;+ created_at: timestamptz&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;fontSize=12;html=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="40" y="60" width="240" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="cInstitution" value="&lt;p style=&quot;margin:4px;text-align:center&quot;&gt;&lt;b&gt;Institution&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:4px;margin-left:6px&quot;&gt;+ id: int «PK»&lt;br/&gt;+ name: varchar(160)&lt;br/&gt;+ slug: varchar(120) «unique»&lt;br/&gt;+ status: varchar(20)&lt;br/&gt;+ plan_id: int «FK Plan»&lt;br/&gt;+ seats_limit: int&lt;br/&gt;+ email_domains: text[]&lt;br/&gt;+ feature_overrides: jsonb&lt;br/&gt;+ primary_color: varchar(20)&lt;br/&gt;+ logo_url: text&lt;br/&gt;+ is_default: boolean&lt;br/&gt;+ created_at: timestamptz&lt;br/&gt;+ updated_at: timestamptz&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;fontSize=12;html=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="40" y="250" width="240" height="255" as="geometry" />
+        </mxCell>
+        <mxCell id="cUser" value="&lt;p style=&quot;margin:4px;text-align:center&quot;&gt;&lt;b&gt;User&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:4px;margin-left:6px&quot;&gt;+ id: int «PK»&lt;br/&gt;+ username: varchar(255)&lt;br/&gt;+ email: varchar(255) «unique»&lt;br/&gt;+ password: varchar(255) «bcrypt hash»&lt;br/&gt;+ role: UserRole&lt;br/&gt;+ account_status: AccountStatus&lt;br/&gt;+ avatar_url: text&lt;br/&gt;+ preferences: jsonb&lt;br/&gt;+ institution_id: int «FK Institution»&lt;br/&gt;+ created_at: timestamp&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;fontSize=12;html=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="40" y="560" width="240" height="215" as="geometry" />
+        </mxCell>
+        <mxCell id="cOtp" value="&lt;p style=&quot;margin:4px;text-align:center&quot;&gt;&lt;b&gt;EmailOtpCode&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:4px;margin-left:6px&quot;&gt;+ id: int «PK»&lt;br/&gt;+ email: varchar(255)&lt;br/&gt;+ purpose: OtpPurpose&lt;br/&gt;+ otp_hash: varchar(255) «sha256»&lt;br/&gt;+ payload: jsonb&lt;br/&gt;+ expires_at: timestamp&lt;br/&gt;+ consumed: boolean&lt;br/&gt;+ created_at: timestamp&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;fontSize=12;html=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="40" y="830" width="240" height="180" as="geometry" />
+        </mxCell>
+        <mxCell id="cLoginEvent" value="&lt;p style=&quot;margin:4px;text-align:center&quot;&gt;&lt;b&gt;UserLoginEvent&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:4px;margin-left:6px&quot;&gt;+ id: int «PK»&lt;br/&gt;+ user_id: int «FK User»&lt;br/&gt;+ role: varchar(20)&lt;br/&gt;+ logged_in_at: timestamptz&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;fontSize=12;html=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1060" width="240" height="115" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Column 2: Classes & Content ===== -->
+        <mxCell id="cClass" value="&lt;p style=&quot;margin:4px;text-align:center&quot;&gt;&lt;b&gt;Class&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:4px;margin-left:6px&quot;&gt;+ id: int «PK»&lt;br/&gt;+ instructor_id: int «FK User»&lt;br/&gt;+ title: varchar(255)&lt;br/&gt;+ description: text&lt;br/&gt;+ join_code: varchar(10) «unique»&lt;br/&gt;+ visibility: Visibility&lt;br/&gt;+ background_image: text&lt;br/&gt;+ created_at: timestamp&lt;br/&gt;+ updated_at: timestamp&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;fontSize=12;html=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="440" y="560" width="240" height="195" as="geometry" />
+        </mxCell>
+        <mxCell id="cMembership" value="&lt;p style=&quot;margin:4px;text-align:center&quot;&gt;&lt;b&gt;ClassMembership&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:4px;margin-left:6px&quot;&gt;+ id: int «PK»&lt;br/&gt;+ student_id: int «FK User»&lt;br/&gt;+ class_id: int «FK Class»&lt;br/&gt;+ joined_at: timestamp&lt;br/&gt;«unique (student_id, class_id)»&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;fontSize=12;html=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="440" y="300" width="240" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="cAnnouncement" value="&lt;p style=&quot;margin:4px;text-align:center&quot;&gt;&lt;b&gt;ClassAnnouncement&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:4px;margin-left:6px&quot;&gt;+ id: int «PK»&lt;br/&gt;+ class_id: int «FK Class»&lt;br/&gt;+ instructor_id: int «FK User»&lt;br/&gt;+ content: text «max 500 chars»&lt;br/&gt;+ created_at: timestamptz&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;fontSize=12;html=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="440" y="80" width="240" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="cTopic" value="&lt;p style=&quot;margin:4px;text-align:center&quot;&gt;&lt;b&gt;ClassTopic&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:4px;margin-left:6px&quot;&gt;+ id: int «PK»&lt;br/&gt;+ class_id: int «FK Class»&lt;br/&gt;+ name: varchar(255)&lt;br/&gt;+ is_quiz_topic: boolean&lt;br/&gt;+ display_order: int&lt;br/&gt;+ created_at: timestamp&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;fontSize=12;html=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="440" y="830" width="240" height="145" as="geometry" />
+        </mxCell>
+        <mxCell id="cTopicItem" value="&lt;p style=&quot;margin:4px;text-align:center&quot;&gt;&lt;b&gt;ClassTopicItem&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:4px;margin-left:6px&quot;&gt;+ id: int «PK»&lt;br/&gt;+ topic_id: int «FK ClassTopic»&lt;br/&gt;+ class_id: int «FK Class»&lt;br/&gt;+ item_type: ItemType (file | quiz)&lt;br/&gt;+ title: varchar(255)&lt;br/&gt;+ file_name: varchar(512)&lt;br/&gt;+ stored_name: varchar(512)&lt;br/&gt;+ mime_type: varchar(128)&lt;br/&gt;+ quiz_id: int «FK Quiz»&lt;br/&gt;+ display_order: int&lt;br/&gt;+ created_at: timestamp&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;fontSize=12;html=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="440" y="1030" width="240" height="230" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Column 3: Quizzes ===== -->
+        <mxCell id="cQuiz" value="&lt;p style=&quot;margin:4px;text-align:center&quot;&gt;&lt;b&gt;Quiz&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:4px;margin-left:6px&quot;&gt;+ id: int «PK»&lt;br/&gt;+ instructor_id: int «FK User»&lt;br/&gt;+ course_id: int «FK Course, nullable»&lt;br/&gt;+ class_id: int «FK Class, nullable»&lt;br/&gt;+ title: varchar(255)&lt;br/&gt;+ description: text&lt;br/&gt;+ time_limit_minutes: int&lt;br/&gt;+ shuffle_questions: boolean&lt;br/&gt;+ shuffle_options: boolean&lt;br/&gt;+ max_attempts: int&lt;br/&gt;+ show_results_after: text&lt;br/&gt;+ allow_late_submit: boolean&lt;br/&gt;+ created_at: timestamp&lt;br/&gt;+ updated_at: timestamp&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;fontSize=12;html=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="880" y="560" width="250" height="280" as="geometry" />
+        </mxCell>
+        <mxCell id="cQuestion" value="&lt;p style=&quot;margin:4px;text-align:center&quot;&gt;&lt;b&gt;Question&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:4px;margin-left:6px&quot;&gt;+ id: int «PK»&lt;br/&gt;+ quiz_id: int «FK Quiz»&lt;br/&gt;+ question_text: text&lt;br/&gt;+ question_type: QuestionType&lt;br/&gt;+ correct_answer: varchar(255)&lt;br/&gt;+ question_order: int&lt;br/&gt;+ explanation: text&lt;br/&gt;+ created_at: timestamp&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;fontSize=12;html=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="880" y="920" width="250" height="180" as="geometry" />
+        </mxCell>
+        <mxCell id="cOption" value="&lt;p style=&quot;margin:4px;text-align:center&quot;&gt;&lt;b&gt;QuestionOption&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:4px;margin-left:6px&quot;&gt;+ id: int «PK»&lt;br/&gt;+ question_id: int «FK Question»&lt;br/&gt;+ option_text: varchar(255)&lt;br/&gt;+ option_order: int&lt;br/&gt;+ created_at: timestamp&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;fontSize=12;html=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="880" y="1160" width="250" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="cAttempt" value="&lt;p style=&quot;margin:4px;text-align:center&quot;&gt;&lt;b&gt;StudentQuizAttempt&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:4px;margin-left:6px&quot;&gt;+ id: int «PK»&lt;br/&gt;+ student_id: int «FK User»&lt;br/&gt;+ quiz_id: int «FK Quiz»&lt;br/&gt;+ score: decimal(5,2)&lt;br/&gt;+ correct_answers: int&lt;br/&gt;+ total_questions: int&lt;br/&gt;+ responses: jsonb&lt;br/&gt;+ completed_at: timestamp&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;fontSize=12;html=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="880" y="240" width="250" height="180" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Column 4: Games & Courses ===== -->
+        <mxCell id="cGame" value="&lt;p style=&quot;margin:4px;text-align:center&quot;&gt;&lt;b&gt;Game&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:4px;margin-left:6px&quot;&gt;+ id: int «PK»&lt;br/&gt;+ instructor_id: int «FK User»&lt;br/&gt;+ quiz_id: int «FK Quiz»&lt;br/&gt;+ title: varchar(255)&lt;br/&gt;+ description: text&lt;br/&gt;+ ghost_enabled: boolean&lt;br/&gt;+ game_type: GameType&lt;br/&gt;+ settings: text «JSON»&lt;br/&gt;+ created_at: timestamptz&lt;br/&gt;+ updated_at: timestamptz&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;fontSize=12;html=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="1330" y="560" width="240" height="215" as="geometry" />
+        </mxCell>
+        <mxCell id="cClassGame" value="&lt;p style=&quot;margin:4px;text-align:center&quot;&gt;&lt;b&gt;ClassGame&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:4px;margin-left:6px&quot;&gt;+ id: int «PK»&lt;br/&gt;+ class_id: int «FK Class»&lt;br/&gt;+ game_id: int «FK Game»&lt;br/&gt;+ published_at: timestamptz&lt;br/&gt;«unique (class_id, game_id)»&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;fontSize=12;html=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="1330" y="300" width="240" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="cCourse" value="&lt;p style=&quot;margin:4px;text-align:center&quot;&gt;&lt;b&gt;Course&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:4px;margin-left:6px&quot;&gt;+ id: int «PK»&lt;br/&gt;+ instructor_id: int «FK User»&lt;br/&gt;+ title: varchar(255)&lt;br/&gt;+ description: text&lt;br/&gt;+ created_at: timestamp&lt;br/&gt;+ updated_at: timestamp&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;fontSize=12;html=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="1330" y="880" width="240" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="cEnrollment" value="&lt;p style=&quot;margin:4px;text-align:center&quot;&gt;&lt;b&gt;StudentEnrollment&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:4px;margin-left:6px&quot;&gt;+ id: int «PK»&lt;br/&gt;+ student_id: int «FK User»&lt;br/&gt;+ course_id: int «FK Course»&lt;br/&gt;+ enrolled_at: timestamp&lt;br/&gt;«unique (student_id, course_id)»&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;fontSize=12;html=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="1330" y="1090" width="240" height="130" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Column 5: Notifications & Admin ===== -->
+        <mxCell id="cNotification" value="&lt;p style=&quot;margin:4px;text-align:center&quot;&gt;&lt;b&gt;Notification&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:4px;margin-left:6px&quot;&gt;+ id: int «PK»&lt;br/&gt;+ recipient_id: int «FK User»&lt;br/&gt;+ recipient_role: varchar(20)&#10;(Instructor | Student)&lt;br/&gt;+ type: varchar(50)&lt;br/&gt;+ title: varchar(255)&lt;br/&gt;+ body: text&lt;br/&gt;+ metadata: jsonb&lt;br/&gt;+ read_at: timestamptz&lt;br/&gt;+ created_at: timestamptz&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;fontSize=12;html=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="1770" y="560" width="250" height="215" as="geometry" />
+        </mxCell>
+        <mxCell id="cAudit" value="&lt;p style=&quot;margin:4px;text-align:center&quot;&gt;&lt;b&gt;AdminAuditLog&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:4px;margin-left:6px&quot;&gt;+ id: int «PK»&lt;br/&gt;+ admin_id: int «FK User, nullable»&lt;br/&gt;+ action: varchar(80)&lt;br/&gt;+ target_type: varchar(50)&lt;br/&gt;+ target_id: int&lt;br/&gt;+ details: jsonb&lt;br/&gt;+ created_at: timestamptz&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;fontSize=12;html=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="1770" y="850" width="250" height="165" as="geometry" />
+        </mxCell>
+        <mxCell id="cAdminNotif" value="&lt;p style=&quot;margin:4px;text-align:center&quot;&gt;&lt;b&gt;AdminNotification&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:4px;margin-left:6px&quot;&gt;+ id: int «PK»&lt;br/&gt;+ type: varchar(50)&lt;br/&gt;+ title: varchar(255)&lt;br/&gt;+ body: text&lt;br/&gt;+ metadata: jsonb&lt;br/&gt;+ read_at: timestamptz&lt;br/&gt;+ created_at: timestamptz&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;fontSize=12;html=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="1770" y="1070" width="250" height="165" as="geometry" />
+        </mxCell>
+        <mxCell id="cSettings" value="&lt;p style=&quot;margin:4px;text-align:center&quot;&gt;&lt;b&gt;PlatformSetting&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:4px;margin-left:6px&quot;&gt;+ key: varchar(80) «PK»&lt;br/&gt;+ value: jsonb&lt;br/&gt;+ updated_at: timestamptz&lt;br/&gt;&lt;br/&gt;keys: registration_open,&#10;require_admin_approval,&#10;maintenance_mode, openai_enabled,&#10;games_enabled, quizzes_enabled,&#10;chatbot_enabled, ai_quiz_enabled&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;fontSize=12;html=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="1770" y="1290" width="250" height="200" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Enumerations ===== -->
+        <mxCell id="enUserRole" value="&lt;p style=&quot;margin:4px;text-align:center&quot;&gt;«enumeration»&lt;br/&gt;&lt;b&gt;UserRole&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:4px;margin-left:6px&quot;&gt;Instructor&lt;br/&gt;Student&lt;br/&gt;Admin&lt;br/&gt;SuperAdmin&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;fontSize=12;html=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1250" width="180" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="enAccountStatus" value="&lt;p style=&quot;margin:4px;text-align:center&quot;&gt;«enumeration»&lt;br/&gt;&lt;b&gt;AccountStatus&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:4px;margin-left:6px&quot;&gt;pending&lt;br/&gt;approved&lt;br/&gt;rejected&lt;br/&gt;suspended&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;fontSize=12;html=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="240" y="1250" width="180" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="enQuestionType" value="&lt;p style=&quot;margin:4px;text-align:center&quot;&gt;«enumeration»&lt;br/&gt;&lt;b&gt;QuestionType&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:4px;margin-left:6px&quot;&gt;multiple-choice&lt;br/&gt;true-false&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;fontSize=12;html=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="440" y="1400" width="180" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="enGameType" value="&lt;p style=&quot;margin:4px;text-align:center&quot;&gt;«enumeration»&lt;br/&gt;&lt;b&gt;GameType&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:4px;margin-left:6px&quot;&gt;maze&lt;br/&gt;snake&lt;br/&gt;breakout&lt;br/&gt;race&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;fontSize=12;html=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="640" y="1400" width="180" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="enVisibility" value="&lt;p style=&quot;margin:4px;text-align:center&quot;&gt;«enumeration»&lt;br/&gt;&lt;b&gt;Visibility&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:4px;margin-left:6px&quot;&gt;public&lt;br/&gt;private&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;fontSize=12;html=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="840" y="1400" width="180" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="enOtpPurpose" value="&lt;p style=&quot;margin:4px;text-align:center&quot;&gt;«enumeration»&lt;br/&gt;&lt;b&gt;OtpPurpose&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:4px;margin-left:6px&quot;&gt;register&lt;br/&gt;password-reset&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;fontSize=12;html=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="1040" y="1400" width="180" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="enItemType" value="&lt;p style=&quot;margin:4px;text-align:center&quot;&gt;«enumeration»&lt;br/&gt;&lt;b&gt;ItemType&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:4px;margin-left:6px&quot;&gt;file&lt;br/&gt;quiz&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;fontSize=12;html=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="1240" y="1400" width="180" height="110" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Relationships ===== -->
+        <!-- Plan 1 - 0..* Institution -->
+        <mxCell id="rel1" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=none;rounded=0;" edge="1" parent="1" source="cPlan" target="cInstitution"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="rel1a" value="1" style="edgeLabel;html=1;resizable=0;" vertex="1" connectable="0" parent="rel1"><mxGeometry x="-0.75" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry></mxCell>
+        <mxCell id="rel1b" value="0..*" style="edgeLabel;html=1;resizable=0;" vertex="1" connectable="0" parent="rel1"><mxGeometry x="0.75" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry></mxCell>
+
+        <!-- Institution 1 - 0..* User -->
+        <mxCell id="rel2" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=none;rounded=0;" edge="1" parent="1" source="cInstitution" target="cUser"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="rel2a" value="0..1" style="edgeLabel;html=1;resizable=0;" vertex="1" connectable="0" parent="rel2"><mxGeometry x="-0.75" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry></mxCell>
+        <mxCell id="rel2b" value="0..*" style="edgeLabel;html=1;resizable=0;" vertex="1" connectable="0" parent="rel2"><mxGeometry x="0.75" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry></mxCell>
+
+        <!-- User 1 - 0..* UserLoginEvent -->
+        <mxCell id="rel3" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=none;rounded=0;" edge="1" parent="1" source="cUser" target="cLoginEvent"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="rel3a" value="1" style="edgeLabel;html=1;resizable=0;" vertex="1" connectable="0" parent="rel3"><mxGeometry x="-0.75" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry></mxCell>
+        <mxCell id="rel3b" value="0..*" style="edgeLabel;html=1;resizable=0;" vertex="1" connectable="0" parent="rel3"><mxGeometry x="0.75" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry></mxCell>
+
+        <!-- User(instructor) 1 - 0..* Class -->
+        <mxCell id="rel4" value="teaches" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=none;rounded=0;fontSize=11;" edge="1" parent="1" source="cUser" target="cClass"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="rel4a" value="1 instructor" style="edgeLabel;html=1;resizable=0;fontSize=10;" vertex="1" connectable="0" parent="rel4"><mxGeometry x="-0.75" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry></mxCell>
+        <mxCell id="rel4b" value="0..*" style="edgeLabel;html=1;resizable=0;" vertex="1" connectable="0" parent="rel4"><mxGeometry x="0.75" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry></mxCell>
+
+        <!-- User(student) 1 - 0..* ClassMembership - Class -->
+        <mxCell id="rel5" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=none;rounded=0;exitX=0.5;exitY=0;entryX=0;entryY=0.5;" edge="1" parent="1" source="cClass" target="cMembership"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="rel5a" value="1" style="edgeLabel;html=1;resizable=0;" vertex="1" connectable="0" parent="rel5"><mxGeometry x="-0.75" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry></mxCell>
+        <mxCell id="rel5b" value="0..*" style="edgeLabel;html=1;resizable=0;" vertex="1" connectable="0" parent="rel5"><mxGeometry x="0.75" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry></mxCell>
+        <mxCell id="rel6" value="joins" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=none;rounded=0;fontSize=11;exitX=1;exitY=0.25;entryX=0;entryY=0.5;" edge="1" parent="1" source="cUser" target="cMembership"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="360" y="365" /></Array></mxGeometry></mxCell>
+        <mxCell id="rel6a" value="1 student" style="edgeLabel;html=1;resizable=0;fontSize=10;" vertex="1" connectable="0" parent="rel6"><mxGeometry x="-0.75" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry></mxCell>
+        <mxCell id="rel6b" value="0..*" style="edgeLabel;html=1;resizable=0;" vertex="1" connectable="0" parent="rel6"><mxGeometry x="0.75" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry></mxCell>
+
+        <!-- Class 1 - 0..* ClassAnnouncement -->
+        <mxCell id="rel7" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=none;rounded=0;exitX=0.25;exitY=0;entryX=0.25;entryY=1;" edge="1" parent="1" source="cMembership" target="cAnnouncement"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="rel7x" value="(Class 1 : 0..* ClassAnnouncement via class_id)" style="edgeLabel;html=1;resizable=0;fontSize=9;" vertex="1" connectable="0" parent="rel7"><mxGeometry relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry></mxCell>
+
+        <!-- Class 1 - 0..* ClassTopic -->
+        <mxCell id="rel8" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=none;rounded=0;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="cClass" target="cTopic"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="rel8a" value="1" style="edgeLabel;html=1;resizable=0;" vertex="1" connectable="0" parent="rel8"><mxGeometry x="-0.75" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry></mxCell>
+        <mxCell id="rel8b" value="0..*" style="edgeLabel;html=1;resizable=0;" vertex="1" connectable="0" parent="rel8"><mxGeometry x="0.75" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry></mxCell>
+
+        <!-- ClassTopic 1 - 0..* ClassTopicItem -->
+        <mxCell id="rel9" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=none;rounded=0;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="cTopic" target="cTopicItem"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="rel9a" value="1" style="edgeLabel;html=1;resizable=0;" vertex="1" connectable="0" parent="rel9"><mxGeometry x="-0.75" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry></mxCell>
+        <mxCell id="rel9b" value="0..*" style="edgeLabel;html=1;resizable=0;" vertex="1" connectable="0" parent="rel9"><mxGeometry x="0.75" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry></mxCell>
+
+        <!-- ClassTopicItem 0..* - 0..1 Quiz -->
+        <mxCell id="rel10" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=none;rounded=0;exitX=1;exitY=0.5;entryX=0.25;entryY=1;" edge="1" parent="1" source="cTopicItem" target="cQuiz"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="rel10a" value="0..*" style="edgeLabel;html=1;resizable=0;" vertex="1" connectable="0" parent="rel10"><mxGeometry x="-0.75" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry></mxCell>
+        <mxCell id="rel10b" value="0..1" style="edgeLabel;html=1;resizable=0;" vertex="1" connectable="0" parent="rel10"><mxGeometry x="0.75" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry></mxCell>
+
+        <!-- User(instructor) 1 - 0..* Quiz -->
+        <mxCell id="rel11" value="creates" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=none;rounded=0;fontSize=11;exitX=1;exitY=0.75;entryX=0;entryY=0.75;" edge="1" parent="1" source="cUser" target="cQuiz"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="360" y="790" /><mxPoint x="720" y="790" /></Array></mxGeometry></mxCell>
+        <mxCell id="rel11a" value="1 instructor" style="edgeLabel;html=1;resizable=0;fontSize=10;" vertex="1" connectable="0" parent="rel11"><mxGeometry x="-0.75" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry></mxCell>
+        <mxCell id="rel11b" value="0..*" style="edgeLabel;html=1;resizable=0;" vertex="1" connectable="0" parent="rel11"><mxGeometry x="0.75" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry></mxCell>
+
+        <!-- Class 0..1 - 0..* Quiz -->
+        <mxCell id="rel12" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=none;rounded=0;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="cClass" target="cQuiz"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="rel12a" value="0..1" style="edgeLabel;html=1;resizable=0;" vertex="1" connectable="0" parent="rel12"><mxGeometry x="-0.75" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry></mxCell>
+        <mxCell id="rel12b" value="0..*" style="edgeLabel;html=1;resizable=0;" vertex="1" connectable="0" parent="rel12"><mxGeometry x="0.75" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry></mxCell>
+
+        <!-- Quiz 1 - 1..* Question -->
+        <mxCell id="rel13" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=none;rounded=0;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="cQuiz" target="cQuestion"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="rel13a" value="1" style="edgeLabel;html=1;resizable=0;" vertex="1" connectable="0" parent="rel13"><mxGeometry x="-0.75" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry></mxCell>
+        <mxCell id="rel13b" value="1..*" style="edgeLabel;html=1;resizable=0;" vertex="1" connectable="0" parent="rel13"><mxGeometry x="0.75" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry></mxCell>
+
+        <!-- Question 1 - 0..* QuestionOption -->
+        <mxCell id="rel14" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=none;rounded=0;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="cQuestion" target="cOption"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="rel14a" value="1" style="edgeLabel;html=1;resizable=0;" vertex="1" connectable="0" parent="rel14"><mxGeometry x="-0.75" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry></mxCell>
+        <mxCell id="rel14b" value="0..*" style="edgeLabel;html=1;resizable=0;" vertex="1" connectable="0" parent="rel14"><mxGeometry x="0.75" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry></mxCell>
+
+        <!-- Quiz 1 - 0..* StudentQuizAttempt -->
+        <mxCell id="rel15" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=none;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;" edge="1" parent="1" source="cQuiz" target="cAttempt"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="rel15a" value="1" style="edgeLabel;html=1;resizable=0;" vertex="1" connectable="0" parent="rel15"><mxGeometry x="-0.75" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry></mxCell>
+        <mxCell id="rel15b" value="0..*" style="edgeLabel;html=1;resizable=0;" vertex="1" connectable="0" parent="rel15"><mxGeometry x="0.75" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry></mxCell>
+
+        <!-- User(student) 1 - 0..* StudentQuizAttempt -->
+        <mxCell id="rel16" value="attempts" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=none;rounded=0;fontSize=11;exitX=0.75;exitY=0;entryX=0;entryY=0.25;" edge="1" parent="1" source="cUser" target="cAttempt"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="220" y="230" /><mxPoint x="820" y="230" /></Array></mxGeometry></mxCell>
+        <mxCell id="rel16a" value="1 student" style="edgeLabel;html=1;resizable=0;fontSize=10;" vertex="1" connectable="0" parent="rel16"><mxGeometry x="-0.75" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry></mxCell>
+        <mxCell id="rel16b" value="0..*" style="edgeLabel;html=1;resizable=0;" vertex="1" connectable="0" parent="rel16"><mxGeometry x="0.75" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry></mxCell>
+
+        <!-- Quiz 1 - 0..* Game -->
+        <mxCell id="rel17" value="powers" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=none;rounded=0;fontSize=11;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="cQuiz" target="cGame"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="rel17a" value="1" style="edgeLabel;html=1;resizable=0;" vertex="1" connectable="0" parent="rel17"><mxGeometry x="-0.75" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry></mxCell>
+        <mxCell id="rel17b" value="0..*" style="edgeLabel;html=1;resizable=0;" vertex="1" connectable="0" parent="rel17"><mxGeometry x="0.75" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry></mxCell>
+
+        <!-- Game 1 - 0..* ClassGame -->
+        <mxCell id="rel18" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=none;rounded=0;exitX=0.5;exitY=0;entryX=0.5;entryY=1;" edge="1" parent="1" source="cGame" target="cClassGame"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="rel18a" value="1" style="edgeLabel;html=1;resizable=0;" vertex="1" connectable="0" parent="rel18"><mxGeometry x="-0.75" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry></mxCell>
+        <mxCell id="rel18b" value="0..*" style="edgeLabel;html=1;resizable=0;" vertex="1" connectable="0" parent="rel18"><mxGeometry x="0.75" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry></mxCell>
+
+        <!-- Class 1 - 0..* ClassGame -->
+        <mxCell id="rel19" value="published to" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=none;rounded=0;fontSize=10;exitX=0.75;exitY=0;entryX=0;entryY=0.5;" edge="1" parent="1" source="cClass" target="cClassGame"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="620" y="490" /><mxPoint x="1240" y="490" /><mxPoint x="1240" y="365" /></Array></mxGeometry></mxCell>
+        <mxCell id="rel19a" value="1" style="edgeLabel;html=1;resizable=0;" vertex="1" connectable="0" parent="rel19"><mxGeometry x="-0.75" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry></mxCell>
+        <mxCell id="rel19b" value="0..*" style="edgeLabel;html=1;resizable=0;" vertex="1" connectable="0" parent="rel19"><mxGeometry x="0.75" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry></mxCell>
+
+        <!-- Course 1 - 0..* StudentEnrollment -->
+        <mxCell id="rel21" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=none;rounded=0;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="cCourse" target="cEnrollment"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="rel21a" value="1" style="edgeLabel;html=1;resizable=0;" vertex="1" connectable="0" parent="rel21"><mxGeometry x="-0.75" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry></mxCell>
+        <mxCell id="rel21b" value="0..*" style="edgeLabel;html=1;resizable=0;" vertex="1" connectable="0" parent="rel21"><mxGeometry x="0.75" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry></mxCell>
+
+        <!-- Course 0..1 - 0..* Quiz -->
+        <mxCell id="rel22" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=none;rounded=0;exitX=0;exitY=0.5;entryX=1;entryY=0.75;" edge="1" parent="1" source="cCourse" target="cQuiz"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="rel22a" value="0..1" style="edgeLabel;html=1;resizable=0;" vertex="1" connectable="0" parent="rel22"><mxGeometry x="-0.75" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry></mxCell>
+        <mxCell id="rel22b" value="0..*" style="edgeLabel;html=1;resizable=0;" vertex="1" connectable="0" parent="rel22"><mxGeometry x="0.75" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry></mxCell>
+
+        <!-- User 1 - 0..* Notification -->
+        <mxCell id="rel23" value="receives" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=none;rounded=0;fontSize=11;exitX=1;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="cGame" target="cNotification"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1700" y="530" /></Array></mxGeometry></mxCell>
+        <mxCell id="rel23x" value="(User 1 : 0..* Notification via recipient_id)" style="edgeLabel;html=1;resizable=0;fontSize=9;" vertex="1" connectable="0" parent="rel23"><mxGeometry relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry></mxCell>
+
+        <!-- User(admin) 0..1 - 0..* AdminAuditLog -->
+        <mxCell id="rel24" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=none;rounded=0;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="cNotification" target="cAudit"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="rel24x" value="(User 0..1 : 0..* AdminAuditLog via admin_id)" style="edgeLabel;html=1;resizable=0;fontSize=9;" vertex="1" connectable="0" parent="rel24"><mxGeometry relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry></mxCell>
+
+        <!-- Legend note -->
+        <mxCell id="legend" value="Notes:&#10;- «PK» primary key, «FK» foreign key.&#10;- User.instructor / User.student roles distinguish ends of associations to Class, Quiz, Game, ClassMembership, StudentQuizAttempt.&#10;- EmailOtpCode is linked to users by email address (no FK).&#10;- AdminNotification and PlatformSetting are standalone tables.&#10;- Game also references its creating instructor via instructor_id «FK User»; ClassAnnouncement references its author via instructor_id." style="shape=note;whiteSpace=wrap;html=1;align=left;verticalAlign=top;fontSize=11;size=20;" vertex="1" parent="1">
+          <mxGeometry x="1440" y="1290" width="310" height="200" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

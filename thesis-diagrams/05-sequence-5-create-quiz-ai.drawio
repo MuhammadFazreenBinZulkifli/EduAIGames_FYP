@@ -1,0 +1,55 @@
+<mxfile host="app.diagrams.net" modified="2026-07-09T12:00:00.000Z" agent="EduAIGames Thesis" version="24.0.0">
+  <diagram id="seq-create-quiz-ai" name="Sequence - Instructor Creates Quiz with AI">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1300" pageHeight="1050" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="title" value="Sequence Diagram: Instructor Creates a Quiz with AI Generation and Moderation" style="text;html=1;fontSize=16;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="10" width="800" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- Participants -->
+        <mxCell id="p1" value="Instructor" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="80" y="50" width="30" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="p2" value="QuizCreation.tsx +&#10;AIQuizGenerator.tsx" style="rounded=0;whiteSpace=wrap;html=1;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="230" y="60" width="170" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="p3" value="Express API&#10;(/api/chat, /api/quizzes)" style="rounded=0;whiteSpace=wrap;html=1;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="510" y="60" width="180" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="p4" value="OpenAI API&#10;(gpt-4o-mini)" style="rounded=0;whiteSpace=wrap;html=1;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="800" y="60" width="150" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="p5" value="PostgreSQL" style="rounded=0;whiteSpace=wrap;html=1;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1070" y="60" width="140" height="45" as="geometry" />
+        </mxCell>
+
+        <!-- Lifelines -->
+        <mxCell id="l1" style="endArrow=none;dashed=1;html=1;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="95" y="110" as="sourcePoint" /><mxPoint x="95" y="1000" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="l2" style="endArrow=none;dashed=1;html=1;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="315" y="105" as="sourcePoint" /><mxPoint x="315" y="1000" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="l3" style="endArrow=none;dashed=1;html=1;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="600" y="105" as="sourcePoint" /><mxPoint x="600" y="1000" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="l4" style="endArrow=none;dashed=1;html=1;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="875" y="105" as="sourcePoint" /><mxPoint x="875" y="1000" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="l5" style="endArrow=none;dashed=1;html=1;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="1140" y="105" as="sourcePoint" /><mxPoint x="1140" y="1000" as="targetPoint" /></mxGeometry></mxCell>
+
+        <!-- Messages -->
+        <mxCell id="m1" value="1: Enter quiz details; open AI generator (topic, difficulty, count, type)" style="html=1;verticalAlign=bottom;endArrow=block;fontSize=11;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="95" y="150" as="sourcePoint" /><mxPoint x="315" y="150" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="m2" value="2: POST /api/chat/quiz-generate (feature-gated: ai_quiz_enabled, openai_enabled)" style="html=1;verticalAlign=bottom;endArrow=block;fontSize=11;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="315" y="200" as="sourcePoint" /><mxPoint x="600" y="200" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="m3" value="3: Moderation check (OpenAI Moderation + education classifier)" style="html=1;verticalAlign=bottom;endArrow=block;fontSize=11;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="600" y="250" as="sourcePoint" /><mxPoint x="875" y="250" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="m4" value="4: moderation verdict (block + audit log if flagged)" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;fontSize=11;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="875" y="295" as="sourcePoint" /><mxPoint x="600" y="295" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="m5" value="5: Chat Completions request - generate questions as JSON" style="html=1;verticalAlign=bottom;endArrow=block;fontSize=11;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="600" y="345" as="sourcePoint" /><mxPoint x="875" y="345" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="m6" value="6: questions (text, options, correct answers, explanations)" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;fontSize=11;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="875" y="395" as="sourcePoint" /><mxPoint x="600" y="395" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="m7" value="7: 200 {questions[]}" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;fontSize=11;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="600" y="445" as="sourcePoint" /><mxPoint x="315" y="445" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="m8" value="8: Prefill question editor with generated questions" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;fontSize=11;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="315" y="495" as="sourcePoint" /><mxPoint x="95" y="495" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="m9" value="9: Review / edit questions, then click Save Quiz" style="html=1;verticalAlign=bottom;endArrow=block;fontSize=11;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="95" y="545" as="sourcePoint" /><mxPoint x="315" y="545" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="m10" value="10: POST /api/quizzes {title, description, settings, questions[]}" style="html=1;verticalAlign=bottom;endArrow=block;fontSize=11;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="315" y="595" as="sourcePoint" /><mxPoint x="600" y="595" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="m11" value="11: INSERT INTO quizzes (instructor_id, settings)" style="html=1;verticalAlign=bottom;endArrow=block;fontSize=11;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="600" y="645" as="sourcePoint" /><mxPoint x="1140" y="645" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="m12" value="12: INSERT INTO questions (question_order) + question_options (option_order)" style="html=1;verticalAlign=bottom;endArrow=block;fontSize=11;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="600" y="695" as="sourcePoint" /><mxPoint x="1140" y="695" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="m13" value="13: 201 {quiz}" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;fontSize=11;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="600" y="745" as="sourcePoint" /><mxPoint x="315" y="745" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="m14" value="14: Show &quot;Quiz created&quot; - available in library" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;fontSize=11;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="315" y="795" as="sourcePoint" /><mxPoint x="95" y="795" as="targetPoint" /></mxGeometry></mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
